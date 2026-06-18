@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material3.MaterialTheme
-import androidx.wear.compose.material3.Text
 import com.example.claudwecho.theme.ClaudWechoTheme
+import com.example.claudwecho.ui.login.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,11 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "ClaudWecho")
+                    LoginScreen(
+                        onLoginSuccess = {
+                            // TODO: Navigate to Main Screen
+                        }
+                    )
                 }
             }
         }

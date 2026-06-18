@@ -1,5 +1,8 @@
 package com.example.claudwecho.di
 
+import com.example.claudwecho.data.api.NeteaseApi
+import com.example.claudwecho.data.LoginRepository
+import com.example.claudwecho.ui.login.LoginViewModel
 import com.example.claudwecho.data.api.PersistentCookieJar
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -7,6 +10,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
@@ -36,4 +40,8 @@ val networkModule = module {
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
     }
+
+    single { get<Retrofit>().create(NeteaseApi::class.java) }
+    single { LoginRepository(get()) }
+    viewModel { LoginViewModel(get()) }
 }
