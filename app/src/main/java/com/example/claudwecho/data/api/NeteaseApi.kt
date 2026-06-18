@@ -46,6 +46,12 @@ interface NeteaseApi {
         @Query("uid") uid: Long,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): UserPlaylistResponse
+
+    @GET("/playlist/detail")
+    suspend fun getPlaylistDetail(
+        @Query("id") id: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): PlaylistDetailResponse
 }
 
 @Serializable
@@ -98,3 +104,9 @@ data class UserPlaylistResponse(val playlist: List<Playlist>, val code: Int)
 
 @Serializable
 data class Playlist(val id: Long, val name: String, val coverImgUrl: String, val trackCount: Int)
+
+@Serializable
+data class PlaylistDetailResponse(val code: Int, val playlist: PlaylistDetail)
+
+@Serializable
+data class PlaylistDetail(val tracks: List<Song>)

@@ -35,6 +35,9 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 // User is logged in
                 _dailySongs.value = repository.getDailyRecommendSongs()
                 _playlists.value = repository.getUserPlaylists(profile.userId)
+            } else {
+                // Not logged in, fetch Hot Songs instead
+                _dailySongs.value = repository.getHotSongs()
             }
             _isLoading.value = false
         }

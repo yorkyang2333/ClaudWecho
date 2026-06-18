@@ -34,4 +34,14 @@ class MainRepository(private val api: NeteaseApi) {
             emptyList()
         }
     }
+
+    suspend fun getHotSongs(): List<Song> = withContext(Dispatchers.IO) {
+        try {
+            // 热歌榜 ID: 3778678
+            val response = api.getPlaylistDetail(3778678L)
+            if (response.code == 200) response.playlist.tracks else emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }

@@ -45,11 +45,6 @@ fun MainScreen(
     ) {
         if (isLoading) {
             Text("Loading...", color = MaterialTheme.colorScheme.primary)
-        } else if (userProfile == null) {
-            // Not logged in
-            LaunchedEffect(Unit) {
-                onNavigateToLogin()
-            }
         } else {
             ScalingLazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,27 +52,36 @@ fun MainScreen(
             ) {
                 item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        userProfile?.avatarUrl?.let {
-                            AsyncImage(
-                                model = it,
-                                contentDescription = "Avatar",
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
+                        if (userProfile != null) {
+                            userProfile?.avatarUrl?.let {
+                                AsyncImage(
+                                    model = it,
+                                    contentDescription = "Avatar",
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
+                            Text(
+                                text = userProfile?.nickname ?: "User",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
                             )
+                        } else {
+                            androidx.wear.compose.material3.Button(
+                                onClick = onNavigateToLogin,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                            ) {
+                                Text("Login for more")
+                            }
                         }
-                        Text(
-                            text = userProfile?.nickname ?: "User",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
-                        )
                     }
                 }
 
                 if (dailySongs.isNotEmpty()) {
                     item {
                         Text(
-                            "Daily Recommendations",
+                            if (userProfile != null) "Daily Recommendations" else "Hot Songs",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 8.dp)
