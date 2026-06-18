@@ -2,7 +2,9 @@ package com.example.claudwecho.di
 
 import com.example.claudwecho.data.api.NeteaseApi
 import com.example.claudwecho.data.LoginRepository
+import com.example.claudwecho.data.MainRepository
 import com.example.claudwecho.ui.login.LoginViewModel
+import com.example.claudwecho.ui.main.MainViewModel
 import com.example.claudwecho.data.api.PersistentCookieJar
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -43,5 +45,7 @@ val networkModule = module {
 
     single { get<Retrofit>().create(NeteaseApi::class.java) }
     single { LoginRepository(get()) }
+    single { MainRepository(get()) }
     viewModel { LoginViewModel(get()) }
+    viewModel { MainViewModel(get()) }
 }

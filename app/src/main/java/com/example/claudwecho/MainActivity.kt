@@ -23,11 +23,7 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background),
                     contentAlignment = Alignment.Center
                 ) {
-                    LoginScreen(
-                        onLoginSuccess = {
-                            // TODO: Navigate to Main Screen
-                        }
-                    )
+                    AppNavigation()
                 }
             }
         }

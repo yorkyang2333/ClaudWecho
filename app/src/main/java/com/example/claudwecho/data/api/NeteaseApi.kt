@@ -34,6 +34,18 @@ interface NeteaseApi {
         @Query("captcha") captcha: String,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): LoginResponse
+
+    @GET("/login/status")
+    suspend fun getLoginStatus(@Query("timestamp") timestamp: Long = System.currentTimeMillis()): LoginStatusResponse
+
+    @GET("/recommend/songs")
+    suspend fun getRecommendSongs(@Query("timestamp") timestamp: Long = System.currentTimeMillis()): RecommendSongsResponse
+
+    @GET("/user/playlist")
+    suspend fun getUserPlaylists(
+        @Query("uid") uid: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): UserPlaylistResponse
 }
 
 @Serializable
@@ -53,3 +65,36 @@ data class QrCheckResponse(val code: Int, val message: String? = null, val cooki
 
 @Serializable
 data class LoginResponse(val code: Int, val message: String? = null, val cookie: String? = null)
+
+@Serializable
+data class LoginStatusResponse(val data: LoginStatusData)
+
+@Serializable
+data class LoginStatusData(val profile: UserProfile?, val account: UserAccount?)
+
+@Serializable
+data class UserProfile(val userId: Long, val nickname: String, val avatarUrl: String?)
+
+@Serializable
+data class UserAccount(val id: Long)
+
+@Serializable
+data class RecommendSongsResponse(val data: RecommendSongsData, val code: Int)
+
+@Serializable
+data class RecommendSongsData(val dailySongs: List<Song>)
+
+@Serializable
+data class Song(val id: Long, val name: String, val ar: List<Artist>, val al: Album)
+
+@Serializable
+data class Artist(val id: Long, val name: String)
+
+@Serializable
+data class Album(val id: Long, val name: String, val picUrl: String)
+
+@Serializable
+data class UserPlaylistResponse(val playlist: List<Playlist>, val code: Int)
+
+@Serializable
+data class Playlist(val id: Long, val name: String, val coverImgUrl: String, val trackCount: Int)
