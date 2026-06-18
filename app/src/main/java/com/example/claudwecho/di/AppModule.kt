@@ -5,6 +5,7 @@ import com.example.claudwecho.data.LoginRepository
 import com.example.claudwecho.data.MainRepository
 import com.example.claudwecho.ui.login.LoginViewModel
 import com.example.claudwecho.ui.main.MainViewModel
+import com.example.claudwecho.ui.player.PlayerViewModel
 import com.example.claudwecho.data.api.PersistentCookieJar
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -48,4 +49,5 @@ val networkModule = module {
     single { MainRepository(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
+    viewModel { PlayerViewModel(androidContext()) }
 }

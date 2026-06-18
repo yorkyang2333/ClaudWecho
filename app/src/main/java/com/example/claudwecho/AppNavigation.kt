@@ -7,6 +7,7 @@ import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import com.example.claudwecho.ui.login.LoginScreen
 import com.example.claudwecho.ui.main.MainScreen
+import com.example.claudwecho.ui.player.PlayerScreen
 
 @Composable
 fun AppNavigation(
@@ -22,6 +23,9 @@ fun AppNavigation(
                     navController.navigate("login") {
                         popUpTo("main") { inclusive = true }
                     }
+                },
+                onNavigateToPlayer = { url, title ->
+                    navController.navigate("player")
                 }
             )
         }
@@ -31,6 +35,13 @@ fun AppNavigation(
                     navController.navigate("main") {
                         popUpTo("login") { inclusive = true }
                     }
+                }
+            )
+        }
+        composable("player") {
+            PlayerScreen(
+                onBack = {
+                    navController.popBackStack()
                 }
             )
         }

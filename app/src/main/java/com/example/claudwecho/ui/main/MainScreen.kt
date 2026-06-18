@@ -25,7 +25,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToPlayer: (String, String) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val userProfile by viewModel.userProfile.collectAsState()
