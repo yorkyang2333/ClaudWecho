@@ -1,0 +1,39 @@
+package com.example.claudwecho.di
+
+import com.example.claudwecho.data.api.PersistentCookieJar
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
+import retrofit2.Retrofit
+
+val networkModule = module {
+    single {
+        PersistentCookieJar(androidContext())
+    }
+
+    single {
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        OkHttpClient.Builder()
+            .cookieJar(get<PersistentCookieJar>())
+            .addInterceptor(logging)
+            .build()
+    }
+
+    single {
+        val json = Json { ignoreUnknownKeys = true; isLenient = true }
+        val contentType = "application/json".toMediaType()
+        
+        // Default base URL, will be customizable later
+        Retrofit.Builder()
+            .baseUrl("https://netease-cloud-music-api-demo.vercel.app/")
+            .client(get())
+            .addConverterFactory(json.asConverterFactory(contentType))
+            .build()
+    }
+}
