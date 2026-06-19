@@ -154,7 +154,7 @@ fun PlayerScreen(
                         onClick = {
                             viewModel.playOrPause()
                         },
-                        modifier = Modifier.size(72.dp),
+                        modifier = Modifier.size(64.dp),
                         enabled = currentTitle != null,
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -165,7 +165,7 @@ fun PlayerScreen(
                             imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
                             tint = if (currentTitle == null) Color.Gray else Color.White,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(36.dp)
                         )
                     }
 
