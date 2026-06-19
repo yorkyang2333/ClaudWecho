@@ -10,6 +10,8 @@ class PlaybackStateManager(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("playback_state", Context.MODE_PRIVATE)
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
+    val currentTrackId = kotlinx.coroutines.flow.MutableStateFlow<Long?>(null)
+
     fun saveState(songs: List<Song>, index: Int) {
         try {
             val jsonStr = json.encodeToString(songs)

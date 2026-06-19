@@ -87,6 +87,7 @@ class PlayerViewModel(
                 
                 // Fetch lyrics for the new item
                 val songId = mediaItem?.mediaId?.toLongOrNull()
+                playbackStateManager.currentTrackId.value = songId
                 if (songId != null) {
                     val song = currentPlaylist.find { it.id == songId }
                     if (song != null) {

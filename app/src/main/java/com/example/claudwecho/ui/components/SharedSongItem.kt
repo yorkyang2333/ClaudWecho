@@ -16,6 +16,11 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import coil.compose.AsyncImage
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.wear.compose.material3.Icon
 import com.example.claudwecho.data.api.Song
 
 @Composable
@@ -23,15 +28,28 @@ fun SharedSongItem(
     song: Song,
     onClick: () -> Unit
 ) {
+    val playbackStateManager: com.example.claudwecho.data.PlaybackStateManager = org.koin.compose.koinInject()
+    val currentTrackId by playbackStateManager.currentTrackId.collectAsState()
+    val isPlaying = song.id == currentTrackId
+
     Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(),
         label = {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                if (isPlaying) {
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        contentDescription = "Playing",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp).padding(end = 4.dp)
+                    )
+                }
                 Text(
                     text = song.name,
                     style = MaterialTheme.typography.titleMedium,
+                    color = if (isPlaying) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
