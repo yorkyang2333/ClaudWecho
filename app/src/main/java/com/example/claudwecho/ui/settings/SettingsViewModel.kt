@@ -5,15 +5,87 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.viewModelScope
 
-class SettingsViewModel(private val context: Context) : ViewModel() {
+class SettingsViewModel(
+    private val context: Context,
+    private val loginRepository: com.example.claudwecho.data.LoginRepository,
+    private val cookieJar: com.example.claudwecho.data.api.PersistentCookieJar
+) : ViewModel() {
     private val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
 
     private val _screenShape = MutableStateFlow(prefs.getString("screen_shape", "auto") ?: "auto")
     val screenShape: StateFlow<String> = _screenShape.asStateFlow()
 
-    fun setScreenShape(shape: String) {
-        prefs.edit().putString("screen_shape", shape).apply()
-        _screenShape.value = shape
+    private val _cacheSize = MutableStateFlow("0 MB")
+    val cacheSize: StateFlow<String> = _cacheSize.asStateFlow()
+
+    private val _logoutEvent = kotlinx.coroutines.flow.MutableSharedFlow<Unit>()
+    val logoutEvent = _logoutEvent.asSharedFlow()
+
+    init {
+        calculateCacheSize()
+    }
+
+    private fun calculateCacheSize() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val size = getFolderSize(context.cacheDir)
+            val sizeInMb = size / (1024.0 * 1024.0)
+            _cacheSize.value = String.format(java.util.Locale.US, "%.2f MB", sizeInMb)
+        }
+    }
+
+    private fun getFolderSize(file: java.io.File?): Long {
+        var size: Long = 0
+        if (file != null && file.exists()) {
+            if (file.isDirectory) {
+                file.listFiles()?.forEach { child ->
+                    size += getFolderSize(child)
+                }
+            } else {
+                size = file.length()
+            }
+        }
+        return size
+    }
+
+    fun clearCache() {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteFolder(context.cacheDir)
+            calculateCacheSize()
+        }
+    }
+
+    private fun deleteFolder(file: java.io.File?) {
+        if (file != null && file.exists()) {
+            if (file.isDirectory) {
+                file.listFiles()?.forEach { child ->
+                    deleteFolder(child)
+                }
+            }
+            if (file != context.cacheDir) {
+                file.delete()
+            }
+        }
+    }
+
+    fun toggleScreenShape() {
+        val current = _screenShape.value
+        val shapes = listOf("auto", "round", "square")
+        val nextIndex = (shapes.indexOf(current) + 1) % shapes.size
+        val nextShape = shapes[nextIndex]
+        prefs.edit().putString("screen_shape", nextShape).apply()
+        _screenShape.value = nextShape
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            loginRepository.logout()
+            cookieJar.clear()
+            _logoutEvent.emit(Unit)
+        }
     }
 }

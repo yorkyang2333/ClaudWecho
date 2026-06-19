@@ -71,4 +71,9 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
         return validCookies
     }
+
+    fun clear() {
+        cookies.clear()
+        sharedPreferences.edit().clear().apply()
+    }
 }

@@ -38,4 +38,13 @@ class LoginRepository(private val api: NeteaseApi) {
             false
         }
     }
+
+    suspend fun logout(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            api.logout()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

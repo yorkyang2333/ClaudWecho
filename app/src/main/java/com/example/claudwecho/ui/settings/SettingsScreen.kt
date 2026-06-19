@@ -13,9 +13,32 @@ import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Build
+import androidx.wear.compose.material3.Icon
+
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    onNavigateToLogin: () -> Unit
+) {
     val screenShape by viewModel.screenShape.collectAsState()
+    val cacheSize by viewModel.cacheSize.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.logoutEvent.collect {
+            onNavigateToLogin()
+        }
+    }
+
+    val shapeText = when (screenShape) {
+        "round" -> "圆屏"
+        "square" -> "方屏"
+        else -> "自动检测"
+    }
 
     ScalingLazyColumn(
         autoCentering = null,
@@ -30,36 +53,35 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
+        
         item {
-            Text(
-                text = "屏幕形状",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-        
-        val options = listOf(
-            "auto" to "自动检测",
-            "round" to "圆屏",
-            "square" to "方屏"
-        )
-        
-        items(options.size) { index ->
-            val (key, label) = options[index]
-            val isSelected = screenShape == key
             Button(
-                onClick = { viewModel.setScreenShape(key) },
+                onClick = { viewModel.toggleScreenShape() },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(),
-                label = {
-                    Text(text = label, style = MaterialTheme.typography.labelMedium)
-                },
-                secondaryLabel = {
-                    if (isSelected) {
-                        Text(text = "已选", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                    }
-                }
+                label = { Text("屏幕形状: $shapeText") },
+                icon = { Icon(Icons.Filled.Build, null, tint = MaterialTheme.colorScheme.primary) }
+            )
+        }
+
+        item {
+            Button(
+                onClick = { viewModel.clearCache() },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = ButtonDefaults.filledTonalButtonColors(),
+                label = { Text("清除缓存") },
+                secondaryLabel = { Text(cacheSize) },
+                icon = { Icon(Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.primary) }
+            )
+        }
+
+        item {
+            Button(
+                onClick = { viewModel.logout() },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = ButtonDefaults.filledTonalButtonColors(),
+                label = { Text("退出登录") },
+                icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = MaterialTheme.colorScheme.primary) }
             )
         }
     }

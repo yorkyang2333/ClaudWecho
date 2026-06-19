@@ -156,7 +156,14 @@ fun AppNavigation(
         }
         composable("settings") { 
             val vm: com.example.claudwecho.ui.settings.SettingsViewModel = koinViewModel()
-            com.example.claudwecho.ui.settings.SettingsScreen(viewModel = vm)
+            com.example.claudwecho.ui.settings.SettingsScreen(
+                viewModel = vm,
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
         composable("player_menu") {
             com.example.claudwecho.ui.player.PlayerMenuScreen(viewModel = playerViewModel)

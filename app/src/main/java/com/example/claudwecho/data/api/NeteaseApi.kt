@@ -115,6 +115,10 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): BaseResponse
 
+    @GET("/logout")
+    suspend fun logout(
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
 }
 
 @Serializable

@@ -71,9 +71,9 @@ fun PlayerMenuScreen(
                     )
                 },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.buttonColors(),
+                colors = ButtonDefaults.filledTonalButtonColors(),
                 label = { Text("调节音量") },
-                icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null) }
+                icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = MaterialTheme.colorScheme.primary) }
             )
         }
         
@@ -84,9 +84,9 @@ fun PlayerMenuScreen(
                         viewModel.cyclePlaybackMode()
                     },
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                    colors = ButtonDefaults.buttonColors(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
                     label = { Text(playbackModeText) },
-                    icon = { Icon(playbackModeIcon, null) }
+                    icon = { Icon(playbackModeIcon, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
         }
