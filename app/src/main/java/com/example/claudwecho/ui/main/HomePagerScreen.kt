@@ -20,12 +20,6 @@ fun HomePagerScreen(
 ) {
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 3 })
 
-    LaunchedEffect(initialPage) {
-        if (pagerState.currentPage != initialPage) {
-            pagerState.animateScrollToPage(initialPage)
-        }
-    }
-
     HorizontalPager(state = pagerState) { page ->
         when (page) {
             0 -> MainScreen(

@@ -1,4 +1,4 @@
-package com.example.claudwecho.ui.recommend
+package com.example.claudwecho.ui.recent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,8 +23,8 @@ import androidx.wear.compose.material3.Text
 import coil.compose.AsyncImage
 
 @Composable
-fun DailyRecommendScreen(
-    viewModel: DailyRecommendViewModel,
+fun RecentlyPlayedScreen(
+    viewModel: RecentlyPlayedViewModel,
     onNavigateToPlayer: (Long, String) -> Unit
 ) {
     val songs by viewModel.songs.collectAsState()
@@ -43,7 +43,7 @@ fun DailyRecommendScreen(
         if (isLoading) {
             Text("Loading...", color = MaterialTheme.colorScheme.primary)
         } else if (songs.isEmpty()) {
-            Text("暂无推荐", color = Color.Gray)
+            Text("暂无最近播放", color = Color.Gray)
         } else {
             ScalingLazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,7 +57,7 @@ fun DailyRecommendScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "每日推荐",
+                            "最近播放",
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.width(8.dp))

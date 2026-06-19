@@ -25,14 +25,20 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PlaylistDetailScreen(
     playlistId: Long,
+    type: String = "playlist",
     viewModel: PlaylistDetailViewModel = koinViewModel(),
     onNavigateToPlayer: (Long, String) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
 
-    LaunchedEffect(playlistId) {
-        viewModel.loadPlaylist(playlistId)
+    LaunchedEffect(playlistId, type) {
+        when (type) {
+            "playlist" -> viewModel.loadPlaylist(playlistId)
+            "album" -> viewModel.loadAlbum(playlistId)
+            "djradio" -> viewModel.loadDjRadio(playlistId)
+            else -> viewModel.loadPlaylist(playlistId)
+        }
     }
 
     Box(
@@ -56,13 +62,12 @@ fun PlaylistDetailScreen(
                             .padding(vertical = 4.dp)
                             .background(Color.DarkGray, RoundedCornerShape(8.dp))
                             .clickable {
-                                val encodedTitle = java.net.URLEncoder.encode(song.name, "UTF-8")
-                                onNavigateToPlayer(song.id, encodedTitle)
+                                onNavigateToPlayer(song.id, song.name)
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AsyncImage(
-                            model = song.al.picUrl,
+                            model = song.al?.picUrl ?: "",
                             contentDescription = "Album Art",
                             modifier = Modifier
                                 .size(36.dp)

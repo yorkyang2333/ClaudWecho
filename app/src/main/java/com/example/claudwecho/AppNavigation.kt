@@ -104,14 +104,31 @@ fun AppNavigation(
 
         composable("my_collection/albums") {
             val vm: com.example.claudwecho.ui.collection.MyCollectionViewModel = koinViewModel()
-            com.example.claudwecho.ui.collection.MyCollectionAlbumsScreen(viewModel = vm)
+            com.example.claudwecho.ui.collection.MyCollectionAlbumsScreen(
+                viewModel = vm,
+                onNavigateToAlbumDetail = { id -> navController.navigate("album/$id") }
+            )
         }
 
         composable("my_collection/blogs") {
             val vm: com.example.claudwecho.ui.collection.MyCollectionViewModel = koinViewModel()
-            com.example.claudwecho.ui.collection.MyCollectionBlogsScreen(viewModel = vm)
+            com.example.claudwecho.ui.collection.MyCollectionBlogsScreen(
+                viewModel = vm,
+                onNavigateToDjRadioDetail = { id -> navController.navigate("djradio/$id") }
+            )
         }
-        composable("recently_played") { DummyScreen("最近播放", navController) }
+        composable("recently_played") { 
+            val vm: com.example.claudwecho.ui.recent.RecentlyPlayedViewModel = koinViewModel()
+            com.example.claudwecho.ui.recent.RecentlyPlayedScreen(
+                viewModel = vm,
+                onNavigateToPlayer = { pId, pTitle ->
+                    playerViewModel.playSong(pId, pTitle)
+                    navController.navigate("main?page=1") {
+                        popUpTo("main?page=0") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("settings") { DummyScreen("设置", navController) }
         
         composable(
@@ -123,6 +140,45 @@ fun AppNavigation(
             val id = backStackEntry.arguments?.getLong("id") ?: return@composable
             com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
                 playlistId = id,
+                type = "playlist",
+                onNavigateToPlayer = { pId, pTitle ->
+                    playerViewModel.playSong(pId, pTitle)
+                    navController.navigate("main?page=1") {
+                        popUpTo("main?page=0") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = "album/{id}",
+            arguments = listOf(
+                androidx.navigation.navArgument("id") { type = androidx.navigation.NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
+            com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
+                playlistId = id,
+                type = "album",
+                onNavigateToPlayer = { pId, pTitle ->
+                    playerViewModel.playSong(pId, pTitle)
+                    navController.navigate("main?page=1") {
+                        popUpTo("main?page=0") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = "djradio/{id}",
+            arguments = listOf(
+                androidx.navigation.navArgument("id") { type = androidx.navigation.NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
+            com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
+                playlistId = id,
+                type = "djradio",
                 onNavigateToPlayer = { pId, pTitle ->
                     playerViewModel.playSong(pId, pTitle)
                     navController.navigate("main?page=1") {

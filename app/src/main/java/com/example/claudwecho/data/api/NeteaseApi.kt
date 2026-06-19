@@ -73,7 +73,46 @@ interface NeteaseApi {
         @Query("limit") limit: Int = 50,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): SubscribedDjRadiosResponse
+    @GET("/album")
+    suspend fun getAlbumDetail(
+        @Query("id") id: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): AlbumDetailResponse
+
+    @GET("/dj/program")
+    suspend fun getDjPrograms(
+        @Query("rid") rid: Long,
+        @Query("limit") limit: Int = 50,
+        @Query("offset") offset: Int = 0,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): DjProgramResponse
+    @GET("/record/recent/song")
+    suspend fun getRecentSongs(
+        @Query("limit") limit: Int = 50,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): RecentSongsResponse
 }
+
+@Serializable
+data class RecentSongsResponse(val code: Int, val data: RecentSongsData? = null)
+
+@Serializable
+data class RecentSongsData(val list: List<RecentSongItem> = emptyList())
+
+@Serializable
+data class RecentSongItem(val resourceId: String, val data: Song)
+
+@Serializable
+data class AlbumDetailResponse(val code: Int, val songs: List<Song>? = null)
+
+@Serializable
+data class DjProgramResponse(val code: Int, val programs: List<DjProgram>? = null)
+
+@Serializable
+data class DjProgram(val id: Long, val mainSong: DjSong)
+
+@Serializable
+data class DjSong(val id: Long, val name: String, val artists: List<Artist>? = null, val album: Album? = null)
 
 @Serializable
 data class SongUrlResponse(val data: List<SongUrlData>, val code: Int)
@@ -118,13 +157,13 @@ data class RecommendSongsResponse(val data: RecommendSongsData, val code: Int)
 data class RecommendSongsData(val dailySongs: List<Song>)
 
 @Serializable
-data class Song(val id: Long, val name: String, val ar: List<Artist>, val al: Album, val fee: Int = 0)
+data class Song(val id: Long, val name: String, val ar: List<Artist> = emptyList(), val al: Album? = null, val fee: Int = 0)
 
 @Serializable
 data class Artist(val id: Long, val name: String)
 
 @Serializable
-data class Album(val id: Long, val name: String, val picUrl: String)
+data class Album(val id: Long, val name: String, val picUrl: String? = null)
 
 @Serializable
 data class UserPlaylistResponse(val playlist: List<Playlist>, val code: Int)

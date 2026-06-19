@@ -24,4 +24,20 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
             _isLoading.value = false
         }
     }
+
+    fun loadAlbum(id: Long) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            _songs.value = repository.getAlbumTracks(id)
+            _isLoading.value = false
+        }
+    }
+
+    fun loadDjRadio(id: Long) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            _songs.value = repository.getDjRadioPrograms(id)
+            _isLoading.value = false
+        }
+    }
 }

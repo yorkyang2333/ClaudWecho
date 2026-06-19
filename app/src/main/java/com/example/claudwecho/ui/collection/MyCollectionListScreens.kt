@@ -56,7 +56,8 @@ fun MyCollectionPlaylistsScreen(
 
 @Composable
 fun MyCollectionAlbumsScreen(
-    viewModel: MyCollectionViewModel
+    viewModel: MyCollectionViewModel,
+    onNavigateToAlbumDetail: (Long) -> Unit
 ) {
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -76,8 +77,8 @@ fun MyCollectionAlbumsScreen(
             CollectionItemRow(
                 title = album.name,
                 subtitle = "专辑",
-                imageUrl = album.picUrl,
-                onClick = { /* Not implemented yet */ }
+                imageUrl = album.picUrl ?: "",
+                onClick = { onNavigateToAlbumDetail(album.id) }
             )
         }
     )
@@ -85,7 +86,8 @@ fun MyCollectionAlbumsScreen(
 
 @Composable
 fun MyCollectionBlogsScreen(
-    viewModel: MyCollectionViewModel
+    viewModel: MyCollectionViewModel,
+    onNavigateToDjRadioDetail: (Long) -> Unit
 ) {
     val djRadios by viewModel.djRadios.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -106,7 +108,7 @@ fun MyCollectionBlogsScreen(
                 title = dj.name,
                 subtitle = "播客",
                 imageUrl = dj.picUrl,
-                onClick = { /* Not implemented yet */ }
+                onClick = { onNavigateToDjRadioDetail(dj.id) }
             )
         }
     )

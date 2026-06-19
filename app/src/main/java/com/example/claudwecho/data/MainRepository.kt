@@ -110,4 +110,49 @@ class MainRepository(private val api: NeteaseApi) {
             emptyList()
         }
     }
+
+    suspend fun getAlbumTracks(id: Long): List<Song> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getAlbumDetail(id)
+            if (response.code == 200) response.songs ?: emptyList() else emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getDjRadioPrograms(rid: Long): List<Song> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getDjPrograms(rid = rid)
+            if (response.code == 200 && response.programs != null) {
+                response.programs.map { program ->
+                    val djSong = program.mainSong
+                    // Map DjSong to Song for unified playback
+                    Song(
+                        id = djSong.id,
+                        name = djSong.name,
+                        ar = djSong.artists ?: emptyList(),
+                        al = djSong.album,
+                        fee = 0
+                    )
+                }
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getRecentSongs(): List<Song> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getRecentSongs()
+            if (response.code == 200) {
+                response.data?.list?.map { it.data } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
