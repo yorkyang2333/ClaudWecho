@@ -32,19 +32,39 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
         
         viewModelScope.launch {
             _isLoading.value = true
-            val profile = repository.getLoginStatus()
+            val profile = repository.getLoginStatus(forceRefresh)
             _userProfile.value = profile
+            _isLoading.value = false // UI can show the menu now!
             
-            if (profile != null) {
-                // User is logged in
-                _dailySongs.value = repository.getDailyRecommendSongs()
-                _playlists.value = repository.getUserPlaylists(profile.userId)
-            } else {
-                // Not logged in, fetch Hot Songs instead
-                _dailySongs.value = repository.getHotSongs()
+            // Fetch heavy data in background without blocking the UI
+            launch {
+                if (profile != null) {
+                    _dailySongs.value = repository.getDailyRecommendSongs(forceRefresh)
+                    _playlists.value = repository.getUserPlaylists(profile.userId, forceRefresh)
+                } else {
+                    _dailySongs.value = repository.getHotSongs(forceRefresh)
+                }
             }
             isInitialized = true
-            _isLoading.value = false
+        }
+    }
+
+    fun getLikedPlaylistId(onResult: (Long?) -> Unit) {
+        viewModelScope.launch {
+            if (_playlists.value.isNotEmpty()) {
+                onResult(_playlists.value.firstOrNull()?.id)
+                return@launch
+            }
+            
+            val profile = _userProfile.value
+            if (profile != null) {
+                // If not loaded yet, fetch now
+                val pl = repository.getUserPlaylists(profile.userId)
+                _playlists.value = pl
+                onResult(pl.firstOrNull()?.id)
+            } else {
+                onResult(null)
+            }
         }
     }
 }

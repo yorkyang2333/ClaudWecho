@@ -6,6 +6,9 @@ import com.example.claudwecho.data.MainRepository
 import com.example.claudwecho.ui.login.LoginViewModel
 import com.example.claudwecho.ui.main.MainViewModel
 import com.example.claudwecho.ui.player.PlayerViewModel
+import com.example.claudwecho.ui.playlist.PlaylistDetailViewModel
+import com.example.claudwecho.ui.collection.MyCollectionViewModel
+import com.example.claudwecho.ui.recommend.DailyRecommendViewModel
 import com.example.claudwecho.data.api.PersistentCookieJar
 import com.example.claudwecho.BuildConfig
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -52,4 +55,6 @@ val networkModule = module {
     viewModel { MainViewModel(get()) }
     viewModel { PlayerViewModel(androidContext(), get()) }
     viewModel { com.example.claudwecho.ui.playlist.PlaylistDetailViewModel(get()) }
+    viewModel { com.example.claudwecho.ui.collection.MyCollectionViewModel(get()) }
+    viewModel { com.example.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
 }

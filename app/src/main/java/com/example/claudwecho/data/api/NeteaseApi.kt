@@ -61,6 +61,18 @@ interface NeteaseApi {
         @Query("level") level: String = "standard",
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): SongUrlResponse
+
+    @GET("/album/sublist")
+    suspend fun getSubscribedAlbums(
+        @Query("limit") limit: Int = 50,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): SubscribedAlbumsResponse
+
+    @GET("/dj/sublist")
+    suspend fun getSubscribedDjRadios(
+        @Query("limit") limit: Int = 50,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): SubscribedDjRadiosResponse
 }
 
 @Serializable
@@ -131,3 +143,12 @@ data class LyricResponse(val code: Int, val lrc: LrcData? = null, val tlyric: Lr
 
 @Serializable
 data class LrcData(val lyric: String?)
+
+@Serializable
+data class SubscribedAlbumsResponse(val data: List<Album>, val code: Int)
+
+@Serializable
+data class SubscribedDjRadiosResponse(val djRadios: List<DjRadio>, val code: Int)
+
+@Serializable
+data class DjRadio(val id: Long, val name: String, val picUrl: String)

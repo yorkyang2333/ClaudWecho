@@ -16,37 +16,12 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.compose.ui.text.style.TextAlign
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.itemsIndexed
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PlayerScreen(
-    viewModel: PlayerViewModel = koinViewModel(),
-    onBack: () -> Unit,
-    id: Long,
-    title: String
-) {
+fun PlayerScreen(viewModel: PlayerViewModel) {
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
-
-    val lyrics by viewModel.lyrics.collectAsState()
-    val currentLyricIndex by viewModel.currentLyricIndex.collectAsState()
-    val listState = rememberScalingLazyListState()
-
-    androidx.compose.runtime.LaunchedEffect(id, title) {
-        if (id > 0L) {
-            viewModel.playSong(id, title)
-        }
-    }
-
-    androidx.compose.runtime.LaunchedEffect(currentLyricIndex) {
-        if (currentLyricIndex >= 0 && currentLyricIndex < lyrics.size) {
-            // Scroll to current lyric (offset by 1 because first item is the player UI)
-            listState.animateScrollToItem(currentLyricIndex + 1)
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -54,88 +29,55 @@ fun PlayerScreen(
             .background(Color.Black),
         contentAlignment = Alignment.Center
     ) {
-        ScalingLazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
-        ) {
-            item {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = currentTitle ?: "No track selected",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        textAlign = TextAlign.Center
-                    )
+        if (currentTitle == null) {
+            Text(
+                text = "暂无播放内容",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = currentTitle ?: "No track selected",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    textAlign = TextAlign.Center
+                )
 
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = { viewModel.skipToPrevious() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                        modifier = Modifier.size(48.dp).clip(CircleShape)
                     ) {
-                        Button(
-                            onClick = { viewModel.skipToPrevious() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-                            modifier = Modifier.size(48.dp).clip(CircleShape)
-                        ) {
-                            Text("|<")
-                        }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Button(
-                            onClick = { viewModel.playOrPause() },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                            modifier = Modifier.size(64.dp).clip(CircleShape)
-                        ) {
-                            Text(if (isPlaying) "||" else ">")
-                        }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Button(
-                            onClick = { viewModel.skipToNext() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-                            modifier = Modifier.size(48.dp).clip(CircleShape)
-                        ) {
-                            Text(">|")
-                        }
+                        Text("|<")
                     }
                     
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
+                    Spacer(modifier = Modifier.width(8.dp))
 
-            if (lyrics.isEmpty()) {
-                item {
-                    Text(
-                        text = "No lyrics available",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
-                }
-            } else {
-                itemsIndexed(lyrics) { index, line ->
-                    val isCurrent = index == currentLyricIndex
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                    Button(
+                        onClick = { viewModel.playOrPause() },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(64.dp).clip(CircleShape)
                     ) {
-                        Text(
-                            text = line.text,
-                            style = if (isCurrent) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                            color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.Gray,
-                            textAlign = TextAlign.Center
-                        )
-                        if (line.tText != null) {
-                            Text(
-                                text = line.tText!!,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.DarkGray,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        Text(if (isPlaying) "||" else ">")
+                    }
+                    
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = { viewModel.skipToNext() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                        modifier = Modifier.size(48.dp).clip(CircleShape)
+                    ) {
+                        Text(">|")
                     }
                 }
             }
