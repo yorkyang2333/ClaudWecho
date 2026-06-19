@@ -164,7 +164,7 @@ fun PlayerScreen(
                         Icon(
                             imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = if (currentTitle == null) Color.Gray else Color.Black,
+                            tint = if (currentTitle == null) Color.Gray else Color.White,
                             modifier = Modifier.size(36.dp)
                         )
                     }
