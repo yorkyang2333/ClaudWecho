@@ -7,6 +7,7 @@ import com.example.claudwecho.ui.login.LoginViewModel
 import com.example.claudwecho.ui.main.MainViewModel
 import com.example.claudwecho.ui.player.PlayerViewModel
 import com.example.claudwecho.data.api.PersistentCookieJar
+import com.example.claudwecho.BuildConfig
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
