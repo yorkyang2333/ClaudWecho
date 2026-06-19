@@ -16,50 +16,16 @@ import com.example.claudwecho.ui.player.PlayerViewModel
 fun HomePagerScreen(
     playerViewModel: PlayerViewModel,
     initialPage: Int = 0,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToPlaylistDetail: (Long) -> Unit,
-    onNavigateToFeature: (String) -> Unit
+    onNavigateToMenu: () -> Unit
 ) {
-    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 3 })
-
-    var lastFlingTime by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0L) }
+    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 2 })
 
     HorizontalPager(
-        state = pagerState,
-        flingBehavior = androidx.compose.foundation.pager.PagerDefaults.flingBehavior(
-            state = pagerState,
-            pagerSnapDistance = object : androidx.compose.foundation.pager.PagerSnapDistance {
-                override fun calculateTargetPage(
-                    startPage: Int,
-                    suggestedTargetPage: Int,
-                    velocity: Float,
-                    pageSize: Int,
-                    pageSpacing: Int
-                ): Int {
-                    val currentTime = System.currentTimeMillis()
-                    val settled = pagerState.settledPage
-                    
-                    if (currentTime - lastFlingTime < 400) {
-                        return settled
-                    }
-                    
-                    val target = suggestedTargetPage.coerceIn(settled - 1, settled + 1)
-                    if (target != settled) {
-                        lastFlingTime = currentTime
-                    }
-                    return target
-                }
-            }
-        )
+        state = pagerState
     ) { page ->
         when (page) {
-            0 -> MainScreen(
-                onNavigateToLogin = onNavigateToLogin,
-                onNavigateToPlaylistDetail = onNavigateToPlaylistDetail,
-                onNavigateToFeature = onNavigateToFeature
-            )
-            1 -> PlayerScreen(viewModel = playerViewModel)
-            2 -> LyricsScreen(viewModel = playerViewModel)
+            0 -> PlayerScreen(viewModel = playerViewModel, onMenuClick = onNavigateToMenu)
+            1 -> LyricsScreen(viewModel = playerViewModel)
         }
     }
 }

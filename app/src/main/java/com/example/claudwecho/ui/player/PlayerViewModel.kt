@@ -37,11 +37,23 @@ class PlayerViewModel(
     private val _currentTrackTitle = MutableStateFlow<String?>(null)
     val currentTrackTitle: StateFlow<String?> = _currentTrackTitle.asStateFlow()
 
+    private val _currentArtistName = MutableStateFlow<String?>(null)
+    val currentArtistName: StateFlow<String?> = _currentArtistName.asStateFlow()
+
     private val _lyrics = MutableStateFlow<List<LyricLine>>(emptyList())
     val lyrics: StateFlow<List<LyricLine>> = _lyrics.asStateFlow()
 
     private val _currentLyricIndex = MutableStateFlow(-1)
     val currentLyricIndex: StateFlow<Int> = _currentLyricIndex.asStateFlow()
+
+    private val _currentPosition = MutableStateFlow(0L)
+    val currentPosition: StateFlow<Long> = _currentPosition.asStateFlow()
+
+    private val _duration = MutableStateFlow(0L)
+    val duration: StateFlow<Long> = _duration.asStateFlow()
+
+    private val _currentArtworkUri = MutableStateFlow<String?>(null)
+    val currentArtworkUri: StateFlow<String?> = _currentArtworkUri.asStateFlow()
 
     init {
         initializeController()
@@ -70,6 +82,8 @@ class PlayerViewModel(
             }
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 _currentTrackTitle.value = mediaItem?.mediaMetadata?.title?.toString()
+                _currentArtistName.value = mediaItem?.mediaMetadata?.artist?.toString()
+                _currentArtworkUri.value = mediaItem?.mediaMetadata?.artworkUri?.toString()
                 
                 // Fetch lyrics for the new item
                 val songId = mediaItem?.mediaId?.toLongOrNull()
@@ -146,6 +160,8 @@ class PlayerViewModel(
             while (true) {
                 if (player?.isPlaying == true) {
                     val pos = player?.currentPosition ?: 0L
+                    _currentPosition.value = pos
+                    _duration.value = player?.duration?.coerceAtLeast(0L) ?: 0L
                     val lrcList = _lyrics.value
                     if (lrcList.isNotEmpty()) {
                         val index = lrcList.indexOfLast { it.timeMs <= pos }
@@ -173,6 +189,10 @@ class PlayerViewModel(
 
     fun skipToPrevious() {
         player?.seekToPreviousMediaItem()
+    }
+
+    fun seekTo(positionMs: Long) {
+        player?.seekTo(positionMs)
     }
 
     fun toggleRepeatMode() {

@@ -55,6 +55,7 @@ kotlin {
 }
 
 dependencies {
+  implementation(libs.androidx.palette.ktx)
   val composeBom = platform(libs.androidx.compose.bom)
   implementation(composeBom)
   androidTestImplementation(composeBom)
@@ -75,6 +76,7 @@ dependencies {
   
   // Wear Compose
   implementation(libs.androidx.wear.compose.material3)
+    implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.wear.compose.foundation)
   implementation(libs.androidx.wear.compose.navigation)
   implementation(libs.play.services.wearable)

@@ -31,21 +31,22 @@ fun AppNavigation(
 
     SwipeDismissableNavHost(
         navController = navController,
-        startDestination = "main?page=0"
+        startDestination = "player"
     ) {
-        composable(
-            route = "main?page={page}",
-            arguments = listOf(
-                androidx.navigation.navArgument("page") { type = androidx.navigation.NavType.IntType; defaultValue = 0 }
-            )
-        ) { backStackEntry ->
-            val page = backStackEntry.arguments?.getInt("page") ?: 0
+        composable("player") {
             HomePagerScreen(
                 playerViewModel = playerViewModel,
-                initialPage = page,
+                initialPage = 0,
+                onNavigateToMenu = {
+                    navController.navigate("main")
+                }
+            )
+        }
+        composable("main") {
+            MainScreen(
                 onNavigateToLogin = {
                     navController.navigate("login") {
-                        popUpTo("main?page=0") { inclusive = true }
+                        popUpTo("main") { inclusive = true }
                     }
                 },
                 onNavigateToPlaylistDetail = { id ->
@@ -59,8 +60,22 @@ fun AppNavigation(
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate("main?page=0") {
+                    navController.navigate("player") {
                         popUpTo("login") { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("liked") {
+            val vm: com.example.claudwecho.ui.playlist.PlaylistDetailViewModel = koinViewModel()
+            com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
+                playlistId = -1L,
+                type = "liked",
+                viewModel = vm,
+                onNavigateToPlayer = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
                     }
                 }
             )
@@ -72,8 +87,8 @@ fun AppNavigation(
                 viewModel = vm,
                 onNavigateToPlayer = { songs, index ->
                     playerViewModel.playPlaylist(songs, index)
-                    navController.navigate("main?page=1") {
-                        popUpTo("main?page=0") { inclusive = true }
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
                     }
                 }
             )
@@ -123,8 +138,8 @@ fun AppNavigation(
                 viewModel = vm,
                 onNavigateToPlayer = { songs, index ->
                     playerViewModel.playPlaylist(songs, index)
-                    navController.navigate("main?page=1") {
-                        popUpTo("main?page=0") { inclusive = true }
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
                     }
                 }
             )
@@ -143,8 +158,8 @@ fun AppNavigation(
                 type = "playlist",
                 onNavigateToPlayer = { songs, index ->
                     playerViewModel.playPlaylist(songs, index)
-                    navController.navigate("main?page=1") {
-                        popUpTo("main?page=0") { inclusive = true }
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
                     }
                 }
             )
@@ -162,8 +177,8 @@ fun AppNavigation(
                 type = "album",
                 onNavigateToPlayer = { songs, index ->
                     playerViewModel.playPlaylist(songs, index)
-                    navController.navigate("main?page=1") {
-                        popUpTo("main?page=0") { inclusive = true }
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
                     }
                 }
             )
@@ -181,8 +196,8 @@ fun AppNavigation(
                 type = "djradio",
                 onNavigateToPlayer = { songs, index ->
                     playerViewModel.playPlaylist(songs, index)
-                    navController.navigate("main?page=1") {
-                        popUpTo("main?page=0") { inclusive = true }
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
                     }
                 }
             )

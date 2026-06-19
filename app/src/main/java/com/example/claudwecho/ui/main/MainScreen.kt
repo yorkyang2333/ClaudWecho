@@ -12,10 +12,12 @@ import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +56,7 @@ fun MainScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            Text("Loading...", color = MaterialTheme.colorScheme.primary)
+            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
         } else {
             ScalingLazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -63,29 +65,35 @@ fun MainScreen(
             ) {
                 // User Profile Section
                 item {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp, start = 8.dp, end = 8.dp)
+                    ) {
                         if (userProfile != null) {
                             userProfile?.avatarUrl?.let {
                                 AsyncImage(
                                     model = it,
                                     contentDescription = "Avatar",
                                     modifier = Modifier
-                                        .size(48.dp)
+                                        .size(36.dp)
                                         .clip(CircleShape)
                                 )
                             }
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = userProfile?.nickname ?: "User",
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         } else {
                             Button(
                                 onClick = onNavigateToLogin,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
-                            ) {
-                                Text("登录网易云")
-                            }
+                                colors = ButtonDefaults.filledTonalButtonColors(),
+                                label = { Text("登录网易云") }
+                            )
                         }
                     }
                 }
@@ -95,15 +103,7 @@ fun MainScreen(
                     FeatureButton(
                         icon = Icons.Default.Favorite,
                         text = "我喜欢的音乐",
-                        onClick = { 
-                            viewModel.getLikedPlaylistId { likedPlaylistId ->
-                                if (likedPlaylistId != null) {
-                                    onNavigateToPlaylistDetail(likedPlaylistId)
-                                } else {
-                                    onNavigateToFeature("my_collection")
-                                }
-                            }
-                        }
+                        onClick = { onNavigateToFeature("liked") }
                     )
                 }
                 
@@ -159,34 +159,22 @@ fun FeatureButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2D2D2D)
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.size(24.dp),
-                tint = Color.White
-            )
-            Spacer(modifier = Modifier.width(12.dp))
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.filledTonalButtonColors(),
+        label = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        },
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = Modifier.size(24.dp)
+            )
         }
-    }
+    )
 }

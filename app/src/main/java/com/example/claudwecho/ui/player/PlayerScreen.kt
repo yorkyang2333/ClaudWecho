@@ -1,120 +1,273 @@
 package com.example.claudwecho.ui.player
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material3.Button
-import androidx.wear.compose.material3.ButtonDefaults
+import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material3.CircularProgressIndicator
+import androidx.wear.compose.material3.Icon
+import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import androidx.compose.ui.text.style.TextAlign
-import org.koin.androidx.compose.koinViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.Repeat
+import coil.compose.AsyncImage
 
 @Composable
-fun PlayerScreen(viewModel: PlayerViewModel) {
+fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
+    val currentArtist by viewModel.currentArtistName.collectAsState()
+    val currentArtworkUri by viewModel.currentArtworkUri.collectAsState()
+    val repeatMode by viewModel.repeatMode.collectAsState()
+    val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
+    val currentPosition by viewModel.currentPosition.collectAsState()
+    val duration by viewModel.duration.collectAsState()
+
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
+    val infiniteTransition = rememberInfiniteTransition()
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(25000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1.2f,
+        targetValue = 1.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(10000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(Color.Black)
+            .clipToBounds()
+            .onRotaryScrollEvent { event ->
+                val deltaMs = (event.verticalScrollPixels * 100).toLong()
+                val newPos = (currentPosition + deltaMs).coerceIn(0L, duration)
+                viewModel.seekTo(newPos)
+                true
+            }
+            .focusRequester(focusRequester)
+            .focusable(),
         contentAlignment = Alignment.Center
     ) {
+        // Fluid Background using Album Art
+        if (currentArtworkUri != null) {
+            AsyncImage(
+                model = currentArtworkUri,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        rotationZ = rotation
+                        scaleX = scale
+                        scaleY = scale
+                    }
+                    .blur(60.dp)
+            )
+            // Add a dark overlay so text is readable
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
+        } else {
+            // Default gradient if no artwork
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF1E2124))
+            )
+        }
+
+        // Circular Progress at edge
+        val progress = if (duration > 0) currentPosition.toFloat() / duration else 0f
+        androidx.wear.compose.material3.CircularProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxSize(),
+            strokeWidth = 6.dp,
+            colors = androidx.wear.compose.material3.ProgressIndicatorDefaults.colors(
+                indicatorColor = MaterialTheme.colorScheme.primary,
+                trackColor = Color.White.copy(alpha = 0.2f)
+            )
+        )
+
         if (currentTitle == null) {
             Text(
                 text = "暂无播放内容",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
+                color = Color.White.copy(alpha = 0.7f)
             )
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(16.dp)
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize().padding(16.dp)
             ) {
+                Spacer(modifier = Modifier.height(24.dp))
+                
                 Text(
-                    text = currentTitle ?: "No track selected",
-                    style = MaterialTheme.typography.titleMedium,
+                    text = currentTitle ?: "Unknown Title",
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                     color = Color.White,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    textAlign = TextAlign.Center
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = currentArtist ?: "Unknown Artist",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                    color = Color.White.copy(alpha = 0.7f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                ) {
-                    val repeatMode by viewModel.repeatMode.collectAsState()
-                    val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
-                    
-                    val repeatText = when (repeatMode) {
-                        androidx.media3.common.Player.REPEAT_MODE_ONE -> "单曲"
-                        androidx.media3.common.Player.REPEAT_MODE_ALL -> "列表"
-                        else -> "顺序"
-                    }
-                    
-                    Button(
-                        onClick = { viewModel.toggleRepeatMode() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-                        modifier = Modifier.size(40.dp).clip(CircleShape)
-                    ) {
-                        Text(repeatText, style = MaterialTheme.typography.bodySmall)
-                    }
-                    
-                    Spacer(modifier = Modifier.width(16.dp))
-                    
-                    Button(
-                        onClick = { viewModel.toggleShuffleMode() },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (shuffleMode) MaterialTheme.colorScheme.primary else Color.DarkGray
-                        ),
-                        modifier = Modifier.size(40.dp).clip(CircleShape)
-                    ) {
-                        Text("随机", style = MaterialTheme.typography.bodySmall)
-                    }
-                }
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
-                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
+                    IconButton(
                         onClick = { viewModel.skipToPrevious() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-                        modifier = Modifier.size(48.dp).clip(CircleShape)
+                        modifier = Modifier.size(42.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
-                        Text("|<")
+                        Icon(
+                            imageVector = Icons.Filled.SkipPrevious,
+                            contentDescription = "Previous",
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
-                    
-                    Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(
+                    IconButton(
                         onClick = { viewModel.playOrPause() },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.size(64.dp).clip(CircleShape)
+                        modifier = Modifier.size(56.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
-                        Text(if (isPlaying) "||" else ">")
+                        Icon(
+                            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = if (isPlaying) "Pause" else "Play",
+                            tint = Color.White,
+                            modifier = Modifier.size(52.dp)
+                        )
                     }
-                    
-                    Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(
+                    IconButton(
                         onClick = { viewModel.skipToNext() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-                        modifier = Modifier.size(48.dp).clip(CircleShape)
+                        modifier = Modifier.size(42.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
-                        Text(">|")
+                        Icon(
+                            imageVector = Icons.Filled.SkipNext,
+                            contentDescription = "Next",
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val context = androidx.compose.ui.platform.LocalContext.current
+                    IconButton(
+                        onClick = {
+                            val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
+                            audioManager.adjustStreamVolume(
+                                android.media.AudioManager.STREAM_MUSIC,
+                                android.media.AudioManager.ADJUST_SAME,
+                                android.media.AudioManager.FLAG_SHOW_UI
+                            )
+                        },
+                        modifier = Modifier.size(32.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = "Volume",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { 
+                            if (!shuffleMode) {
+                                viewModel.toggleShuffleMode()
+                            } else {
+                                viewModel.toggleShuffleMode()
+                                viewModel.toggleRepeatMode()
+                            }
+                        },
+                        modifier = Modifier.size(32.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    ) {
+                        Icon(
+                            imageVector = if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat,
+                            contentDescription = "Shuffle/Repeat",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onMenuClick,
+                        modifier = Modifier.size(32.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = "Menu",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

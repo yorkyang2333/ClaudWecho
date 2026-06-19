@@ -131,7 +131,7 @@ fun <T> CollectionListBase(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            Text("Loading...", color = MaterialTheme.colorScheme.primary)
+            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
         } else if (items.isEmpty()) {
             Text(emptyMessage, color = Color.Gray)
         } else {
@@ -179,39 +179,35 @@ fun CollectionItemRow(
     imageUrl: String,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF2D2D2D))
-            .clickable(onClick = onClick)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = title,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(4.dp))
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
+    androidx.wear.compose.material3.Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+        label = {
+            androidx.wear.compose.material3.Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
+        },
+        secondaryLabel = {
+            androidx.wear.compose.material3.Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
+            )
+        },
+        icon = {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = title,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(4.dp))
             )
         }
-    }
+    )
 }

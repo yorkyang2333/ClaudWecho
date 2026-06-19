@@ -19,6 +19,8 @@ import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
@@ -37,6 +39,7 @@ fun PlaylistDetailScreen(
             "playlist" -> viewModel.loadPlaylist(playlistId)
             "album" -> viewModel.loadAlbum(playlistId)
             "djradio" -> viewModel.loadDjRadio(playlistId)
+            "liked" -> viewModel.loadLiked()
             else -> viewModel.loadPlaylist(playlistId)
         }
     }
@@ -48,57 +51,53 @@ fun PlaylistDetailScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            Text("Loading...", color = MaterialTheme.colorScheme.primary)
+            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
         } else {
             ScalingLazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
             ) {
-                items(songs.size, key = { songs[it].id }) { index ->
-                    val song = songs[index]
+                // Header
+                item {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .padding(vertical = 4.dp)
-                            .background(Color.DarkGray, RoundedCornerShape(8.dp))
-                            .clickable {
-                                onNavigateToPlayer(songs, index)
-                            },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AsyncImage(
-                            model = song.al?.picUrl ?: "",
-                            contentDescription = "Album Art",
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(RoundedCornerShape(4.dp))
+                        androidx.wear.compose.material3.Text(
+                            text = when (type) {
+                                "liked" -> "我喜欢的音乐"
+                                "playlist" -> "歌单"
+                                "album" -> "专辑"
+                                "djradio" -> "播客"
+                                else -> "音乐列表"
+                            },
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                androidx.wear.compose.material3.Text(
-                                    text = song.name, 
-                                    style = MaterialTheme.typography.bodyLarge, 
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f, fill = false)
+                        if (type == "liked") {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            androidx.wear.compose.material3.IconButton(
+                                onClick = { viewModel.loadLiked() },
+                                modifier = Modifier.size(36.dp),
+                                colors = androidx.wear.compose.material3.IconButtonDefaults.filledTonalIconButtonColors()
+                            ) {
+                                androidx.wear.compose.material3.Icon(
+                                    imageVector = androidx.compose.material.icons.Icons.Default.Refresh, 
+                                    contentDescription = "Refresh", 
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                if (song.fee == 1) {
-                                    Text(
-                                        text = "VIP",
-                                        color = Color(0xFFFFD700),
-                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
-                                        modifier = Modifier
-                                            .padding(start = 4.dp)
-                                            .border(1.dp, Color(0xFFFFD700), RoundedCornerShape(2.dp))
-                                            .padding(horizontal = 2.dp)
-                                    )
-                                }
                             }
-                            Text(song.ar.firstOrNull()?.name ?: "Unknown Artist", style = MaterialTheme.typography.bodySmall, color = Color.Gray, maxLines = 1)
                         }
                     }
+                }
+
+                items(songs.size, key = { songs[it].id }) { index ->
+                    val song = songs[index]
+                    com.example.claudwecho.ui.components.SharedSongItem(
+                        song = song,
+                        onClick = { onNavigateToPlayer(songs, index) }
+                    )
                 }
             }
         }

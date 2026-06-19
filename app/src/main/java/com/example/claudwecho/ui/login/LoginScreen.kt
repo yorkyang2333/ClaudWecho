@@ -73,7 +73,7 @@ fun LoginScreen(
                 }
             }
             LoginState.LOADING_QR, LoginState.LOGGING_IN -> {
-                Text("Loading...", color = MaterialTheme.colorScheme.primary)
+                androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
             }
             LoginState.QR_READY -> {
                 Column(

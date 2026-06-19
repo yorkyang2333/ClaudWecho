@@ -40,4 +40,19 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
             _isLoading.value = false
         }
     }
+
+    fun loadLiked() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val profile = repository.getLoginStatus()
+            if (profile != null) {
+                val pl = repository.getUserPlaylists(profile.userId)
+                val likedId = pl.firstOrNull()?.id
+                if (likedId != null) {
+                    _songs.value = repository.getPlaylistTracks(likedId)
+                }
+            }
+            _isLoading.value = false
+        }
+    }
 }

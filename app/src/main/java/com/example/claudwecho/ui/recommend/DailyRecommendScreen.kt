@@ -41,7 +41,7 @@ fun DailyRecommendScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            Text("Loading...", color = MaterialTheme.colorScheme.primary)
+            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
         } else if (songs.isEmpty()) {
             Text("暂无推荐", color = Color.Gray)
         } else {
@@ -76,41 +76,10 @@ fun DailyRecommendScreen(
                 }
                 items(songs.size, key = { songs[it].id }) { index ->
                     val song = songs[index]
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF2D2D2D))
-                            .clickable { onNavigateToPlayer(songs, index) }
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AsyncImage(
-                            model = song.al?.picUrl,
-                            contentDescription = song.name,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = song.name,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = song.ar.joinToString { it.name },
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.Gray,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
+                    com.example.claudwecho.ui.components.SharedSongItem(
+                        song = song,
+                        onClick = { onNavigateToPlayer(songs, index) }
+                    )
                 }
             }
         }
