@@ -40,7 +40,7 @@ fun MyCollectionScreen(
         contentAlignment = Alignment.Center
     ) {
         ScalingLazyColumn(
-        autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 1),
+        autoCentering = null,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
