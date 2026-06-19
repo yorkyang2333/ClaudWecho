@@ -29,6 +29,9 @@ fun AppNavigation(
                     // A better way is using navigation arguments, but since PlayerViewModel is a singleton in Koin for now...
                     // Wait, PlayerViewModel is scoped to the ViewModel, so we can just retrieve it here.
                     navController.navigate("player?url=$url&title=$title")
+                },
+                onNavigateToPlaylistDetail = { id ->
+                    navController.navigate("playlist/$id")
                 }
             )
         }
@@ -57,6 +60,20 @@ fun AppNavigation(
                 },
                 url = url,
                 title = title
+            )
+        }
+        composable(
+            route = "playlist/{id}",
+            arguments = listOf(
+                androidx.navigation.navArgument("id") { type = androidx.navigation.NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
+            com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
+                playlistId = id,
+                onNavigateToPlayer = { pUrl, pTitle ->
+                    navController.navigate("player?url=$pUrl&title=$pTitle")
+                }
             )
         }
     }

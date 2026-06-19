@@ -51,4 +51,5 @@ val networkModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
     viewModel { PlayerViewModel(androidContext(), get()) }
+    viewModel { com.example.claudwecho.ui.playlist.PlaylistDetailViewModel(get()) }
 }

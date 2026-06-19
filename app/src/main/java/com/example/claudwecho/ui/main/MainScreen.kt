@@ -26,7 +26,8 @@ import org.koin.androidx.compose.koinViewModel
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
     onNavigateToLogin: () -> Unit,
-    onNavigateToPlayer: (String, String) -> Unit
+    onNavigateToPlayer: (String, String) -> Unit,
+    onNavigateToPlaylistDetail: (Long) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val userProfile by viewModel.userProfile.collectAsState()
@@ -134,7 +135,7 @@ fun MainScreen(
                                 .padding(vertical = 4.dp)
                                 .background(Color.DarkGray, RoundedCornerShape(8.dp))
                                 .padding(8.dp)
-                                .clickable { /* Open playlist */ },
+                                .clickable { onNavigateToPlaylistDetail(playlist.id) },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AsyncImage(

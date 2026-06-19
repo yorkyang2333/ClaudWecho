@@ -15,6 +15,10 @@ import androidx.wear.compose.material3.*
 import coil.compose.rememberAsyncImagePainter
 import org.koin.androidx.compose.koinViewModel
 
+import androidx.compose.ui.graphics.asImageBitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
@@ -81,10 +85,8 @@ fun LoginScreen(
                         val bitmap = remember(base64Url) {
                             try {
                                 val base64Str = if (base64Url.contains(",")) base64Url.split(",")[1] else base64Url
-                                val decodedBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
-                                android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)?.let {
-                                    androidx.compose.ui.graphics.asImageBitmap(it)
-                                }
+                                val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+                                BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)?.asImageBitmap()
                             } catch (e: Exception) {
                                 null
                             }
