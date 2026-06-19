@@ -97,6 +97,15 @@ class MainRepository(
         }
     }
 
+    suspend fun searchSongs(keywords: String, limit: Int = 30): List<Song> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.search(keywords = keywords, limit = limit)
+            if (response.code == 200) response.result?.songs ?: emptyList() else emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     suspend fun getSubscribedAlbums(forceRefresh: Boolean = false): List<com.example.claudwecho.data.api.Album> = withContext(Dispatchers.IO) {
         if (!forceRefresh && cachedAlbums != null) return@withContext cachedAlbums!!
         try {

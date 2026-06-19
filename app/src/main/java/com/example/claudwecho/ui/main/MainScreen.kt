@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Radio
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Today
@@ -105,6 +106,13 @@ fun MainScreen(
                         icon = Icons.Rounded.Favorite,
                         text = "我喜欢的音乐",
                         onClick = { onNavigateToFeature("liked") }
+                    )
+                }
+                item {
+                    FeatureButton(
+                        icon = Icons.Rounded.Search,
+                        text = "搜索",
+                        onClick = { onNavigateToFeature("search") }
                     )
                 }
                 

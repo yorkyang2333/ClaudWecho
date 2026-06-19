@@ -103,6 +103,18 @@ fun AppNavigation(
                 }
             )
         }
+        composable("search") {
+            val vm: com.example.claudwecho.ui.search.SearchViewModel = koinViewModel()
+            com.example.claudwecho.ui.search.SearchScreen(
+                viewModel = vm,
+                playerViewModel = playerViewModel,
+                onSongClick = {
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
+                    }
+                }
+            )
+        }
         
         composable("my_collection") { 
             val vm: com.example.claudwecho.ui.collection.MyCollectionViewModel = koinViewModel()

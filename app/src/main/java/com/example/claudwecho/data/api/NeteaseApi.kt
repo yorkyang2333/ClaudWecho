@@ -98,6 +98,15 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): LikeResponse
 
+    @GET("/search")
+    suspend fun search(
+        @Query("keywords") keywords: String,
+        @Query("limit") limit: Int = 30,
+        @Query("offset") offset: Int = 0,
+        @Query("type") type: Int = 1,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): SearchResponse
+
     @GET("/likelist")
     suspend fun getLikeList(
         @Query("uid") uid: Long,
@@ -189,6 +198,18 @@ data class UserProfile(val userId: Long, val nickname: String, val avatarUrl: St
 
 @Serializable
 data class UserAccount(val id: Long)
+
+@Serializable
+data class SearchResponse(
+    val code: Int,
+    val result: SearchResult? = null
+)
+
+@Serializable
+data class SearchResult(
+    val songs: List<Song>? = null,
+    val songCount: Int = 0
+)
 
 @Serializable
 data class RecommendSongsResponse(val data: RecommendSongsData, val code: Int)
