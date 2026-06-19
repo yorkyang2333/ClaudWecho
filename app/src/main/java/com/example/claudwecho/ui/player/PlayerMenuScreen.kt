@@ -29,6 +29,7 @@ fun PlayerMenuScreen(
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
     
     ScalingLazyColumn(
+        autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 1),
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(top = 32.dp, bottom = 32.dp)

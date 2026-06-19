@@ -18,6 +18,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     val screenShape by viewModel.screenShape.collectAsState()
 
     ScalingLazyColumn(
+        autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 1),
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally

@@ -46,6 +46,7 @@ fun RecentlyPlayedScreen(
             Text("暂无播放记录", color = Color.Gray)
         } else {
             ScalingLazyColumn(
+        autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 1),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
