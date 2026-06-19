@@ -50,11 +50,14 @@ val networkModule = module {
 
     single { get<Retrofit>().create(NeteaseApi::class.java) }
     single { com.example.claudwecho.data.LocalRecentPlaysManager(androidContext()) }
+    single { com.example.claudwecho.data.PlaybackStateManager(androidContext()) }
     single { LoginRepository(get()) }
     single { MainRepository(get(), get()) }
+    
+    // ViewModels
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
-    viewModel { PlayerViewModel(androidContext(), get()) }
+    viewModel { PlayerViewModel(androidContext(), get(), get()) }
     viewModel { com.example.claudwecho.ui.playlist.PlaylistDetailViewModel(get()) }
     viewModel { com.example.claudwecho.ui.collection.MyCollectionViewModel(get()) }
     viewModel { com.example.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }

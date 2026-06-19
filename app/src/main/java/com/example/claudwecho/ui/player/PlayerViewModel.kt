@@ -23,7 +23,8 @@ data class LyricLine(val timeMs: Long, val text: String, var tText: String? = nu
 
 class PlayerViewModel(
     private val context: Context,
-    private val repository: MainRepository
+    private val repository: MainRepository,
+    private val playbackStateManager: com.example.claudwecho.data.PlaybackStateManager
 ) : ViewModel() {
 
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -79,6 +80,8 @@ class PlayerViewModel(
                             repository.recordRecentPlay(song)
                         }
                     }
+                    val currentIndex = player?.currentMediaItemIndex ?: 0
+                    playbackStateManager.saveState(currentPlaylist, currentIndex)
                     _lyrics.value = emptyList()
                     _currentLyricIndex.value = -1
                     viewModelScope.launch {
@@ -111,9 +114,31 @@ class PlayerViewModel(
         })
         
         // Play pending playlist if any
-        pendingSongs?.let { songs ->
-            playPlaylist(songs, pendingIndex)
+        if (pendingSongs != null) {
+            playPlaylist(pendingSongs!!, pendingIndex)
             pendingSongs = null
+        } else {
+            val lastPlaylist = playbackStateManager.getLastPlaylist()
+            if (lastPlaylist != null && lastPlaylist.isNotEmpty()) {
+                currentPlaylist = lastPlaylist
+                val mediaItems = lastPlaylist.map { song ->
+                    val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+                    MediaItem.Builder()
+                        .setMediaId(song.id.toString())
+                        .setUri("netease://song/${song.id}")
+                        .setMediaMetadata(
+                            androidx.media3.common.MediaMetadata.Builder()
+                                .setTitle(song.name)
+                                .setArtist(song.ar.joinToString { it.name })
+                                .setArtworkUri(artworkUri)
+                                .build()
+                        )
+                        .build()
+                }
+                val lastIndex = playbackStateManager.getLastIndex()
+                player?.setMediaItems(mediaItems, lastIndex, androidx.media3.common.C.TIME_UNSET)
+                player?.prepare()
+            }
         }
 
         // Poll current position for lyrics
