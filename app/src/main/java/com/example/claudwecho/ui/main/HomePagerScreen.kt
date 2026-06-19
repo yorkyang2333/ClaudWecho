@@ -59,8 +59,20 @@ fun HomePagerScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // Fluid Background using Album Art
         if (currentArtworkUri != null) {
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val isApi31AndAbove = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+            val imageRequest = coil.request.ImageRequest.Builder(context)
+                .data(currentArtworkUri)
+                .apply {
+                    if (!isApi31AndAbove) {
+                        transformations(com.example.claudwecho.ui.utils.BlurTransformation(context, 25f))
+                        size(100) // downscale to intensify blur effect
+                    }
+                }
+                .build()
+
             AsyncImage(
-                model = currentArtworkUri,
+                model = imageRequest,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -70,7 +82,7 @@ fun HomePagerScreen(
                         scaleX = scale
                         scaleY = scale
                     }
-                    .blur(60.dp)
+                    .then(if (isApi31AndAbove) Modifier.blur(60.dp) else Modifier)
             )
             // Add a dark overlay so text is readable
             Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
