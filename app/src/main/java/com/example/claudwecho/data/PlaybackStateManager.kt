@@ -36,4 +36,19 @@ class PlaybackStateManager(context: Context) {
     fun getLastIndex(): Int {
         return prefs.getInt("last_index", 0)
     }
+
+    fun savePlaybackMode(repeatMode: Int, shuffleMode: Boolean) {
+        prefs.edit()
+            .putInt("repeat_mode", repeatMode)
+            .putBoolean("shuffle_mode", shuffleMode)
+            .apply()
+    }
+
+    fun getRepeatMode(): Int {
+        return prefs.getInt("repeat_mode", androidx.media3.common.Player.REPEAT_MODE_OFF)
+    }
+
+    fun getShuffleMode(): Boolean {
+        return prefs.getBoolean("shuffle_mode", false)
+    }
 }

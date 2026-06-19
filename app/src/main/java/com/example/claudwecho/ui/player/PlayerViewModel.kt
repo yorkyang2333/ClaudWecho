@@ -99,8 +99,8 @@ class PlayerViewModel(
     private var pendingIndex: Int = 0
     private var currentPlaylist: List<com.example.claudwecho.data.api.Song> = emptyList()
 
-    val repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
-    val shuffleModeEnabled = MutableStateFlow(false)
+    val repeatMode = MutableStateFlow(playbackStateManager.getRepeatMode())
+    val shuffleModeEnabled = MutableStateFlow(playbackStateManager.getShuffleMode())
 
     private fun setupPlayerListeners() {
         player?.addListener(object : Player.Listener {
@@ -148,9 +148,11 @@ class PlayerViewModel(
             }
             override fun onRepeatModeChanged(mode: Int) {
                 repeatMode.value = mode
+                playbackStateManager.savePlaybackMode(mode, player?.shuffleModeEnabled ?: false)
             }
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 this@PlayerViewModel.shuffleModeEnabled.value = shuffleModeEnabled
+                playbackStateManager.savePlaybackMode(player?.repeatMode ?: androidx.media3.common.Player.REPEAT_MODE_OFF, shuffleModeEnabled)
             }
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                 android.util.Log.e("PlayerViewModel", "Player error: ${error.message}", error)
@@ -181,6 +183,8 @@ class PlayerViewModel(
                 }
                 val lastIndex = playbackStateManager.getLastIndex()
                 player?.setMediaItems(mediaItems, lastIndex, androidx.media3.common.C.TIME_UNSET)
+                player?.repeatMode = playbackStateManager.getRepeatMode()
+                player?.shuffleModeEnabled = playbackStateManager.getShuffleMode()
                 player?.prepare()
             }
         }
