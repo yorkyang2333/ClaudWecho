@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.RemoteInput
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -127,7 +128,7 @@ fun SearchScreen(
                     RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
                     launcher.launch(intent)
                 },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, top = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 colors = ButtonDefaults.filledTonalButtonColors()
             ) {
                 Icon(
