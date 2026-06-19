@@ -39,7 +39,7 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Transparent),
+            .background(Color.Black.copy(alpha = 0.6f)),
         contentAlignment = Alignment.Center
     ) {
         if (currentTitle == null) {
