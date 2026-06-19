@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import com.example.claudwecho.data.MainRepository
 import kotlinx.coroutines.delay
 
-data class LyricLine(val timeMs: Long, val text: String)
+data class LyricLine(val timeMs: Long, val text: String, var tText: String? = null)
 
 class PlayerViewModel(
     private val context: Context,
@@ -137,9 +137,19 @@ class PlayerViewModel(
         val id = idStr.toLongOrNull()
         if (id != null) {
             viewModelScope.launch {
-                val lrc = repository.getLyric(id)
+                val (lrc, tlyric) = repository.getLyrics(id)
                 if (lrc != null) {
-                    _lyrics.value = parseLyric(lrc)
+                    val lines = parseLyric(lrc)
+                    if (tlyric != null) {
+                        val tLines = parseLyric(tlyric)
+                        tLines.forEach { tLine ->
+                            val matchingLine = lines.find { it.timeMs == tLine.timeMs }
+                            if (matchingLine != null) {
+                                matchingLine.tText = tLine.text
+                            }
+                        }
+                    }
+                    _lyrics.value = lines
                 }
             }
         }

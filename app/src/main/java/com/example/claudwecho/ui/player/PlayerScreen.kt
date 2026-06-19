@@ -118,13 +118,25 @@ fun PlayerScreen(
             } else {
                 itemsIndexed(lyrics) { index, line ->
                     val isCurrent = index == currentLyricIndex
-                    Text(
-                        text = line.text,
-                        style = if (isCurrent) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-                        color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.Gray,
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = line.text,
+                            style = if (isCurrent) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                            color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
+                        if (line.tText != null) {
+                            Text(
+                                text = line.tText!!,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.DarkGray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }

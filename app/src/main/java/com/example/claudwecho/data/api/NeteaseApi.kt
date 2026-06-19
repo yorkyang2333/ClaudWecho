@@ -115,7 +115,7 @@ data class PlaylistDetailResponse(val code: Int, val playlist: PlaylistDetail)
 data class PlaylistDetail(val tracks: List<Song>)
 
 @Serializable
-data class LyricResponse(val code: Int, val lrc: LrcData? = null)
+data class LyricResponse(val code: Int, val lrc: LrcData? = null, val tlyric: LrcData? = null)
 
 @Serializable
 data class LrcData(val lyric: String?)

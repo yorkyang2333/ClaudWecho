@@ -48,12 +48,12 @@ class MainRepository(private val api: NeteaseApi) {
         }
     }
 
-    suspend fun getLyric(id: Long): String? = withContext(Dispatchers.IO) {
+    suspend fun getLyrics(id: Long): Pair<String?, String?> = withContext(Dispatchers.IO) {
         try {
             val response = api.getLyric(id)
-            if (response.code == 200) response.lrc?.lyric else null
+            if (response.code == 200) Pair(response.lrc?.lyric, response.tlyric?.lyric) else Pair(null, null)
         } catch (e: Exception) {
-            null
+            Pair(null, null)
         }
     }
 }
