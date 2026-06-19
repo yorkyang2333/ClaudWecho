@@ -24,7 +24,18 @@ fun HomePagerScreen(
         state = pagerState,
         flingBehavior = androidx.compose.foundation.pager.PagerDefaults.flingBehavior(
             state = pagerState,
-            pagerSnapDistance = androidx.compose.foundation.pager.PagerSnapDistance.atMost(1)
+            pagerSnapDistance = object : androidx.compose.foundation.pager.PagerSnapDistance {
+                override fun calculateTargetPage(
+                    startPage: Int,
+                    suggestedTargetPage: Int,
+                    velocity: Float,
+                    pageSize: Int,
+                    pageSpacing: Int
+                ): Int {
+                    val settled = pagerState.settledPage
+                    return suggestedTargetPage.coerceIn(settled - 1, settled + 1)
+                }
+            }
         )
     ) { page ->
         when (page) {
