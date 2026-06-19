@@ -39,40 +39,36 @@ fun MyCollectionScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        ScalingLazyColumn(
-        autoCentering = null,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
-        ) {
-            item {
-                Text(
-                    "我的收藏",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+        Box(modifier = Modifier.fillMaxSize()) {
+            ScalingLazyColumn(
+                autoCentering = null,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+            ) {
+                item {
+                    CollectionFeatureButton(
+                        icon = Icons.Rounded.LibraryMusic,
+                        text = "歌单",
+                        onClick = onNavigateToPlaylists
+                    )
+                }
+                item {
+                    CollectionFeatureButton(
+                        icon = Icons.Rounded.Album,
+                        text = "专辑",
+                        onClick = onNavigateToAlbums
+                    )
+                }
+                item {
+                    CollectionFeatureButton(
+                        icon = Icons.Rounded.Podcasts,
+                        text = "播客",
+                        onClick = onNavigateToBlogs
+                    )
+                }
             }
-            item {
-                CollectionFeatureButton(
-                    icon = Icons.Rounded.LibraryMusic,
-                    text = "歌单",
-                    onClick = onNavigateToPlaylists
-                )
-            }
-            item {
-                CollectionFeatureButton(
-                    icon = Icons.Rounded.Album,
-                    text = "专辑",
-                    onClick = onNavigateToAlbums
-                )
-            }
-            item {
-                CollectionFeatureButton(
-                    icon = Icons.Rounded.Podcasts,
-                    text = "播客",
-                    onClick = onNavigateToBlogs
-                )
-            }
+            com.example.claudwecho.ui.components.PinnedHeader(title = "我的收藏")
         }
     }
 }
@@ -89,7 +85,7 @@ fun CollectionFeatureButton(
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2D2D2D)
+            containerColor = Color(0xFF252320)
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -103,12 +99,12 @@ fun CollectionFeatureButton(
                 imageVector = icon,
                 contentDescription = text,
                 modifier = Modifier.size(24.dp),
-                tint = Color.White
+                tint = Color(0xFFcc785c)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
