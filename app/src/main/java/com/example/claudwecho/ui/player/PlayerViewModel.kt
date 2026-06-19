@@ -16,7 +16,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(private val context: Context) : ViewModel() {
+import com.example.claudwecho.data.MainRepository
+import kotlinx.coroutines.delay
+
+data class LyricLine(val timeMs: Long, val text: String)
+
+class PlayerViewModel(
+    private val context: Context,
+    private val repository: MainRepository
+) : ViewModel() {
 
     private var controllerFuture: ListenableFuture<MediaController>? = null
     var player: MediaController? = null
@@ -27,6 +35,12 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
 
     private val _currentTrackTitle = MutableStateFlow<String?>(null)
     val currentTrackTitle: StateFlow<String?> = _currentTrackTitle.asStateFlow()
+
+    private val _lyrics = MutableStateFlow<List<LyricLine>>(emptyList())
+    val lyrics: StateFlow<List<LyricLine>> = _lyrics.asStateFlow()
+
+    private val _currentLyricIndex = MutableStateFlow(-1)
+    val currentLyricIndex: StateFlow<Int> = _currentLyricIndex.asStateFlow()
 
     init {
         initializeController()
@@ -60,6 +74,21 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                 playSong(url, title)
                 pendingUrl = null
                 pendingTitle = null
+            }
+        }
+
+        // Poll current position for lyrics
+        viewModelScope.launch {
+            while (true) {
+                if (player?.isPlaying == true) {
+                    val pos = player?.currentPosition ?: 0L
+                    val lrcList = _lyrics.value
+                    if (lrcList.isNotEmpty()) {
+                        val index = lrcList.indexOfLast { it.timeMs <= pos }
+                        _currentLyricIndex.value = index
+                    }
+                }
+                delay(200)
             }
         }
     }
@@ -100,6 +129,32 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         player?.prepare()
         player?.play()
         _currentTrackTitle.value = title // Optimistically set title
+        
+        _lyrics.value = emptyList()
+        _currentLyricIndex.value = -1
+
+        val idStr = url.substringAfter("id=").substringBefore(".mp3")
+        val id = idStr.toLongOrNull()
+        if (id != null) {
+            viewModelScope.launch {
+                val lrc = repository.getLyric(id)
+                if (lrc != null) {
+                    _lyrics.value = parseLyric(lrc)
+                }
+            }
+        }
+    }
+
+    private fun parseLyric(lrc: String): List<LyricLine> {
+        val regex = Regex("\\[(\\d{2,}):(\\d{2})\\.(\\d{2,3})\\](.*)")
+        return lrc.lines().mapNotNull { line ->
+            val matchResult = regex.find(line)
+            if (matchResult != null) {
+                val (min, sec, ms, text) = matchResult.destructured
+                val timeMs = min.toLong() * 60000 + sec.toLong() * 1000 + (if (ms.length == 2) ms.toLong() * 10 else ms.toLong())
+                LyricLine(timeMs, text.trim())
+            } else null
+        }.filter { it.text.isNotEmpty() }
     }
 
     override fun onCleared() {

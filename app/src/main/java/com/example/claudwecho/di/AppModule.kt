@@ -50,5 +50,5 @@ val networkModule = module {
     single { MainRepository(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
-    viewModel { PlayerViewModel(androidContext()) }
+    viewModel { PlayerViewModel(androidContext(), get()) }
 }

@@ -52,6 +52,9 @@ interface NeteaseApi {
         @Query("id") id: Long,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): PlaylistDetailResponse
+
+    @GET("/lyric")
+    suspend fun getLyric(@Query("id") id: Long): LyricResponse
 }
 
 @Serializable
@@ -110,3 +113,9 @@ data class PlaylistDetailResponse(val code: Int, val playlist: PlaylistDetail)
 
 @Serializable
 data class PlaylistDetail(val tracks: List<Song>)
+
+@Serializable
+data class LyricResponse(val code: Int, val lrc: LrcData? = null)
+
+@Serializable
+data class LrcData(val lyric: String?)
