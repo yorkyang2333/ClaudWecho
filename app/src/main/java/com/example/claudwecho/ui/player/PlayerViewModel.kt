@@ -105,6 +105,9 @@ class PlayerViewModel(
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 this@PlayerViewModel.shuffleModeEnabled.value = shuffleModeEnabled
             }
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                android.util.Log.e("PlayerViewModel", "Player error: ${error.message}", error)
+            }
         })
         
         // Play pending playlist if any

@@ -44,13 +44,14 @@ val playerModule = module {
             androidx.media3.datasource.ResolvingDataSource.Resolver { dataSpec ->
                 val uri = dataSpec.uri
                 if (uri.scheme == "netease") {
-                    val id = uri.host?.toLongOrNull()
+                    val id = uri.lastPathSegment?.toLongOrNull()
                     if (id != null) {
                         var actualUrl: String? = null
                         kotlinx.coroutines.runBlocking {
                             actualUrl = repository.getSongUrl(id)
                         }
                         val finalUrl = actualUrl ?: "https://music.163.com/song/media/outer/url?id=${id}.mp3"
+                        android.util.Log.d("ResolvingDataSource", "Resolved URL for $id to $finalUrl")
                         return@Resolver dataSpec.withUri(android.net.Uri.parse(finalUrl))
                     }
                 }
