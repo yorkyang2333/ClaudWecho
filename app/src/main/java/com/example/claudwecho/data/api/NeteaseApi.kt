@@ -97,7 +97,16 @@ interface NeteaseApi {
         @Query("like") like: Boolean = true,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): LikeResponse
+
+    @GET("/likelist")
+    suspend fun getLikeList(
+        @Query("uid") uid: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): LikeListResponse
 }
+
+@Serializable
+data class LikeListResponse(val ids: List<Long> = emptyList(), val code: Int)
 
 @Serializable
 data class LikeResponse(val code: Int, val message: String? = null)

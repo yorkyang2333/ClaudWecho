@@ -162,4 +162,13 @@ class MainRepository(
             false
         }
     }
+
+    suspend fun getLikeList(uid: Long): Set<Long> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getLikeList(uid)
+            if (response.code == 200) response.ids.toSet() else emptySet()
+        } catch (e: Exception) {
+            emptySet()
+        }
+    }
 }

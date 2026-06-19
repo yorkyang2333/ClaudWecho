@@ -55,8 +55,32 @@ class PlayerViewModel(
     private val _currentArtworkUri = MutableStateFlow<String?>(null)
     val currentArtworkUri: StateFlow<String?> = _currentArtworkUri.asStateFlow()
 
+    private val likedSongs = mutableSetOf<Long>()
+    private val _isCurrentSongLiked = MutableStateFlow(false)
+    val isCurrentSongLiked: StateFlow<Boolean> = _isCurrentSongLiked.asStateFlow()
+
     init {
         initializeController()
+        fetchLikedSongs()
+    }
+
+    private fun fetchLikedSongs() {
+        viewModelScope.launch {
+            val status = repository.getLoginStatus()
+            if (status != null) {
+                val list = repository.getLikeList(status.userId)
+                likedSongs.clear()
+                likedSongs.addAll(list)
+                updateLikeStatus()
+            }
+        }
+    }
+
+    private fun updateLikeStatus() {
+        val songId = player?.currentMediaItem?.mediaId?.toLongOrNull()
+        if (songId != null) {
+            _isCurrentSongLiked.value = likedSongs.contains(songId)
+        }
     }
 
     private fun initializeController() {
@@ -88,6 +112,7 @@ class PlayerViewModel(
                 // Fetch lyrics for the new item
                 val songId = mediaItem?.mediaId?.toLongOrNull()
                 playbackStateManager.currentTrackId.value = songId
+                updateLikeStatus()
                 if (songId != null) {
                     val song = currentPlaylist.find { it.id == songId }
                     if (song != null) {
@@ -213,11 +238,22 @@ class PlayerViewModel(
         }
     }
 
-    fun likeCurrentSong(onResult: (Boolean) -> Unit = {}) {
+    fun toggleLikeCurrentSong() {
         val songId = player?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+        val currentLike = _isCurrentSongLiked.value
+        val newLike = !currentLike
+        
+        // Optimistically update UI
+        if (newLike) likedSongs.add(songId) else likedSongs.remove(songId)
+        _isCurrentSongLiked.value = newLike
+
         viewModelScope.launch {
-            val success = repository.likeSong(songId, true)
-            onResult(success)
+            val success = repository.likeSong(songId, newLike)
+            if (!success) {
+                // Revert on failure
+                if (currentLike) likedSongs.add(songId) else likedSongs.remove(songId)
+                _isCurrentSongLiked.value = currentLike
+            }
         }
     }
 
