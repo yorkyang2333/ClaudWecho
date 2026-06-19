@@ -175,7 +175,12 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                     val context = androidx.compose.ui.platform.LocalContext.current
                     
                     IconButton(
-                        onClick = { viewModel.likeCurrentSong() },
+                        onClick = {
+                            viewModel.likeCurrentSong { success ->
+                                val msg = if (success) "已添加到我喜欢的音乐" else "收藏失败"
+                                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        },
                         modifier = Modifier.size(32.dp).offset(y = (-8).dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
@@ -217,51 +222,50 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                 Spacer(modifier = Modifier.height(28.dp))
             }
         }
-    }
-
-    if (showBottomMenu.value) {
-        val context = androidx.compose.ui.platform.LocalContext.current
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.9f))
-                .clickable { showBottomMenu.value = false },
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+        if (showBottomMenu.value) {
+            val context = androidx.compose.ui.platform.LocalContext.current
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.9f))
+                    .clickable { showBottomMenu.value = false },
+                contentAlignment = Alignment.Center
             ) {
-                androidx.wear.compose.material3.Button(
-                    onClick = {
-                        val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
-                        audioManager.adjustStreamVolume(
-                            android.media.AudioManager.STREAM_MUSIC,
-                            android.media.AudioManager.ADJUST_SAME,
-                            android.media.AudioManager.FLAG_SHOW_UI
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                    colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text("调节音量", color = Color.White) },
-                    icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = Color.White) }
-                )
-                
-                androidx.wear.compose.material3.Button(
-                    onClick = {
-                        if (!shuffleMode) {
-                            viewModel.toggleShuffleMode()
-                        } else {
-                            viewModel.toggleShuffleMode()
-                            viewModel.toggleRepeatMode()
-                        }
-                        showBottomMenu.value = false
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text(if (shuffleMode) "随机播放" else "列表循环", color = Color.White) },
-                    icon = { Icon(if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat, null, tint = Color.White) }
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                ) {
+                    androidx.wear.compose.material3.Button(
+                        onClick = {
+                            val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
+                            audioManager.adjustStreamVolume(
+                                android.media.AudioManager.STREAM_MUSIC,
+                                android.media.AudioManager.ADJUST_SAME,
+                                android.media.AudioManager.FLAG_SHOW_UI
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                        colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                        label = { Text("调节音量", color = Color.White) },
+                        icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = Color.White) }
+                    )
+                    
+                    androidx.wear.compose.material3.Button(
+                        onClick = {
+                            if (!shuffleMode) {
+                                viewModel.toggleShuffleMode()
+                            } else {
+                                viewModel.toggleShuffleMode()
+                                viewModel.toggleRepeatMode()
+                            }
+                            showBottomMenu.value = false
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                        label = { Text(if (shuffleMode) "随机播放" else "列表循环", color = Color.White) },
+                        icon = { Icon(if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat, null, tint = Color.White) }
+                    )
+                }
             }
         }
     }
