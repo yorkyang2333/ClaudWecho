@@ -152,7 +152,6 @@ fun AppNavigation(
             com.example.claudwecho.ui.settings.SettingsScreen(viewModel = vm)
         }
         composable("player_menu") {
-            val playerViewModel: com.example.claudwecho.ui.player.PlayerViewModel = koinViewModel()
             com.example.claudwecho.ui.player.PlayerMenuScreen(viewModel = playerViewModel)
         }
         
