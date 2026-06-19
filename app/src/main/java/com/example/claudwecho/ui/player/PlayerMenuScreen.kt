@@ -5,7 +5,9 @@ import android.media.AudioManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,6 +21,7 @@ import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
 @Composable
@@ -27,16 +30,35 @@ fun PlayerMenuScreen(
 ) {
     val context = LocalContext.current
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
+    val repeatMode by viewModel.repeatMode.collectAsState()
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
+    
+    val playbackModeText = when {
+        shuffleMode -> "随机播放"
+        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ONE -> "单曲循环"
+        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ALL -> "列表循环"
+        else -> "播完即止"
+    }
+
+    val playbackModeIcon = when {
+        shuffleMode -> Icons.Filled.Shuffle
+        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ONE -> Icons.Filled.RepeatOne
+        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ALL -> Icons.Filled.Repeat
+        else -> Icons.AutoMirrored.Filled.ArrowForward
+    }
     
     ScalingLazyColumn(
         autoCentering = null,
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(top = 32.dp, bottom = 32.dp)
+        contentPadding = PaddingValues(top = 32.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
     ) {
         item {
-            Text("播放设置", color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(bottom = 16.dp))
+            Text(
+                text = "播放设置", 
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
         }
         item {
             Button(
@@ -48,7 +70,7 @@ fun PlayerMenuScreen(
                         AudioManager.FLAG_SHOW_UI
                     )
                 },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(),
                 label = { Text("调节音量", color = Color.White) },
                 icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = Color.White) }
@@ -59,17 +81,12 @@ fun PlayerMenuScreen(
             item {
                 Button(
                     onClick = {
-                        if (!shuffleMode) {
-                            viewModel.toggleShuffleMode()
-                        } else {
-                            viewModel.toggleShuffleMode()
-                            viewModel.toggleRepeatMode()
-                        }
+                        viewModel.cyclePlaybackMode()
                     },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text(if (shuffleMode) "随机播放" else "列表循环", color = Color.White) },
-                    icon = { Icon(if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat, null, tint = Color.White) }
+                    label = { Text(playbackModeText, color = Color.White) },
+                    icon = { Icon(playbackModeIcon, null, tint = Color.White) }
                 )
             }
         }

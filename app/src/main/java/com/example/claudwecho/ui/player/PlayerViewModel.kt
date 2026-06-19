@@ -225,20 +225,27 @@ class PlayerViewModel(
         player?.seekTo(positionMs)
     }
 
-    fun toggleRepeatMode() {
-        player?.let {
-            val nextMode = when (it.repeatMode) {
-                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
-                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
-                else -> Player.REPEAT_MODE_OFF
-            }
-            it.repeatMode = nextMode
-        }
-    }
+    fun cyclePlaybackMode() {
+        val player = player ?: return
+        val currentRepeat = player.repeatMode
+        val currentShuffle = player.shuffleModeEnabled
 
-    fun toggleShuffleMode() {
-        player?.let {
-            it.shuffleModeEnabled = !it.shuffleModeEnabled
+        if (!currentShuffle && currentRepeat == androidx.media3.common.Player.REPEAT_MODE_ALL) {
+            // "列表循环" -> "单曲循环"
+            player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ONE
+            player.shuffleModeEnabled = false
+        } else if (!currentShuffle && currentRepeat == androidx.media3.common.Player.REPEAT_MODE_ONE) {
+            // "单曲循环" -> "随机播放"
+            player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ALL
+            player.shuffleModeEnabled = true
+        } else if (currentShuffle) {
+            // "随机播放" -> "播完即止"
+            player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_OFF
+            player.shuffleModeEnabled = false
+        } else {
+            // "播完即止" or unknown -> "列表循环"
+            player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ALL
+            player.shuffleModeEnabled = false
         }
     }
 
