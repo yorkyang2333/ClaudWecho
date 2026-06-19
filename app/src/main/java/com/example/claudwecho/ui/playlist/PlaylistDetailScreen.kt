@@ -71,7 +71,13 @@ fun PlaylistDetailScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(song.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                                androidx.wear.compose.material3.Text(
+                                    text = song.name, 
+                                    style = MaterialTheme.typography.bodyLarge, 
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                )
                                 if (song.fee == 1) {
                                     Text(
                                         text = "VIP",
