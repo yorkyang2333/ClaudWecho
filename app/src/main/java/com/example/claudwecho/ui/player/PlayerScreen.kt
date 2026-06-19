@@ -51,28 +51,10 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
         focusRequester.requestFocus()
     }
 
-    val infiniteTransition = rememberInfiniteTransition()
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(25000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1.2f,
-        targetValue = 1.6f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(10000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color.Transparent)
             .clipToBounds()
             .onRotaryScrollEvent { event ->
                 val deltaMs = (event.verticalScrollPixels * 100).toLong()
@@ -84,31 +66,6 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
             .focusable(),
         contentAlignment = Alignment.Center
     ) {
-        // Fluid Background using Album Art
-        if (currentArtworkUri != null) {
-            AsyncImage(
-                model = currentArtworkUri,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        rotationZ = rotation
-                        scaleX = scale
-                        scaleY = scale
-                    }
-                    .blur(60.dp)
-            )
-            // Add a dark overlay so text is readable
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
-        } else {
-            // Default gradient if no artwork
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF1E2124))
-            )
-        }
 
         // Circular Progress at edge
         val progress = if (duration > 0) currentPosition.toFloat() / duration else 0f
