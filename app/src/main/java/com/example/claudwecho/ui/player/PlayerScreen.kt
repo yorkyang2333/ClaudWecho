@@ -4,6 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -93,19 +94,21 @@ fun PlayerScreen(
         ) {
             Spacer(modifier = Modifier.height(36.dp))
             
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 24.dp)) {
                 Text(
                     text = currentTitle ?: "暂无播放内容",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
-                    maxLines = 1
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee()
                 )
                 if (currentTitle != null) {
                     Text(
                         text = currentArtist ?: "未知歌手",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.7f),
-                        maxLines = 1
+                        maxLines = 1,
+                        modifier = Modifier.basicMarquee()
                     )
                 }
             }

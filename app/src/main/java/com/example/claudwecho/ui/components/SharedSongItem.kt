@@ -3,6 +3,7 @@ package com.example.claudwecho.ui.components
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,8 +52,7 @@ fun SharedSongItem(
                     style = MaterialTheme.typography.titleMedium,
                     color = if (isPlaying) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
+                    modifier = Modifier.weight(1f, fill = false).basicMarquee()
                 )
                 if (song.fee == 1) {
                     Text(
@@ -73,7 +73,7 @@ fun SharedSongItem(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                modifier = Modifier.basicMarquee()
             )
         },
         icon = {
