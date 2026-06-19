@@ -25,18 +25,18 @@ import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.SkipPrevious
+import androidx.compose.material.icons.rounded.Shuffle
+import androidx.compose.material.icons.rounded.Repeat
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.foundation.clickable
 
 @Composable
@@ -127,7 +127,7 @@ fun PlayerScreen(
                             enabled = currentTitle != null
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.Delete,
+                                imageVector = Icons.Rounded.Delete,
                                 contentDescription = "Trash",
                                 tint = if (currentTitle == null) Color.Gray else Color.White,
                                 modifier = Modifier.size(24.dp)
@@ -140,7 +140,7 @@ fun PlayerScreen(
                             enabled = currentTitle != null
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.SkipPrevious,
+                                imageVector = Icons.Rounded.SkipPrevious,
                                 contentDescription = "Previous",
                                 tint = if (currentTitle == null) Color.Gray else Color.White,
                                 modifier = Modifier.size(24.dp)
@@ -162,7 +162,7 @@ fun PlayerScreen(
                         )
                     ) {
                         Icon(
-                            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
                             tint = if (currentTitle == null) Color.Gray else Color.Black,
                             modifier = Modifier.size(32.dp)
@@ -177,7 +177,7 @@ fun PlayerScreen(
                         enabled = currentTitle != null
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.SkipNext,
+                            imageVector = Icons.Rounded.SkipNext,
                             contentDescription = "Next",
                             tint = if (currentTitle == null) Color.Gray else Color.White,
                             modifier = Modifier.size(24.dp)
@@ -200,7 +200,7 @@ fun PlayerScreen(
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
-                            imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                             contentDescription = "Like",
                             tint = if (currentTitle == null) Color.Gray else if (isLiked) Color.Red else Color.White,
                             modifier = Modifier.size(24.dp)
@@ -213,7 +213,7 @@ fun PlayerScreen(
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Home,
+                            imageVector = Icons.Rounded.Home,
                             contentDescription = "Home",
                             tint = Color.White,
                             modifier = Modifier.size(24.dp)
@@ -226,7 +226,7 @@ fun PlayerScreen(
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Menu,
+                            imageVector = Icons.Rounded.Menu,
                             contentDescription = "Menu",
                             tint = Color.White,
                             modifier = Modifier.size(24.dp)

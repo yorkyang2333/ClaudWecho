@@ -4,11 +4,11 @@ import android.content.Context
 import android.media.AudioManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Repeat
+import androidx.compose.material.icons.rounded.RepeatOne
+import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,10 +41,10 @@ fun PlayerMenuScreen(
     }
 
     val playbackModeIcon = when {
-        shuffleMode -> Icons.Filled.Shuffle
-        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ONE -> Icons.Filled.RepeatOne
-        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ALL -> Icons.Filled.Repeat
-        else -> Icons.AutoMirrored.Filled.ArrowForward
+        shuffleMode -> Icons.Rounded.Shuffle
+        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ONE -> Icons.Rounded.RepeatOne
+        repeatMode == androidx.media3.common.Player.REPEAT_MODE_ALL -> Icons.Rounded.Repeat
+        else -> Icons.AutoMirrored.Rounded.ArrowForward
     }
     
     ScalingLazyColumn(
@@ -73,7 +73,7 @@ fun PlayerMenuScreen(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 colors = ButtonDefaults.filledTonalButtonColors(),
                 label = { Text("调节音量") },
-                icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = MaterialTheme.colorScheme.primary) }
+                icon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, null, tint = MaterialTheme.colorScheme.primary) }
             )
         }
         

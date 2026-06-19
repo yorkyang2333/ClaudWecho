@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Radio
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Today
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Radio
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.Today
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -102,7 +102,7 @@ fun MainScreen(
                 // Main Features
                 item {
                     FeatureButton(
-                        icon = Icons.Default.Favorite,
+                        icon = Icons.Rounded.Favorite,
                         text = "我喜欢的音乐",
                         onClick = { onNavigateToFeature("liked") }
                     )
@@ -110,7 +110,7 @@ fun MainScreen(
                 
                 item {
                     FeatureButton(
-                        icon = Icons.Default.Radio,
+                        icon = Icons.Rounded.Radio,
                         text = "私人 FM",
                         onClick = { onNavigateToFeature("personal_fm") }
                     )
@@ -118,7 +118,7 @@ fun MainScreen(
                 
                 item {
                     FeatureButton(
-                        icon = Icons.Default.Today,
+                        icon = Icons.Rounded.Today,
                         text = "每日推荐",
                         onClick = { onNavigateToFeature("daily_recommendation") }
                     )
@@ -126,7 +126,7 @@ fun MainScreen(
 
                 item {
                     FeatureButton(
-                        icon = Icons.Default.Star,
+                        icon = Icons.Rounded.Star,
                         text = "我的收藏",
                         onClick = { onNavigateToFeature("my_collection") }
                     )
@@ -134,7 +134,7 @@ fun MainScreen(
 
                 item {
                     FeatureButton(
-                        icon = Icons.Default.History,
+                        icon = Icons.Rounded.History,
                         text = "最近播放",
                         onClick = { onNavigateToFeature("recently_played") }
                     )
@@ -142,7 +142,7 @@ fun MainScreen(
 
                 item {
                     FeatureButton(
-                        icon = Icons.Default.Settings,
+                        icon = Icons.Rounded.Settings,
                         text = "设置",
                         onClick = { onNavigateToFeature("settings") }
                     )

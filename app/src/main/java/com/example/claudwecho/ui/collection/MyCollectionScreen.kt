@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Album
-import androidx.compose.material.icons.filled.LibraryMusic
-import androidx.compose.material.icons.filled.Podcasts
+import androidx.compose.material.icons.rounded.Album
+import androidx.compose.material.icons.rounded.LibraryMusic
+import androidx.compose.material.icons.rounded.Podcasts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -54,21 +54,21 @@ fun MyCollectionScreen(
             }
             item {
                 CollectionFeatureButton(
-                    icon = Icons.Default.LibraryMusic,
+                    icon = Icons.Rounded.LibraryMusic,
                     text = "歌单",
                     onClick = onNavigateToPlaylists
                 )
             }
             item {
                 CollectionFeatureButton(
-                    icon = Icons.Default.Album,
+                    icon = Icons.Rounded.Album,
                     text = "专辑",
                     onClick = onNavigateToAlbums
                 )
             }
             item {
                 CollectionFeatureButton(
-                    icon = Icons.Default.Podcasts,
+                    icon = Icons.Rounded.Podcasts,
                     text = "播客",
                     onClick = onNavigateToBlogs
                 )

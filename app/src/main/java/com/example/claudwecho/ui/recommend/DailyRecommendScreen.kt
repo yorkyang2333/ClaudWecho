@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
@@ -67,7 +67,7 @@ fun DailyRecommendScreen(
                             colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
                         ) {
                             androidx.wear.compose.material3.Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Refresh, 
+                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
                                 contentDescription = "Refresh", 
                                 modifier = Modifier.size(16.dp),
                                 tint = Color.White

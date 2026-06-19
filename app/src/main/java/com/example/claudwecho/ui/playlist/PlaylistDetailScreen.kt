@@ -20,7 +20,7 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.Refresh
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
@@ -84,7 +84,7 @@ fun PlaylistDetailScreen(
                                 colors = androidx.wear.compose.material3.IconButtonDefaults.filledTonalIconButtonColors()
                             ) {
                                 androidx.wear.compose.material3.Icon(
-                                    imageVector = androidx.compose.material.icons.Icons.Default.Refresh, 
+                                    imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
                                     contentDescription = "Refresh", 
                                     modifier = Modifier.size(20.dp)
                                 )

@@ -22,7 +22,7 @@ import com.example.claudwecho.data.api.Album
 import com.example.claudwecho.data.api.DjRadio
 import com.example.claudwecho.data.api.Playlist
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.rounded.Refresh
 
 @Composable
 fun MyCollectionPlaylistsScreen(
@@ -157,7 +157,7 @@ fun <T> CollectionListBase(
                             colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
                         ) {
                             androidx.wear.compose.material3.Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Default.Refresh, 
+                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
                                 contentDescription = "Refresh", 
                                 modifier = Modifier.size(16.dp),
                                 tint = Color.White

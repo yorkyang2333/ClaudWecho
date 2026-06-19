@@ -17,7 +17,7 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.wear.compose.material3.Icon
@@ -40,7 +40,7 @@ fun SharedSongItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (isPlaying) {
                     Icon(
-                        imageVector = Icons.Filled.PlayArrow,
+                        imageVector = Icons.Rounded.PlayArrow,
                         contentDescription = "Playing",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp).padding(end = 4.dp)
