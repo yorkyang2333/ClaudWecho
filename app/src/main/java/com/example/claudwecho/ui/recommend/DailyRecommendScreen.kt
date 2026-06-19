@@ -25,7 +25,7 @@ import coil.compose.AsyncImage
 @Composable
 fun DailyRecommendScreen(
     viewModel: DailyRecommendViewModel,
-    onNavigateToPlayer: (Long, String) -> Unit
+    onNavigateToPlayer: (List<com.example.claudwecho.data.api.Song>, Int) -> Unit
 ) {
     val songs by viewModel.songs.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -74,14 +74,15 @@ fun DailyRecommendScreen(
                         }
                     }
                 }
-                items(songs, key = { it.id }) { song ->
+                items(songs.size, key = { songs[it].id }) { index ->
+                    val song = songs[index]
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color(0xFF2D2D2D))
-                            .clickable { onNavigateToPlayer(song.id, song.name) }
+                            .clickable { onNavigateToPlayer(songs, index) }
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

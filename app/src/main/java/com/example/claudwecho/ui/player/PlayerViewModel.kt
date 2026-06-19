@@ -55,8 +55,12 @@ class PlayerViewModel(
         }, MoreExecutors.directExecutor())
     }
 
-    private var pendingId: Long? = null
-    private var pendingTitle: String? = null
+    private var pendingSongs: List<com.example.claudwecho.data.api.Song>? = null
+    private var pendingIndex: Int = 0
+    private var currentPlaylist: List<com.example.claudwecho.data.api.Song> = emptyList()
+
+    val repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
+    val shuffleModeEnabled = MutableStateFlow(false)
 
     private fun setupPlayerListeners() {
         player?.addListener(object : Player.Listener {
@@ -65,16 +69,48 @@ class PlayerViewModel(
             }
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 _currentTrackTitle.value = mediaItem?.mediaMetadata?.title?.toString()
+                
+                // Fetch lyrics for the new item
+                val songId = mediaItem?.mediaId?.toLongOrNull()
+                if (songId != null) {
+                    val song = currentPlaylist.find { it.id == songId }
+                    if (song != null) {
+                        viewModelScope.launch {
+                            repository.recordRecentPlay(song)
+                        }
+                    }
+                    _lyrics.value = emptyList()
+                    _currentLyricIndex.value = -1
+                    viewModelScope.launch {
+                        val (lrc, tlyric) = repository.getLyrics(songId)
+                        if (lrc != null) {
+                            val lines = parseLyric(lrc)
+                            if (tlyric != null) {
+                                val tLines = parseLyric(tlyric)
+                                tLines.forEach { tLine ->
+                                    val matchingLine = lines.find { it.timeMs == tLine.timeMs }
+                                    if (matchingLine != null) {
+                                        matchingLine.tText = tLine.text
+                                    }
+                                }
+                            }
+                            _lyrics.value = lines
+                        }
+                    }
+                }
+            }
+            override fun onRepeatModeChanged(mode: Int) {
+                repeatMode.value = mode
+            }
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                this@PlayerViewModel.shuffleModeEnabled.value = shuffleModeEnabled
             }
         })
         
-        // Play pending song if any
-        pendingId?.let { id ->
-            pendingTitle?.let { title ->
-                playSong(id, title)
-                pendingId = null
-                pendingTitle = null
-            }
+        // Play pending playlist if any
+        pendingSongs?.let { songs ->
+            playPlaylist(songs, pendingIndex)
+            pendingSongs = null
         }
 
         // Poll current position for lyrics
@@ -111,47 +147,49 @@ class PlayerViewModel(
         player?.seekToPreviousMediaItem()
     }
 
-    fun playSong(id: Long, title: String) {
+    fun toggleRepeatMode() {
+        player?.let {
+            val nextMode = when (it.repeatMode) {
+                Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+                Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+                else -> Player.REPEAT_MODE_OFF
+            }
+            it.repeatMode = nextMode
+        }
+    }
+
+    fun toggleShuffleMode() {
+        player?.let {
+            it.shuffleModeEnabled = !it.shuffleModeEnabled
+        }
+    }
+
+    fun playPlaylist(songs: List<com.example.claudwecho.data.api.Song>, startIndex: Int) {
+        currentPlaylist = songs
         if (player == null) {
-            pendingId = id
-            pendingTitle = title
+            pendingSongs = songs
+            pendingIndex = startIndex
             return
         }
         
-        _currentTrackTitle.value = title // Optimistically set title
-        _lyrics.value = emptyList()
-        _currentLyricIndex.value = -1
-
-        viewModelScope.launch {
-            val url = repository.getSongUrl(id) ?: "https://music.163.com/song/media/outer/url?id=${id}.mp3"
-            
-            val mediaItem = MediaItem.Builder()
-                .setUri(url)
+        val mediaItems = songs.map { song ->
+            val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+            MediaItem.Builder()
+                .setMediaId(song.id.toString())
+                .setUri("netease://song/${song.id}")
                 .setMediaMetadata(
                     androidx.media3.common.MediaMetadata.Builder()
-                        .setTitle(title)
+                        .setTitle(song.name)
+                        .setArtist(song.ar.joinToString { it.name })
+                        .setArtworkUri(artworkUri)
                         .build()
                 )
                 .build()
-            player?.setMediaItem(mediaItem)
-            player?.prepare()
-            player?.play()
-
-            val (lrc, tlyric) = repository.getLyrics(id)
-            if (lrc != null) {
-                val lines = parseLyric(lrc)
-                if (tlyric != null) {
-                    val tLines = parseLyric(tlyric)
-                    tLines.forEach { tLine ->
-                        val matchingLine = lines.find { it.timeMs == tLine.timeMs }
-                        if (matchingLine != null) {
-                            matchingLine.tText = tLine.text
-                        }
-                    }
-                }
-                _lyrics.value = lines
-            }
         }
+        
+        player?.setMediaItems(mediaItems, startIndex, androidx.media3.common.C.TIME_UNSET)
+        player?.prepare()
+        player?.play()
     }
 
     private fun parseLyric(lrc: String): List<LyricLine> {

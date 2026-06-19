@@ -70,8 +70,8 @@ fun AppNavigation(
             val vm: com.example.claudwecho.ui.recommend.DailyRecommendViewModel = koinViewModel()
             com.example.claudwecho.ui.recommend.DailyRecommendScreen(
                 viewModel = vm,
-                onNavigateToPlayer = { pId, pTitle ->
-                    playerViewModel.playSong(pId, pTitle)
+                onNavigateToPlayer = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
                     navController.navigate("main?page=1") {
                         popUpTo("main?page=0") { inclusive = true }
                     }
@@ -121,8 +121,8 @@ fun AppNavigation(
             val vm: com.example.claudwecho.ui.recent.RecentlyPlayedViewModel = koinViewModel()
             com.example.claudwecho.ui.recent.RecentlyPlayedScreen(
                 viewModel = vm,
-                onNavigateToPlayer = { pId, pTitle ->
-                    playerViewModel.playSong(pId, pTitle)
+                onNavigateToPlayer = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
                     navController.navigate("main?page=1") {
                         popUpTo("main?page=0") { inclusive = true }
                     }
@@ -141,8 +141,8 @@ fun AppNavigation(
             com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
                 playlistId = id,
                 type = "playlist",
-                onNavigateToPlayer = { pId, pTitle ->
-                    playerViewModel.playSong(pId, pTitle)
+                onNavigateToPlayer = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
                     navController.navigate("main?page=1") {
                         popUpTo("main?page=0") { inclusive = true }
                     }
@@ -160,8 +160,8 @@ fun AppNavigation(
             com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
                 playlistId = id,
                 type = "album",
-                onNavigateToPlayer = { pId, pTitle ->
-                    playerViewModel.playSong(pId, pTitle)
+                onNavigateToPlayer = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
                     navController.navigate("main?page=1") {
                         popUpTo("main?page=0") { inclusive = true }
                     }
@@ -179,8 +179,8 @@ fun AppNavigation(
             com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
                 playlistId = id,
                 type = "djradio",
-                onNavigateToPlayer = { pId, pTitle ->
-                    playerViewModel.playSong(pId, pTitle)
+                onNavigateToPlayer = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
                     navController.navigate("main?page=1") {
                         popUpTo("main?page=0") { inclusive = true }
                     }

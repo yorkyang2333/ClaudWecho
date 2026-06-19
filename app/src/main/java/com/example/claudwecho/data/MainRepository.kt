@@ -7,7 +7,10 @@ import com.example.claudwecho.data.api.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class MainRepository(private val api: NeteaseApi) {
+class MainRepository(
+    private val api: NeteaseApi,
+    private val localRecentPlaysManager: LocalRecentPlaysManager
+) {
     private var cachedProfile: UserProfile? = null
     private var cachedDailyRecommend: List<Song>? = null
     private var cachedUserPlaylists: List<Playlist>? = null
@@ -144,15 +147,10 @@ class MainRepository(private val api: NeteaseApi) {
     }
 
     suspend fun getRecentSongs(): List<Song> = withContext(Dispatchers.IO) {
-        try {
-            val response = api.getRecentSongs()
-            if (response.code == 200) {
-                response.data?.list?.map { it.data } ?: emptyList()
-            } else {
-                emptyList()
-            }
-        } catch (e: Exception) {
-            emptyList()
-        }
+        localRecentPlaysManager.getRecentSongs()
+    }
+
+    suspend fun recordRecentPlay(song: Song) = withContext(Dispatchers.IO) {
+        localRecentPlaysManager.addSong(song)
     }
 }

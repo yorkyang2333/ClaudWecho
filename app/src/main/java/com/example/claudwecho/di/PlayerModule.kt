@@ -37,9 +37,29 @@ val playerModule = module {
     single {
         val context: Context = androidContext()
         val cacheDataSourceFactory: CacheDataSource.Factory = get()
+        val repository: com.example.claudwecho.data.MainRepository = get()
+        
+        val resolvingDataSourceFactory = androidx.media3.datasource.ResolvingDataSource.Factory(
+            cacheDataSourceFactory,
+            androidx.media3.datasource.ResolvingDataSource.Resolver { dataSpec ->
+                val uri = dataSpec.uri
+                if (uri.scheme == "netease") {
+                    val id = uri.host?.toLongOrNull()
+                    if (id != null) {
+                        var actualUrl: String? = null
+                        kotlinx.coroutines.runBlocking {
+                            actualUrl = repository.getSongUrl(id)
+                        }
+                        val finalUrl = actualUrl ?: "https://music.163.com/song/media/outer/url?id=${id}.mp3"
+                        return@Resolver dataSpec.withUri(android.net.Uri.parse(finalUrl))
+                    }
+                }
+                dataSpec
+            }
+        )
         
         ExoPlayer.Builder(context)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(cacheDataSourceFactory))
+            .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(resolvingDataSourceFactory))
             .build()
     }
 }

@@ -27,7 +27,7 @@ fun PlaylistDetailScreen(
     playlistId: Long,
     type: String = "playlist",
     viewModel: PlaylistDetailViewModel = koinViewModel(),
-    onNavigateToPlayer: (Long, String) -> Unit
+    onNavigateToPlayer: (List<com.example.claudwecho.data.api.Song>, Int) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
@@ -55,14 +55,15 @@ fun PlaylistDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
             ) {
-                items(songs) { song ->
+                items(songs.size, key = { songs[it].id }) { index ->
+                    val song = songs[index]
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .padding(vertical = 4.dp)
                             .background(Color.DarkGray, RoundedCornerShape(8.dp))
                             .clickable {
-                                onNavigateToPlayer(song.id, song.name)
+                                onNavigateToPlayer(songs, index)
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {

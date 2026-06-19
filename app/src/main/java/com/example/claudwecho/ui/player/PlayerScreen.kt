@@ -50,6 +50,41 @@ fun PlayerScreen(viewModel: PlayerViewModel) {
 
                 Row(
                     horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    val repeatMode by viewModel.repeatMode.collectAsState()
+                    val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
+                    
+                    val repeatText = when (repeatMode) {
+                        androidx.media3.common.Player.REPEAT_MODE_ONE -> "单曲"
+                        androidx.media3.common.Player.REPEAT_MODE_ALL -> "列表"
+                        else -> "顺序"
+                    }
+                    
+                    Button(
+                        onClick = { viewModel.toggleRepeatMode() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                        modifier = Modifier.size(40.dp).clip(CircleShape)
+                    ) {
+                        Text(repeatText, style = MaterialTheme.typography.bodySmall)
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    Button(
+                        onClick = { viewModel.toggleShuffleMode() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (shuffleMode) MaterialTheme.colorScheme.primary else Color.DarkGray
+                        ),
+                        modifier = Modifier.size(40.dp).clip(CircleShape)
+                    ) {
+                        Text("随机", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(

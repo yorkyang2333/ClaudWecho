@@ -20,7 +20,13 @@ fun HomePagerScreen(
 ) {
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 3 })
 
-    HorizontalPager(state = pagerState) { page ->
+    HorizontalPager(
+        state = pagerState,
+        flingBehavior = androidx.compose.foundation.pager.PagerDefaults.flingBehavior(
+            state = pagerState,
+            pagerSnapDistance = androidx.compose.foundation.pager.PagerSnapDistance.atMost(1)
+        )
+    ) { page ->
         when (page) {
             0 -> MainScreen(
                 onNavigateToLogin = onNavigateToLogin,
