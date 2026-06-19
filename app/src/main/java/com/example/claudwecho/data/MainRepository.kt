@@ -60,12 +60,19 @@ class MainRepository(
         list
     }
 
-    suspend fun getPlaylistTracks(id: Long): List<Song> = withContext(Dispatchers.IO) {
-        // We usually don't cache individual playlist tracks heavily in memory here,
-        // but could add it later if needed.
+    private val cachedPlaylistTracks = mutableMapOf<Long, List<Song>>()
+
+    suspend fun getPlaylistTracks(id: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
+        if (!forceRefresh && cachedPlaylistTracks.containsKey(id)) {
+            return@withContext cachedPlaylistTracks[id]!!
+        }
         try {
             val response = api.getPlaylistDetail(id)
-            if (response.code == 200) response.playlist.tracks else emptyList()
+            val list = if (response.code == 200) response.playlist.tracks else emptyList()
+            if (list.isNotEmpty() || forceRefresh) {
+                cachedPlaylistTracks[id] = list
+            }
+            list
         } catch (e: Exception) {
             emptyList()
         }

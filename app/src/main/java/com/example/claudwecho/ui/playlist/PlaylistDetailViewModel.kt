@@ -17,31 +17,31 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
     private val _songs = MutableStateFlow<List<Song>>(emptyList())
     val songs: StateFlow<List<Song>> = _songs.asStateFlow()
 
-    fun loadPlaylist(id: Long) {
+    fun loadPlaylist(id: Long, forceRefresh: Boolean = false) {
         _isLoading.value = true
         viewModelScope.launch {
-            _songs.value = repository.getPlaylistTracks(id)
+            _songs.value = repository.getPlaylistTracks(id, forceRefresh)
             _isLoading.value = false
         }
     }
 
-    fun loadAlbum(id: Long) {
+    fun loadAlbum(id: Long, forceRefresh: Boolean = false) {
         _isLoading.value = true
         viewModelScope.launch {
-            _songs.value = repository.getAlbumTracks(id)
+            _songs.value = repository.getAlbumTracks(id) // Not cached yet, but can be
             _isLoading.value = false
         }
     }
 
-    fun loadDjRadio(id: Long) {
+    fun loadDjRadio(id: Long, forceRefresh: Boolean = false) {
         _isLoading.value = true
         viewModelScope.launch {
-            _songs.value = repository.getDjRadioPrograms(id)
+            _songs.value = repository.getDjRadioPrograms(id) // Not cached yet
             _isLoading.value = false
         }
     }
 
-    fun loadLiked() {
+    fun loadLiked(forceRefresh: Boolean = false) {
         _isLoading.value = true
         viewModelScope.launch {
             val profile = repository.getLoginStatus()
@@ -49,7 +49,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
                 val pl = repository.getUserPlaylists(profile.userId)
                 val likedId = pl.firstOrNull()?.id
                 if (likedId != null) {
-                    _songs.value = repository.getPlaylistTracks(likedId)
+                    _songs.value = repository.getPlaylistTracks(likedId, forceRefresh)
                 }
             }
             _isLoading.value = false

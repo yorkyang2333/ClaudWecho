@@ -79,7 +79,7 @@ fun PlaylistDetailScreen(
                         if (type == "liked") {
                             Spacer(modifier = Modifier.width(8.dp))
                             androidx.wear.compose.material3.IconButton(
-                                onClick = { viewModel.loadLiked() },
+                                onClick = { viewModel.loadLiked(forceRefresh = true) },
                                 modifier = Modifier.size(36.dp),
                                 colors = androidx.wear.compose.material3.IconButtonDefaults.filledTonalIconButtonColors()
                             ) {
