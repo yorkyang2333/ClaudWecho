@@ -68,19 +68,57 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
-                        Text(
-                            text = line.text,
-                            style = if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
-                            color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center
-                        )
-                        if (line.tText != null) {
+                        Box(contentAlignment = Alignment.Center) {
+                            // Stroke
                             Text(
-                                text = line.tText!!,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.5f),
+                                text = line.text,
+                                style = (if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium).copy(
+                                    drawStyle = androidx.compose.ui.graphics.drawscope.Stroke(
+                                        miter = 10f,
+                                        width = 4f,
+                                        join = androidx.compose.ui.graphics.StrokeJoin.Round
+                                    ),
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                ),
+                                color = Color.Black.copy(alpha = 0.8f),
                                 textAlign = TextAlign.Center
                             )
+                            // Fill
+                            Text(
+                                text = line.text,
+                                style = (if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium).copy(
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                ),
+                                color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        if (line.tText != null) {
+                            Box(contentAlignment = Alignment.Center) {
+                                // Stroke
+                                Text(
+                                    text = line.tText!!,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        drawStyle = androidx.compose.ui.graphics.drawscope.Stroke(
+                                            miter = 10f,
+                                            width = 3f,
+                                            join = androidx.compose.ui.graphics.StrokeJoin.Round
+                                        ),
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                    ),
+                                    color = Color.Black.copy(alpha = 0.8f),
+                                    textAlign = TextAlign.Center
+                                )
+                                // Fill
+                                Text(
+                                    text = line.tText!!,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                    ),
+                                    color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.7f),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
