@@ -88,38 +88,37 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize().padding(16.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(36.dp))
                 
-                Text(
-                    text = currentTitle ?: "Unknown Title",
-                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                    color = Color.White,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-                
-                Spacer(modifier = Modifier.height(4.dp))
-                
-                Text(
-                    text = currentArtist ?: "Unknown Artist",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                    color = Color.White.copy(alpha = 0.7f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = currentTitle ?: "Unknown Title",
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = currentArtist ?: "Unknown Artist",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                        color = Color.White.copy(alpha = 0.7f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
@@ -162,10 +161,10 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -179,7 +178,7 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                                 android.media.AudioManager.FLAG_SHOW_UI
                             )
                         },
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(32.dp).offset(y = (-8).dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
@@ -199,7 +198,7 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                                 viewModel.toggleRepeatMode()
                             }
                         },
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(32.dp).offset(y = 4.dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
@@ -212,7 +211,7 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
 
                     IconButton(
                         onClick = onMenuClick,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(32.dp).offset(y = (-8).dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
@@ -224,7 +223,7 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(28.dp))
             }
         }
     }
