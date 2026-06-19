@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.border
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
@@ -24,7 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 fun PlaylistDetailScreen(
     playlistId: Long,
     viewModel: PlaylistDetailViewModel = koinViewModel(),
-    onNavigateToPlayer: (String, String) -> Unit
+    onNavigateToPlayer: (Long, String) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
@@ -54,10 +56,8 @@ fun PlaylistDetailScreen(
                             .padding(vertical = 4.dp)
                             .background(Color.DarkGray, RoundedCornerShape(8.dp))
                             .clickable {
-                                val realUrl = "https://music.163.com/song/media/outer/url?id=${song.id}.mp3"
-                                val encodedUrl = java.net.URLEncoder.encode(realUrl, "UTF-8")
                                 val encodedTitle = java.net.URLEncoder.encode(song.name, "UTF-8")
-                                onNavigateToPlayer(encodedUrl, encodedTitle)
+                                onNavigateToPlayer(song.id, encodedTitle)
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -70,7 +70,20 @@ fun PlaylistDetailScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
-                            Text(song.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(song.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                                if (song.fee == 1) {
+                                    Text(
+                                        text = "VIP",
+                                        color = Color(0xFFFFD700),
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
+                                        modifier = Modifier
+                                            .padding(start = 4.dp)
+                                            .border(1.dp, Color(0xFFFFD700), RoundedCornerShape(2.dp))
+                                            .padding(horizontal = 2.dp)
+                                    )
+                                }
+                            }
                             Text(song.ar.firstOrNull()?.name ?: "Unknown Artist", style = MaterialTheme.typography.bodySmall, color = Color.Gray, maxLines = 1)
                         }
                     }

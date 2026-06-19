@@ -25,7 +25,7 @@ import org.koin.androidx.compose.koinViewModel
 fun PlayerScreen(
     viewModel: PlayerViewModel = koinViewModel(),
     onBack: () -> Unit,
-    url: String,
+    id: Long,
     title: String
 ) {
     val isPlaying by viewModel.isPlaying.collectAsState()
@@ -35,9 +35,9 @@ fun PlayerScreen(
     val currentLyricIndex by viewModel.currentLyricIndex.collectAsState()
     val listState = rememberScalingLazyListState()
 
-    androidx.compose.runtime.LaunchedEffect(url, title) {
-        if (url.isNotEmpty()) {
-            viewModel.playSong(url, title)
+    androidx.compose.runtime.LaunchedEffect(id, title) {
+        if (id > 0L) {
+            viewModel.playSong(id, title)
         }
     }
 

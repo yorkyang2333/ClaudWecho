@@ -24,11 +24,8 @@ fun AppNavigation(
                         popUpTo("main") { inclusive = true }
                     }
                 },
-                onNavigateToPlayer = { url, title ->
-                    // To keep it simple, we can navigate first, then let the PlayerViewModel know.
-                    // A better way is using navigation arguments, but since PlayerViewModel is a singleton in Koin for now...
-                    // Wait, PlayerViewModel is scoped to the ViewModel, so we can just retrieve it here.
-                    navController.navigate("player?url=$url&title=$title")
+                onNavigateToPlayer = { id, title ->
+                    navController.navigate("player?id=$id&title=$title")
                 },
                 onNavigateToPlaylistDetail = { id ->
                     navController.navigate("playlist/$id")
@@ -45,20 +42,20 @@ fun AppNavigation(
             )
         }
         composable(
-            route = "player?url={url}&title={title}",
+            route = "player?id={id}&title={title}",
             arguments = listOf(
-                androidx.navigation.navArgument("url") { type = androidx.navigation.NavType.StringType; defaultValue = "" },
+                androidx.navigation.navArgument("id") { type = androidx.navigation.NavType.LongType; defaultValue = 0L },
                 androidx.navigation.navArgument("title") { type = androidx.navigation.NavType.StringType; defaultValue = "Unknown" }
             )
         ) { backStackEntry ->
-            val url = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("url") ?: "", "UTF-8")
+            val id = backStackEntry.arguments?.getLong("id") ?: 0L
             val title = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("title") ?: "Unknown", "UTF-8")
             
             PlayerScreen(
                 onBack = {
                     navController.popBackStack()
                 },
-                url = url,
+                id = id,
                 title = title
             )
         }
@@ -71,8 +68,8 @@ fun AppNavigation(
             val id = backStackEntry.arguments?.getLong("id") ?: return@composable
             com.example.claudwecho.ui.playlist.PlaylistDetailScreen(
                 playlistId = id,
-                onNavigateToPlayer = { pUrl, pTitle ->
-                    navController.navigate("player?url=$pUrl&title=$pTitle")
+                onNavigateToPlayer = { pId, pTitle ->
+                    navController.navigate("player?id=$pId&title=$pTitle")
                 }
             )
         }

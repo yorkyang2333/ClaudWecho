@@ -55,7 +55,19 @@ interface NeteaseApi {
 
     @GET("/lyric")
     suspend fun getLyric(@Query("id") id: Long): LyricResponse
+    @GET("/song/url/v1")
+    suspend fun getSongUrl(
+        @Query("id") id: Long,
+        @Query("level") level: String = "standard",
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): SongUrlResponse
 }
+
+@Serializable
+data class SongUrlResponse(val data: List<SongUrlData>, val code: Int)
+
+@Serializable
+data class SongUrlData(val id: Long, val url: String?)
 
 @Serializable
 data class QrKeyResponse(val data: QrKeyData, val code: Int)
@@ -94,7 +106,7 @@ data class RecommendSongsResponse(val data: RecommendSongsData, val code: Int)
 data class RecommendSongsData(val dailySongs: List<Song>)
 
 @Serializable
-data class Song(val id: Long, val name: String, val ar: List<Artist>, val al: Album)
+data class Song(val id: Long, val name: String, val ar: List<Artist>, val al: Album, val fee: Int = 0)
 
 @Serializable
 data class Artist(val id: Long, val name: String)

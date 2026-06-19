@@ -56,4 +56,14 @@ class MainRepository(private val api: NeteaseApi) {
             Pair(null, null)
         }
     }
+    suspend fun getSongUrl(id: Long): String? = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getSongUrl(id)
+            if (response.code == 200 && response.data.isNotEmpty()) {
+                response.data.first().url
+            } else null
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

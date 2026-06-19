@@ -55,7 +55,7 @@ class PlayerViewModel(
         }, MoreExecutors.directExecutor())
     }
 
-    private var pendingUrl: String? = null
+    private var pendingId: Long? = null
     private var pendingTitle: String? = null
 
     private fun setupPlayerListeners() {
@@ -69,10 +69,10 @@ class PlayerViewModel(
         })
         
         // Play pending song if any
-        pendingUrl?.let { url ->
+        pendingId?.let { id ->
             pendingTitle?.let { title ->
-                playSong(url, title)
-                pendingUrl = null
+                playSong(id, title)
+                pendingId = null
                 pendingTitle = null
             }
         }
@@ -111,46 +111,45 @@ class PlayerViewModel(
         player?.seekToPreviousMediaItem()
     }
 
-    fun playSong(url: String, title: String) {
+    fun playSong(id: Long, title: String) {
         if (player == null) {
-            pendingUrl = url
+            pendingId = id
             pendingTitle = title
             return
         }
-        val mediaItem = MediaItem.Builder()
-            .setUri(url)
-            .setMediaMetadata(
-                androidx.media3.common.MediaMetadata.Builder()
-                    .setTitle(title)
-                    .build()
-            )
-            .build()
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.play()
-        _currentTrackTitle.value = title // Optimistically set title
         
+        _currentTrackTitle.value = title // Optimistically set title
         _lyrics.value = emptyList()
         _currentLyricIndex.value = -1
 
-        val idStr = url.substringAfter("id=").substringBefore(".mp3")
-        val id = idStr.toLongOrNull()
-        if (id != null) {
-            viewModelScope.launch {
-                val (lrc, tlyric) = repository.getLyrics(id)
-                if (lrc != null) {
-                    val lines = parseLyric(lrc)
-                    if (tlyric != null) {
-                        val tLines = parseLyric(tlyric)
-                        tLines.forEach { tLine ->
-                            val matchingLine = lines.find { it.timeMs == tLine.timeMs }
-                            if (matchingLine != null) {
-                                matchingLine.tText = tLine.text
-                            }
+        viewModelScope.launch {
+            val url = repository.getSongUrl(id) ?: "https://music.163.com/song/media/outer/url?id=${id}.mp3"
+            
+            val mediaItem = MediaItem.Builder()
+                .setUri(url)
+                .setMediaMetadata(
+                    androidx.media3.common.MediaMetadata.Builder()
+                        .setTitle(title)
+                        .build()
+                )
+                .build()
+            player?.setMediaItem(mediaItem)
+            player?.prepare()
+            player?.play()
+
+            val (lrc, tlyric) = repository.getLyrics(id)
+            if (lrc != null) {
+                val lines = parseLyric(lrc)
+                if (tlyric != null) {
+                    val tLines = parseLyric(tlyric)
+                    tLines.forEach { tLine ->
+                        val matchingLine = lines.find { it.timeMs == tLine.timeMs }
+                        if (matchingLine != null) {
+                            matchingLine.tText = tLine.text
                         }
                     }
-                    _lyrics.value = lines
                 }
+                _lyrics.value = lines
             }
         }
     }
