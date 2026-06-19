@@ -93,8 +93,12 @@ fun MainScreen(
                                 .fillMaxWidth(0.9f)
                                 .padding(vertical = 4.dp)
                                 .background(Color.DarkGray, RoundedCornerShape(8.dp))
-                                .padding(8.dp)
-                                .clickable { /* Play song */ },
+                                .clickable { 
+                                    val realUrl = "https://music.163.com/song/media/outer/url?id=${song.id}.mp3"
+                                    val encodedUrl = java.net.URLEncoder.encode(realUrl, "UTF-8")
+                                    val encodedTitle = java.net.URLEncoder.encode(song.name, "UTF-8")
+                                    onNavigateToPlayer(encodedUrl, encodedTitle) 
+                                },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AsyncImage(

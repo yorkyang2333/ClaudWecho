@@ -25,7 +25,10 @@ fun AppNavigation(
                     }
                 },
                 onNavigateToPlayer = { url, title ->
-                    navController.navigate("player")
+                    // To keep it simple, we can navigate first, then let the PlayerViewModel know.
+                    // A better way is using navigation arguments, but since PlayerViewModel is a singleton in Koin for now...
+                    // Wait, PlayerViewModel is scoped to the ViewModel, so we can just retrieve it here.
+                    navController.navigate("player?url=$url&title=$title")
                 }
             )
         }
@@ -38,11 +41,16 @@ fun AppNavigation(
                 }
             )
         }
-        composable("player") {
+        composable("player?url={url}&title={title}") { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: ""
+            val title = backStackEntry.arguments?.getString("title") ?: "Unknown"
+            
             PlayerScreen(
                 onBack = {
                     navController.popBackStack()
-                }
+                },
+                url = url,
+                title = title
             )
         }
     }

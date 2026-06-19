@@ -20,10 +20,18 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PlayerScreen(
     viewModel: PlayerViewModel = koinViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    url: String,
+    title: String
 ) {
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(url, title) {
+        if (url.isNotEmpty()) {
+            viewModel.playSong(url, title)
+        }
+    }
 
     Box(
         modifier = Modifier

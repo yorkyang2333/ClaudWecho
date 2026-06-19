@@ -36,9 +36,9 @@ val networkModule = module {
         val json = Json { ignoreUnknownKeys = true; isLenient = true }
         val contentType = "application/json".toMediaType()
         
-        // Default base URL, will be customizable later
+        // User's own Vercel API instance
         Retrofit.Builder()
-            .baseUrl("https://netease-cloud-music-api-demo.vercel.app/")
+            .baseUrl("https://netease-cloud-music-api-enhanced-zeta.vercel.app/")
             .client(get())
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
