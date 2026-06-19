@@ -25,7 +25,11 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun loadData() {
+    private var isInitialized = false
+
+    fun loadData(forceRefresh: Boolean = false) {
+        if (isInitialized && !forceRefresh) return
+        
         viewModelScope.launch {
             _isLoading.value = true
             val profile = repository.getLoginStatus()
@@ -39,6 +43,7 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
                 // Not logged in, fetch Hot Songs instead
                 _dailySongs.value = repository.getHotSongs()
             }
+            isInitialized = true
             _isLoading.value = false
         }
     }

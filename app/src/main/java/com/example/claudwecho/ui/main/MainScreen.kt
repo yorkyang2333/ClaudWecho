@@ -17,8 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.CircularProgressIndicator
+import androidx.wear.compose.material3.Icon
+import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
@@ -44,11 +48,12 @@ fun MainScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            Text("Loading...", color = MaterialTheme.colorScheme.primary)
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
         } else {
             ScalingLazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
             ) {
                 item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -149,6 +154,16 @@ fun MainScreen(
                                 Text("${playlist.trackCount} tracks", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                             }
                         }
+                    }
+                }
+                
+                // Add a refresh button at the bottom
+                item {
+                    IconButton(
+                        onClick = { viewModel.loadData(forceRefresh = true) },
+                        modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh")
                     }
                 }
             }
