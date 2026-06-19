@@ -77,15 +77,31 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text("Scan with Netease App", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(bottom = 8.dp))
-                    qrCode?.let {
-                        Image(
-                            painter = rememberAsyncImagePainter(it),
-                            contentDescription = "QR Code",
-                            modifier = Modifier
-                                .size(120.dp)
-                                .background(Color.White, RoundedCornerShape(8.dp))
-                                .padding(8.dp)
-                        )
+                    qrCode?.let { base64Url ->
+                        val bitmap = remember(base64Url) {
+                            try {
+                                val base64Str = if (base64Url.contains(",")) base64Url.split(",")[1] else base64Url
+                                val decodedBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
+                                android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)?.let {
+                                    androidx.compose.ui.graphics.asImageBitmap(it)
+                                }
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
+                        
+                        if (bitmap != null) {
+                            Image(
+                                bitmap = bitmap,
+                                contentDescription = "QR Code",
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .background(Color.White, RoundedCornerShape(8.dp))
+                                    .padding(8.dp)
+                            )
+                        } else {
+                            Text("Failed to decode QR", color = MaterialTheme.colorScheme.error)
+                        }
                     }
                 }
             }
