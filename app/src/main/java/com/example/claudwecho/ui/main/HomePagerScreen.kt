@@ -45,8 +45,8 @@ fun HomePagerScreen(
         )
     )
     val scale by infiniteTransition.animateFloat(
-        initialValue = 1.2f,
-        targetValue = 1.6f,
+        initialValue = 2.0f,
+        targetValue = 2.4f,
         animationSpec = infiniteRepeatable(
             animation = tween(10000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse

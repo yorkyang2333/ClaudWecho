@@ -70,14 +70,14 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
                         Text(
                             text = line.text,
                             style = if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
-                            color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.Gray,
+                            color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.7f),
                             textAlign = TextAlign.Center
                         )
                         if (line.tText != null) {
                             Text(
                                 text = line.tText!!,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.DarkGray,
+                                color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.5f),
                                 textAlign = TextAlign.Center
                             )
                         }
