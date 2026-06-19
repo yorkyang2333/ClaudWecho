@@ -16,13 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
-import androidx.wear.compose.material3.CircularProgressIndicator
-import androidx.wear.compose.material3.Icon
-import androidx.wear.compose.material3.IconButton
+import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,7 +44,7 @@ fun MainScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(48.dp))
+            Text("Loading...", color = MaterialTheme.colorScheme.primary)
         } else {
             ScalingLazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -159,11 +155,11 @@ fun MainScreen(
                 
                 // Add a refresh button at the bottom
                 item {
-                    IconButton(
+                    Button(
                         onClick = { viewModel.loadData(forceRefresh = true) },
                         modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh")
+                        Text("Refresh")
                     }
                 }
             }

@@ -38,7 +38,7 @@ val networkModule = module {
         
         // User's own Vercel API instance
         Retrofit.Builder()
-            .baseUrl("https://netease-cloud-music-api-enhanced-zeta.vercel.app/")
+            .baseUrl(BuildConfig.API_BASE_URL)
             .client(get())
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
