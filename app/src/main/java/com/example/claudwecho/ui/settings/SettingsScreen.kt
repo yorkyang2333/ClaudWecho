@@ -14,11 +14,17 @@ import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Build
 import androidx.wear.compose.material3.Icon
+import androidx.compose.foundation.background
 
 @Composable
 fun SettingsScreen(
@@ -27,6 +33,7 @@ fun SettingsScreen(
 ) {
     val screenShape by viewModel.screenShape.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
+    var showConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.logoutEvent.collect {
@@ -40,49 +47,81 @@ fun SettingsScreen(
         else -> "自动检测"
     }
 
-    ScalingLazyColumn(
-        autoCentering = null,
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            Text(
-                text = "设置",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+    if (showConfirm) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("确认清除缓存？", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(
+                    onClick = { showConfirm = false },
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(Icons.Filled.Close, null)
+                }
+                Button(
+                    onClick = {
+                        viewModel.clearCache()
+                        showConfirm = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(Icons.Filled.Check, null)
+                }
+            }
         }
-        
-        item {
-            Button(
-                onClick = { viewModel.toggleScreenShape() },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("屏幕形状: $shapeText") },
-                icon = { Icon(Icons.Filled.Build, null, tint = MaterialTheme.colorScheme.primary) }
-            )
-        }
+    } else {
+        ScalingLazyColumn(
+            autoCentering = null,
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Text(
+                    text = "设置",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+            
+            item {
+                Button(
+                    onClick = { viewModel.toggleScreenShape() },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("屏幕形状: $shapeText") },
+                    icon = { Icon(Icons.Filled.Build, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
 
-        item {
-            Button(
-                onClick = { viewModel.clearCache() },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("清除缓存") },
-                secondaryLabel = { Text(cacheSize) },
-                icon = { Icon(Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.primary) }
-            )
-        }
+            item {
+                Button(
+                    onClick = { showConfirm = true },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("清除缓存") },
+                    secondaryLabel = { Text(cacheSize) },
+                    icon = { Icon(Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
 
-        item {
-            Button(
-                onClick = { viewModel.logout() },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("退出登录") },
-                icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = MaterialTheme.colorScheme.primary) }
-            )
+            item {
+                Button(
+                    onClick = { viewModel.logout() },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("退出登录") },
+                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
         }
     }
 }
