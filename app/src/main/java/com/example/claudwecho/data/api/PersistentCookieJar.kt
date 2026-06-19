@@ -14,11 +14,16 @@ class PersistentCookieJar(context: Context) : CookieJar {
     private val cookies = ConcurrentHashMap<String, MutableList<Cookie>>()
 
     init {
+        // Clear corrupted cookies from previous versions
+        if (!sharedPreferences.getBoolean("is_corrupted_cleared_v2", false)) {
+            sharedPreferences.edit().clear().putBoolean("is_corrupted_cleared_v2", true).apply()
+        }
+
         // Load cookies from shared preferences
         val allEntries = sharedPreferences.all
         for ((key, value) in allEntries) {
-            if (value is String) {
-                val parsedCookies = value.split(";").mapNotNull { Cookie.parse("http://$key".toHttpUrlOrNull()!!, it) }
+            if (value is String && key != "is_corrupted_cleared_v2") {
+                val parsedCookies = value.split("\n").mapNotNull { Cookie.parse("http://$key".toHttpUrlOrNull()!!, it) }
                 if (parsedCookies.isNotEmpty()) {
                     cookies[key] = parsedCookies.toMutableList()
                 }
@@ -39,7 +44,7 @@ class PersistentCookieJar(context: Context) : CookieJar {
         cookies[host] = currentCookies
         
         // Save to shared preferences
-        val cookieString = currentCookies.joinToString(";") { it.toString() }
+        val cookieString = currentCookies.joinToString("\n") { it.toString() }
         sharedPreferences.edit().putString(host, cookieString).apply()
     }
 
@@ -60,7 +65,7 @@ class PersistentCookieJar(context: Context) : CookieJar {
         }
 
         if (changed) {
-            val cookieString = hostCookies.joinToString(";") { it.toString() }
+            val cookieString = hostCookies.joinToString("\n") { it.toString() }
             sharedPreferences.edit().putString(url.host, cookieString).apply()
         }
 
