@@ -60,39 +60,13 @@ fun SearchScreen(
         }
     }
 
-    ScalingLazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            Button(
-                onClick = {
-                    val intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
-                    val remoteInputs = listOf(
-                        RemoteInput.Builder("search_query")
-                            .setLabel("搜索歌曲、歌手或专辑")
-                            .build()
-                    )
-                    RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
-                    launcher.launch(intent)
-                },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = ButtonDefaults.filledTonalButtonColors()
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = "搜索",
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",
-                    modifier = Modifier.padding(start = 8.dp),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        ScalingLazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            state = listState,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 72.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+        ) {
 
         if (isLoading) {
             item {
@@ -120,6 +94,52 @@ fun SearchScreen(
                         playerViewModel.playPlaylist(searchResults, searchResults.indexOf(song))
                         onSongClick()
                     }
+                )
+            }
+        }
+        }
+        
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    androidx.compose.ui.graphics.Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
+                            MaterialTheme.colorScheme.background.copy(alpha = 0f)
+                        ),
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
+                    )
+                )
+                .padding(bottom = 12.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Button(
+                onClick = {
+                    val intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
+                    val remoteInputs = listOf(
+                        RemoteInput.Builder("search_query")
+                            .setLabel("搜索歌曲、歌手或专辑")
+                            .build()
+                    )
+                    RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
+                    launcher.launch(intent)
+                },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, top = 16.dp),
+                colors = ButtonDefaults.filledTonalButtonColors()
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Search,
+                    contentDescription = "搜索",
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",
+                    modifier = Modifier.padding(start = 8.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

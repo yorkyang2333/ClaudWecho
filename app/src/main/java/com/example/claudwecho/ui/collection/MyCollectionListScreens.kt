@@ -135,23 +135,21 @@ fun <T> CollectionListBase(
         } else if (items.isEmpty()) {
             Text(emptyMessage, color = Color.Gray)
         } else {
-            ScalingLazyColumn(
-        autoCentering = null,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
-            ) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            title,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
+            Box(modifier = Modifier.fillMaxSize()) {
+                ScalingLazyColumn(
+                    autoCentering = null,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(top = 56.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    items(items, key = { keySelector(it) }) { item ->
+                        itemContent(item)
+                    }
+                }
+                
+                com.example.claudwecho.ui.components.PinnedHeader(
+                    title = title,
+                    actionIcon = {
                         androidx.wear.compose.material3.CompactButton(
                             onClick = onRefresh,
                             colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
@@ -164,10 +162,7 @@ fun <T> CollectionListBase(
                             )
                         }
                     }
-                }
-                items(items, key = { keySelector(it) }) { item ->
-                    itemContent(item)
-                }
+                )
             }
         }
     }

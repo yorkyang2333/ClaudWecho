@@ -45,23 +45,25 @@ fun DailyRecommendScreen(
         } else if (songs.isEmpty()) {
             Text("暂无推荐", color = Color.Gray)
         } else {
-            ScalingLazyColumn(
-        autoCentering = null,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
-            ) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "每日推荐",
-                            style = MaterialTheme.typography.titleMedium
+            Box(modifier = Modifier.fillMaxSize()) {
+                ScalingLazyColumn(
+                    autoCentering = null,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(top = 56.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    items(songs.size, key = { songs[it].id }) { index ->
+                        val song = songs[index]
+                        com.example.claudwecho.ui.components.SharedSongItem(
+                            song = song,
+                            onClick = { onNavigateToPlayer(songs, index) }
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
+                
+                com.example.claudwecho.ui.components.PinnedHeader(
+                    title = "每日推荐",
+                    actionIcon = {
                         androidx.wear.compose.material3.CompactButton(
                             onClick = { viewModel.loadData(forceRefresh = true) },
                             colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
@@ -74,14 +76,7 @@ fun DailyRecommendScreen(
                             )
                         }
                     }
-                }
-                items(songs.size, key = { songs[it].id }) { index ->
-                    val song = songs[index]
-                    com.example.claudwecho.ui.components.SharedSongItem(
-                        song = song,
-                        onClick = { onNavigateToPlayer(songs, index) }
-                    )
-                }
+                )
             }
         }
     }

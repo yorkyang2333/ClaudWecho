@@ -45,43 +45,38 @@ fun RecentlyPlayedScreen(
         } else if (songs.isEmpty()) {
             Text("暂无播放记录", color = Color.Gray)
         } else {
-            ScalingLazyColumn(
-        autoCentering = null,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
-            ) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "最近播放",
-                            style = MaterialTheme.typography.titleMedium
+            Box(modifier = Modifier.fillMaxSize()) {
+                ScalingLazyColumn(
+                    autoCentering = null,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(top = 56.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    items(songs.size, key = { songs[it].id }) { index ->
+                        val song = songs[index]
+                        com.example.claudwecho.ui.components.SharedSongItem(
+                            song = song,
+                            onClick = { onNavigateToPlayer(songs, index) }
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        androidx.wear.compose.material3.IconButton(
+                    }
+                }
+                
+                com.example.claudwecho.ui.components.PinnedHeader(
+                    title = "最近播放",
+                    actionIcon = {
+                        androidx.wear.compose.material3.CompactButton(
                             onClick = { viewModel.loadData(forceRefresh = true) },
-                            modifier = Modifier.size(36.dp),
-                            colors = androidx.wear.compose.material3.IconButtonDefaults.filledTonalIconButtonColors()
+                            colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
                         ) {
                             androidx.wear.compose.material3.Icon(
                                 imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
                                 contentDescription = "Refresh", 
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(16.dp),
+                                tint = Color.White
                             )
                         }
                     }
-                }
-                items(songs.size, key = { songs[it].id }) { index ->
-                    val song = songs[index]
-                    com.example.claudwecho.ui.components.SharedSongItem(
-                        song = song,
-                        onClick = { onNavigateToPlayer(songs, index) }
-                    )
-                }
+                )
             }
         }
     }
