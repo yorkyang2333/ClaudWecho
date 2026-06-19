@@ -5,6 +5,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.example.claudwecho.ui.player.LyricsScreen
 import com.example.claudwecho.ui.player.PlayerScreen
 import com.example.claudwecho.ui.player.PlayerViewModel
@@ -20,6 +22,8 @@ fun HomePagerScreen(
 ) {
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 3 })
 
+    var lastFlingTime by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0L) }
+
     HorizontalPager(
         state = pagerState,
         flingBehavior = androidx.compose.foundation.pager.PagerDefaults.flingBehavior(
@@ -32,8 +36,18 @@ fun HomePagerScreen(
                     pageSize: Int,
                     pageSpacing: Int
                 ): Int {
+                    val currentTime = System.currentTimeMillis()
                     val settled = pagerState.settledPage
-                    return suggestedTargetPage.coerceIn(settled - 1, settled + 1)
+                    
+                    if (currentTime - lastFlingTime < 400) {
+                        return settled
+                    }
+                    
+                    val target = suggestedTargetPage.coerceIn(settled - 1, settled + 1)
+                    if (target != settled) {
+                        lastFlingTime = currentTime
+                    }
+                    return target
                 }
             }
         )
