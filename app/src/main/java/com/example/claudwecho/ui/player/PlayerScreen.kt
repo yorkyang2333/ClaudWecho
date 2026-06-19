@@ -52,6 +52,7 @@ fun PlayerScreen(
     val duration by viewModel.duration.collectAsState()
     val isLiked by viewModel.isCurrentSongLiked.collectAsState()
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -118,7 +119,10 @@ fun PlayerScreen(
                 ) {
                     if (isFmMode) {
                         IconButton(
-                            onClick = { viewModel.trashCurrentFmSong() },
+                            onClick = {
+                                viewModel.trashCurrentFmSong()
+                                android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
+                            },
                             modifier = Modifier.size(40.dp),
                             enabled = currentTitle != null
                         ) {
