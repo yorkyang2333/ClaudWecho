@@ -64,63 +64,39 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
             ) {
                 itemsIndexed(lyrics) { index, line ->
                     val isCurrent = index == currentLyricIndex
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            // Stroke
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        ) {
                             Text(
                                 text = line.text,
                                 style = (if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium).copy(
-                                    drawStyle = androidx.compose.ui.graphics.drawscope.Stroke(
-                                        miter = 10f,
-                                        width = 4f,
-                                        join = androidx.compose.ui.graphics.StrokeJoin.Round
-                                    ),
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                    shadow = androidx.compose.ui.graphics.Shadow(
+                                        color = Color.Black.copy(alpha = 0.8f),
+                                        offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                                        blurRadius = 8f
+                                    )
                                 ),
-                                color = Color.Black.copy(alpha = 0.8f),
+                                color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White,
                                 textAlign = TextAlign.Center
                             )
-                            // Fill
-                            Text(
-                                text = line.text,
-                                style = (if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium).copy(
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                                ),
-                                color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.9f),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        if (line.tText != null) {
-                            Box(contentAlignment = Alignment.Center) {
-                                // Stroke
+                            if (line.tText != null) {
                                 Text(
                                     text = line.tText!!,
                                     style = MaterialTheme.typography.bodySmall.copy(
-                                        drawStyle = androidx.compose.ui.graphics.drawscope.Stroke(
-                                            miter = 10f,
-                                            width = 3f,
-                                            join = androidx.compose.ui.graphics.StrokeJoin.Round
-                                        ),
-                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                        shadow = androidx.compose.ui.graphics.Shadow(
+                                            color = Color.Black.copy(alpha = 0.8f),
+                                            offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                                            blurRadius = 6f
+                                        )
                                     ),
-                                    color = Color.Black.copy(alpha = 0.8f),
-                                    textAlign = TextAlign.Center
-                                )
-                                // Fill
-                                Text(
-                                    text = line.tText!!,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                                    ),
-                                    color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.7f),
+                                    color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.8f),
                                     textAlign = TextAlign.Center
                                 )
                             }
                         }
-                    }
                 }
             }
         }
