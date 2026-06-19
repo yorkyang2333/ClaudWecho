@@ -193,7 +193,18 @@ data class RecommendSongsResponse(val data: RecommendSongsData, val code: Int)
 data class RecommendSongsData(val dailySongs: List<Song>)
 
 @Serializable
-data class Song(val id: Long, val name: String, val ar: List<Artist> = emptyList(), val al: Album? = null, val fee: Int = 0)
+data class Song(
+    val id: Long, 
+    val name: String, 
+    val ar: List<Artist> = emptyList(), 
+    val al: Album? = null, 
+    val fee: Int = 0,
+    val artists: List<Artist>? = null,
+    val album: Album? = null
+) {
+    val displayArtists: List<Artist> get() = ar.ifEmpty { artists ?: emptyList() }
+    val displayAlbum: Album? get() = al ?: album
+}
 
 @Serializable
 data class Artist(val id: Long, val name: String)

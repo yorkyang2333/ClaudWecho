@@ -166,14 +166,14 @@ class PlayerViewModel(
             if (lastPlaylist != null && lastPlaylist.isNotEmpty()) {
                 currentPlaylist = lastPlaylist
                 val mediaItems = lastPlaylist.map { song ->
-                    val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+                    val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
                     MediaItem.Builder()
                         .setMediaId(song.id.toString())
                         .setUri("netease://song/${song.id}")
                         .setMediaMetadata(
                             androidx.media3.common.MediaMetadata.Builder()
                                 .setTitle(song.name)
-                                .setArtist(song.ar.joinToString { it.name })
+                                .setArtist(song.displayArtists.joinToString { it.name })
                                 .setArtworkUri(artworkUri)
                                 .build()
                         )
@@ -271,14 +271,14 @@ class PlayerViewModel(
         }
         
         val mediaItems = songs.map { song ->
-            val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+            val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
             MediaItem.Builder()
                 .setMediaId(song.id.toString())
                 .setUri("netease://song/${song.id}")
                 .setMediaMetadata(
                     androidx.media3.common.MediaMetadata.Builder()
                         .setTitle(song.name)
-                        .setArtist(song.ar.joinToString { it.name })
+                        .setArtist(song.displayArtists.joinToString { it.name })
                         .setArtworkUri(artworkUri)
                         .build()
                 )
@@ -300,14 +300,14 @@ class PlayerViewModel(
             if (songs.isNotEmpty()) {
                 currentPlaylist = songs
                 val mediaItems = songs.map { song ->
-                    val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+                    val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
                     MediaItem.Builder()
                         .setMediaId(song.id.toString())
                         .setUri("netease://song/${song.id}")
                         .setMediaMetadata(
                             androidx.media3.common.MediaMetadata.Builder()
                                 .setTitle(song.name)
-                                .setArtist(song.ar.joinToString { it.name })
+                                .setArtist(song.displayArtists.joinToString { it.name })
                                 .setArtworkUri(artworkUri)
                                 .build()
                         )
@@ -322,11 +322,28 @@ class PlayerViewModel(
 
     fun trashCurrentFmSong() {
         if (!_isPersonalFmMode.value) return
-        val currentSongId = player?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+        val player = player ?: return
+        val currentSongId = player.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+        
         viewModelScope.launch {
             repository.trashPersonalFm(currentSongId)
         }
-        skipToNext()
+        
+        val currentIndex = player.currentMediaItemIndex
+        if (player.hasNextMediaItem()) {
+            player.seekToNextMediaItem()
+        }
+        // Remove the trashed item
+        if (currentIndex in 0 until player.mediaItemCount) {
+            player.removeMediaItem(currentIndex)
+        }
+        
+        if (!player.isPlaying) {
+            player.prepare()
+            player.play()
+        }
+        
+        fetchMoreFmIfNeeded()
     }
 
     private var isFetchingFm = false
@@ -342,20 +359,25 @@ class PlayerViewModel(
                 if (newSongs.isNotEmpty()) {
                     currentPlaylist = currentPlaylist + newSongs
                     val mediaItems = newSongs.map { song ->
-                        val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+                        val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
                         MediaItem.Builder()
                             .setMediaId(song.id.toString())
                             .setUri("netease://song/${song.id}")
                             .setMediaMetadata(
                                 androidx.media3.common.MediaMetadata.Builder()
                                     .setTitle(song.name)
-                                    .setArtist(song.ar.joinToString { it.name })
+                                    .setArtist(song.displayArtists.joinToString { it.name })
                                     .setArtworkUri(artworkUri)
                                     .build()
                             )
                             .build()
                     }
                     player.addMediaItems(mediaItems)
+                    
+                    if (player.playbackState == androidx.media3.common.Player.STATE_ENDED || player.playbackState == androidx.media3.common.Player.STATE_IDLE) {
+                        player.prepare()
+                        player.play()
+                    }
                 }
                 isFetchingFm = false
             }
