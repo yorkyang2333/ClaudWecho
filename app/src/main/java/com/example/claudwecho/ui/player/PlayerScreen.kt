@@ -123,38 +123,38 @@ fun PlayerScreen(
                                 viewModel.trashCurrentFmSong()
                                 android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
                             },
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier.size(48.dp),
                             enabled = currentTitle != null
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Delete,
                                 contentDescription = "Trash",
                                 tint = if (currentTitle == null) Color.Gray else Color.White,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(32.dp)
                             )
                         }
                     } else {
                         IconButton(
                             onClick = { viewModel.skipToPrevious() },
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier.size(48.dp),
                             enabled = currentTitle != null
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.SkipPrevious,
                                 contentDescription = "Previous",
                                 tint = if (currentTitle == null) Color.Gray else Color.White,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(32.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     IconButton(
                         onClick = {
                             viewModel.playOrPause()
                         },
-                        modifier = Modifier.size(56.dp),
+                        modifier = Modifier.size(64.dp),
                         enabled = currentTitle != null,
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -165,22 +165,22 @@ fun PlayerScreen(
                             imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
                             tint = if (currentTitle == null) Color.Gray else Color.Black,
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(36.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     IconButton(
                         onClick = { viewModel.skipToNext() },
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(48.dp),
                         enabled = currentTitle != null
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.SkipNext,
                             contentDescription = "Next",
                             tint = if (currentTitle == null) Color.Gray else Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 }
@@ -189,13 +189,13 @@ fun PlayerScreen(
 
                 // Bottom Menu Row
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
                         onClick = { viewModel.toggleLikeCurrentSong() },
-                        modifier = Modifier.size(32.dp).offset(y = (-8).dp),
+                        modifier = Modifier.size(40.dp).offset(y = (-8).dp),
                         enabled = currentTitle != null,
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
@@ -203,38 +203,38 @@ fun PlayerScreen(
                             imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                             contentDescription = "Like",
                             tint = if (currentTitle == null) Color.Gray else if (isLiked) Color.Red else Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(28.dp)
                         )
                     }
 
                     IconButton(
                         onClick = onMenuClick,
-                        modifier = Modifier.size(32.dp).offset(y = 4.dp),
+                        modifier = Modifier.size(40.dp).offset(y = 4.dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Home,
                             contentDescription = "Home",
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(28.dp)
                         )
                     }
 
                     IconButton(
                         onClick = onSettingsClick,
-                        modifier = Modifier.size(32.dp).offset(y = (-8).dp),
+                        modifier = Modifier.size(40.dp).offset(y = (-8).dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Menu,
                             contentDescription = "Menu",
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
     }
 }
