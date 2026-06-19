@@ -6,6 +6,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.example.claudwecho.ui.player.LyricsScreen
 import com.example.claudwecho.ui.player.PlayerScreen
@@ -30,10 +31,12 @@ import coil.compose.AsyncImage
 fun HomePagerScreen(
     playerViewModel: PlayerViewModel,
     initialPage: Int = 0,
-    onNavigateToMenu: () -> Unit
+    onNavigateToMenu: () -> Unit,
+    onSettingsClick: () -> Unit = {}
 ) {
     val currentArtworkUri by playerViewModel.currentArtworkUri.collectAsState()
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 2 })
+    val coroutineScope = rememberCoroutineScope()
 
     val infiniteTransition = rememberInfiniteTransition()
     val rotation by infiniteTransition.animateFloat(
@@ -84,7 +87,11 @@ fun HomePagerScreen(
             state = pagerState
         ) { page ->
             when (page) {
-                0 -> PlayerScreen(viewModel = playerViewModel, onMenuClick = onNavigateToMenu)
+                0 -> PlayerScreen(
+                    viewModel = playerViewModel,
+                    onMenuClick = onNavigateToMenu,
+                    onSettingsClick = onSettingsClick
+                )
                 1 -> LyricsScreen(viewModel = playerViewModel)
             }
         }

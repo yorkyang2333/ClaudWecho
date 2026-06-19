@@ -39,6 +39,9 @@ fun AppNavigation(
                 initialPage = 0,
                 onNavigateToMenu = {
                     navController.navigate("main")
+                },
+                onSettingsClick = {
+                    navController.navigate("player_menu")
                 }
             )
         }
