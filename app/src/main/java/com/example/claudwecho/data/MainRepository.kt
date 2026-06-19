@@ -178,4 +178,22 @@ class MainRepository(
             emptySet()
         }
     }
+
+    suspend fun getPersonalFm(): List<Song> = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getPersonalFm()
+            if (response.code == 200) response.data else emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun trashPersonalFm(id: Long): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = api.fmTrash(id)
+            response.code == 200
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

@@ -27,6 +27,7 @@ fun PlayerMenuScreen(
 ) {
     val context = LocalContext.current
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
+    val isFmMode by viewModel.isPersonalFmMode.collectAsState()
     
     ScalingLazyColumn(
         autoCentering = null,
@@ -53,21 +54,24 @@ fun PlayerMenuScreen(
                 icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = Color.White) }
             )
         }
-        item {
-            Button(
-                onClick = {
-                    if (!shuffleMode) {
-                        viewModel.toggleShuffleMode()
-                    } else {
-                        viewModel.toggleShuffleMode()
-                        viewModel.toggleRepeatMode()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text(if (shuffleMode) "随机播放" else "列表循环", color = Color.White) },
-                icon = { Icon(if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat, null, tint = Color.White) }
-            )
+        
+        if (!isFmMode) {
+            item {
+                Button(
+                    onClick = {
+                        if (!shuffleMode) {
+                            viewModel.toggleShuffleMode()
+                        } else {
+                            viewModel.toggleShuffleMode()
+                            viewModel.toggleRepeatMode()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text(if (shuffleMode) "随机播放" else "列表循环", color = Color.White) },
+                    icon = { Icon(if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat, null, tint = Color.White) }
+                )
+            }
         }
     }
 }

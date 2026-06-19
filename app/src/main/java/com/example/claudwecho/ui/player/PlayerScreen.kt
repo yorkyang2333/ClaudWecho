@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.foundation.clickable
 
@@ -50,6 +51,7 @@ fun PlayerScreen(
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
     val isLiked by viewModel.isCurrentSongLiked.collectAsState()
+    val isFmMode by viewModel.isPersonalFmMode.collectAsState()
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -114,17 +116,32 @@ fun PlayerScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = { viewModel.skipToPrevious() },
-                        modifier = Modifier.size(40.dp),
-                        enabled = currentTitle != null
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.SkipPrevious,
-                            contentDescription = "Previous",
-                            tint = if (currentTitle == null) Color.Gray else Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+                    if (isFmMode) {
+                        IconButton(
+                            onClick = { viewModel.trashCurrentFmSong() },
+                            modifier = Modifier.size(40.dp),
+                            enabled = currentTitle != null
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = "Trash",
+                                tint = if (currentTitle == null) Color.Gray else Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { viewModel.skipToPrevious() },
+                            modifier = Modifier.size(40.dp),
+                            enabled = currentTitle != null
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.SkipPrevious,
+                                contentDescription = "Previous",
+                                tint = if (currentTitle == null) Color.Gray else Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.width(16.dp))

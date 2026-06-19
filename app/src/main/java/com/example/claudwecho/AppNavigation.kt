@@ -83,7 +83,14 @@ fun AppNavigation(
                 }
             )
         }
-        composable("personal_fm") { DummyScreen("私人 FM", navController) }
+        composable("personal_fm") {
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                playerViewModel.playPersonalFm()
+                navController.navigate("player") {
+                    popUpTo("main")
+                }
+            }
+        }
         composable("daily_recommendation") { 
             val vm: com.example.claudwecho.ui.recommend.DailyRecommendViewModel = koinViewModel()
             com.example.claudwecho.ui.recommend.DailyRecommendScreen(

@@ -59,6 +59,9 @@ class PlayerViewModel(
     private val _isCurrentSongLiked = MutableStateFlow(false)
     val isCurrentSongLiked: StateFlow<Boolean> = _isCurrentSongLiked.asStateFlow()
 
+    private val _isPersonalFmMode = MutableStateFlow(false)
+    val isPersonalFmMode: StateFlow<Boolean> = _isPersonalFmMode.asStateFlow()
+
     init {
         initializeController()
         fetchLikedSongs()
@@ -122,6 +125,7 @@ class PlayerViewModel(
                     }
                     val currentIndex = player?.currentMediaItemIndex ?: 0
                     playbackStateManager.saveState(currentPlaylist, currentIndex)
+                    fetchMoreFmIfNeeded()
                     _lyrics.value = emptyList()
                     _currentLyricIndex.value = -1
                     viewModelScope.launch {
@@ -258,6 +262,7 @@ class PlayerViewModel(
     }
 
     fun playPlaylist(songs: List<com.example.claudwecho.data.api.Song>, startIndex: Int) {
+        _isPersonalFmMode.value = false
         currentPlaylist = songs
         if (player == null) {
             pendingSongs = songs
@@ -283,6 +288,78 @@ class PlayerViewModel(
         player?.setMediaItems(mediaItems, startIndex, androidx.media3.common.C.TIME_UNSET)
         player?.prepare()
         player?.play()
+    }
+
+    fun playPersonalFm() {
+        _isPersonalFmMode.value = true
+        player?.repeatMode = Player.REPEAT_MODE_OFF
+        player?.shuffleModeEnabled = false
+        
+        viewModelScope.launch {
+            val songs = repository.getPersonalFm()
+            if (songs.isNotEmpty()) {
+                currentPlaylist = songs
+                val mediaItems = songs.map { song ->
+                    val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+                    MediaItem.Builder()
+                        .setMediaId(song.id.toString())
+                        .setUri("netease://song/${song.id}")
+                        .setMediaMetadata(
+                            androidx.media3.common.MediaMetadata.Builder()
+                                .setTitle(song.name)
+                                .setArtist(song.ar.joinToString { it.name })
+                                .setArtworkUri(artworkUri)
+                                .build()
+                        )
+                        .build()
+                }
+                player?.setMediaItems(mediaItems, 0, androidx.media3.common.C.TIME_UNSET)
+                player?.prepare()
+                player?.play()
+            }
+        }
+    }
+
+    fun trashCurrentFmSong() {
+        if (!_isPersonalFmMode.value) return
+        val currentSongId = player?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+        viewModelScope.launch {
+            repository.trashPersonalFm(currentSongId)
+        }
+        skipToNext()
+    }
+
+    private var isFetchingFm = false
+    fun fetchMoreFmIfNeeded() {
+        if (!_isPersonalFmMode.value || isFetchingFm) return
+        val player = player ?: return
+        
+        // If we are at the last or second-to-last item, fetch more
+        if (player.mediaItemCount - player.currentMediaItemIndex <= 2) {
+            isFetchingFm = true
+            viewModelScope.launch {
+                val newSongs = repository.getPersonalFm()
+                if (newSongs.isNotEmpty()) {
+                    currentPlaylist = currentPlaylist + newSongs
+                    val mediaItems = newSongs.map { song ->
+                        val artworkUri = song.al?.picUrl?.let { android.net.Uri.parse(it) }
+                        MediaItem.Builder()
+                            .setMediaId(song.id.toString())
+                            .setUri("netease://song/${song.id}")
+                            .setMediaMetadata(
+                                androidx.media3.common.MediaMetadata.Builder()
+                                    .setTitle(song.name)
+                                    .setArtist(song.ar.joinToString { it.name })
+                                    .setArtworkUri(artworkUri)
+                                    .build()
+                            )
+                            .build()
+                    }
+                    player.addMediaItems(mediaItems)
+                }
+                isFetchingFm = false
+            }
+        }
     }
 
     private fun parseLyric(lrc: String): List<LyricLine> {

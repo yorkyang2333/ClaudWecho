@@ -103,10 +103,28 @@ interface NeteaseApi {
         @Query("uid") uid: Long,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): LikeListResponse
+
+    @GET("/personal_fm")
+    suspend fun getPersonalFm(
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): PersonalFmResponse
+
+    @GET("/fm_trash")
+    suspend fun fmTrash(
+        @Query("id") id: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
+
 }
 
 @Serializable
 data class LikeListResponse(val ids: List<Long> = emptyList(), val code: Int)
+
+@Serializable
+data class PersonalFmResponse(val data: List<Song> = emptyList(), val code: Int)
+
+@Serializable
+data class BaseResponse(val code: Int, val message: String? = null)
 
 @Serializable
 data class LikeResponse(val code: Int, val message: String? = null)
