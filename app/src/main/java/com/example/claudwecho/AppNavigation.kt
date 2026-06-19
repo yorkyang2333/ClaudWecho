@@ -41,9 +41,15 @@ fun AppNavigation(
                 }
             )
         }
-        composable("player?url={url}&title={title}") { backStackEntry ->
-            val url = backStackEntry.arguments?.getString("url") ?: ""
-            val title = backStackEntry.arguments?.getString("title") ?: "Unknown"
+        composable(
+            route = "player?url={url}&title={title}",
+            arguments = listOf(
+                androidx.navigation.navArgument("url") { type = androidx.navigation.NavType.StringType; defaultValue = "" },
+                androidx.navigation.navArgument("title") { type = androidx.navigation.NavType.StringType; defaultValue = "Unknown" }
+            )
+        ) { backStackEntry ->
+            val url = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("url") ?: "", "UTF-8")
+            val title = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("title") ?: "Unknown", "UTF-8")
             
             PlayerScreen(
                 onBack = {

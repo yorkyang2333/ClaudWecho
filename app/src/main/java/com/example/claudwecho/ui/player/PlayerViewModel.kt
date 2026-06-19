@@ -41,6 +41,9 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         }, MoreExecutors.directExecutor())
     }
 
+    private var pendingUrl: String? = null
+    private var pendingTitle: String? = null
+
     private fun setupPlayerListeners() {
         player?.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -50,6 +53,15 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                 _currentTrackTitle.value = mediaItem?.mediaMetadata?.title?.toString()
             }
         })
+        
+        // Play pending song if any
+        pendingUrl?.let { url ->
+            pendingTitle?.let { title ->
+                playSong(url, title)
+                pendingUrl = null
+                pendingTitle = null
+            }
+        }
     }
 
     fun playOrPause() {
@@ -71,6 +83,11 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     }
 
     fun playSong(url: String, title: String) {
+        if (player == null) {
+            pendingUrl = url
+            pendingTitle = title
+            return
+        }
         val mediaItem = MediaItem.Builder()
             .setUri(url)
             .setMediaMetadata(
@@ -82,6 +99,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         player?.setMediaItem(mediaItem)
         player?.prepare()
         player?.play()
+        _currentTrackTitle.value = title // Optimistically set title
     }
 
     override fun onCleared() {
