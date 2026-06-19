@@ -84,26 +84,20 @@ fun PlayerScreen(
             )
         )
 
-        if (currentTitle == null) {
-            Text(
-                text = "暂无播放内容",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.7f)
-            )
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier.height(36.dp))
-                
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = currentTitle ?: "未知歌曲",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White,
-                        maxLines = 1
-                    )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(36.dp))
+            
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = currentTitle ?: "暂无播放内容",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    maxLines = 1
+                )
+                if (currentTitle != null) {
                     Text(
                         text = currentArtist ?: "未知歌手",
                         style = MaterialTheme.typography.bodyMedium,
@@ -111,6 +105,7 @@ fun PlayerScreen(
                         maxLines = 1
                     )
                 }
+            }
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -121,12 +116,13 @@ fun PlayerScreen(
                 ) {
                     IconButton(
                         onClick = { viewModel.skipToPrevious() },
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(40.dp),
+                        enabled = currentTitle != null
                     ) {
                         Icon(
                             imageVector = Icons.Filled.SkipPrevious,
                             contentDescription = "Previous",
-                            tint = Color.White,
+                            tint = if (currentTitle == null) Color.Gray else Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -138,14 +134,16 @@ fun PlayerScreen(
                             viewModel.playOrPause()
                         },
                         modifier = Modifier.size(56.dp),
+                        enabled = currentTitle != null,
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                         )
                     ) {
                         Icon(
                             imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = Color.Black,
+                            tint = if (currentTitle == null) Color.Gray else Color.Black,
                             modifier = Modifier.size(32.dp)
                         )
                     }
@@ -154,12 +152,13 @@ fun PlayerScreen(
 
                     IconButton(
                         onClick = { viewModel.skipToNext() },
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(40.dp),
+                        enabled = currentTitle != null
                     ) {
                         Icon(
                             imageVector = Icons.Filled.SkipNext,
                             contentDescription = "Next",
-                            tint = Color.White,
+                            tint = if (currentTitle == null) Color.Gray else Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -176,12 +175,13 @@ fun PlayerScreen(
                     IconButton(
                         onClick = { viewModel.toggleLikeCurrentSong() },
                         modifier = Modifier.size(32.dp).offset(y = (-8).dp),
+                        enabled = currentTitle != null,
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
                             imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = "Like",
-                            tint = if (isLiked) Color.Red else Color.White,
+                            tint = if (currentTitle == null) Color.Gray else if (isLiked) Color.Red else Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -215,6 +215,5 @@ fun PlayerScreen(
                 
                 Spacer(modifier = Modifier.height(28.dp))
             }
-        }
     }
 }
