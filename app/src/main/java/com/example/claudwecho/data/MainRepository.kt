@@ -153,4 +153,13 @@ class MainRepository(
     suspend fun recordRecentPlay(song: Song) = withContext(Dispatchers.IO) {
         localRecentPlaysManager.addSong(song)
     }
+
+    suspend fun likeSong(id: Long, like: Boolean = true): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = api.likeSong(id, like)
+            response.code == 200
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

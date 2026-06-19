@@ -33,10 +33,14 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.foundation.clickable
 import coil.compose.AsyncImage
 
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
+    val showBottomMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val isPlaying by viewModel.isPlaying.collectAsState()
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
     val currentArtist by viewModel.currentArtistName.collectAsState()
@@ -169,48 +173,35 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val context = androidx.compose.ui.platform.LocalContext.current
+                    
                     IconButton(
-                        onClick = {
-                            val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
-                            audioManager.adjustStreamVolume(
-                                android.media.AudioManager.STREAM_MUSIC,
-                                android.media.AudioManager.ADJUST_SAME,
-                                android.media.AudioManager.FLAG_SHOW_UI
-                            )
-                        },
+                        onClick = { viewModel.likeCurrentSong() },
                         modifier = Modifier.size(32.dp).offset(y = (-8).dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = "Volume",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { 
-                            if (!shuffleMode) {
-                                viewModel.toggleShuffleMode()
-                            } else {
-                                viewModel.toggleShuffleMode()
-                                viewModel.toggleRepeatMode()
-                            }
-                        },
-                        modifier = Modifier.size(32.dp).offset(y = 4.dp),
-                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
-                    ) {
-                        Icon(
-                            imageVector = if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat,
-                            contentDescription = "Shuffle/Repeat",
-                            tint = Color.White,
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = "Like",
+                            tint = Color.Red,
                             modifier = Modifier.size(24.dp)
                         )
                     }
 
                     IconButton(
                         onClick = onMenuClick,
+                        modifier = Modifier.size(32.dp).offset(y = 4.dp),
+                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "Home",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { showBottomMenu.value = true },
                         modifier = Modifier.size(32.dp).offset(y = (-8).dp),
                         colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                     ) {
@@ -224,6 +215,53 @@ fun PlayerScreen(viewModel: PlayerViewModel, onMenuClick: () -> Unit = {}) {
                 }
                 
                 Spacer(modifier = Modifier.height(28.dp))
+            }
+        }
+    }
+
+    if (showBottomMenu.value) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.9f))
+                .clickable { showBottomMenu.value = false },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+            ) {
+                androidx.wear.compose.material3.Button(
+                    onClick = {
+                        val audioManager = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
+                        audioManager.adjustStreamVolume(
+                            android.media.AudioManager.STREAM_MUSIC,
+                            android.media.AudioManager.ADJUST_SAME,
+                            android.media.AudioManager.FLAG_SHOW_UI
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("调节音量", color = Color.White) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.VolumeUp, null, tint = Color.White) }
+                )
+                
+                androidx.wear.compose.material3.Button(
+                    onClick = {
+                        if (!shuffleMode) {
+                            viewModel.toggleShuffleMode()
+                        } else {
+                            viewModel.toggleShuffleMode()
+                            viewModel.toggleRepeatMode()
+                        }
+                        showBottomMenu.value = false
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text(if (shuffleMode) "随机播放" else "列表循环", color = Color.White) },
+                    icon = { Icon(if (shuffleMode) Icons.Filled.Shuffle else Icons.Filled.Repeat, null, tint = Color.White) }
+                )
             }
         }
     }

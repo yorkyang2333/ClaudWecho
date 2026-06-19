@@ -213,6 +213,14 @@ class PlayerViewModel(
         }
     }
 
+    fun likeCurrentSong(onResult: (Boolean) -> Unit = {}) {
+        val songId = player?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
+        viewModelScope.launch {
+            val success = repository.likeSong(songId, true)
+            onResult(success)
+        }
+    }
+
     fun playPlaylist(songs: List<com.example.claudwecho.data.api.Song>, startIndex: Int) {
         currentPlaylist = songs
         if (player == null) {

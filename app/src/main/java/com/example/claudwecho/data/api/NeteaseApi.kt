@@ -91,7 +91,16 @@ interface NeteaseApi {
         @Query("limit") limit: Int = 50,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): RecentSongsResponse
+    @GET("/like")
+    suspend fun likeSong(
+        @Query("id") id: Long,
+        @Query("like") like: Boolean = true,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): LikeResponse
 }
+
+@Serializable
+data class LikeResponse(val code: Int, val message: String? = null)
 
 @Serializable
 data class RecentSongsResponse(val code: Int, val data: RecentSongsData? = null)
