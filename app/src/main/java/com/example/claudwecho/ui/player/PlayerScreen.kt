@@ -77,8 +77,6 @@ fun PlayerScreen(
         androidx.wear.compose.material3.CircularProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxSize(),
-            startAngle = 135f,
-            endAngle = 45f,
             strokeWidth = 6.dp,
             colors = androidx.wear.compose.material3.ProgressIndicatorDefaults.colors(
                 indicatorColor = MaterialTheme.colorScheme.primary,
