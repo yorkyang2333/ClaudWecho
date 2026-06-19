@@ -53,53 +53,47 @@ fun PlaylistDetailScreen(
         if (isLoading) {
             androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
         } else {
-            ScalingLazyColumn(
-        autoCentering = null,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
-            ) {
-                // Header
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        androidx.wear.compose.material3.Text(
-                            text = when (type) {
-                                "liked" -> "我喜欢的音乐"
-                                "playlist" -> "歌单"
-                                "album" -> "专辑"
-                                "djradio" -> "播客"
-                                else -> "音乐列表"
-                            },
-                            style = MaterialTheme.typography.titleMedium
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {
+                ScalingLazyColumn(
+                    autoCentering = null,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    items(songs.size, key = { songs[it].id }) { index ->
+                        val song = songs[index]
+                        com.example.claudwecho.ui.components.SharedSongItem(
+                            song = song,
+                            onClick = { onNavigateToPlayer(songs, index) }
                         )
-                        if (type == "liked") {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            androidx.wear.compose.material3.IconButton(
+                    }
+                }
+
+                com.example.claudwecho.ui.components.PinnedHeader(
+                    title = when (type) {
+                        "liked" -> "我喜欢的音乐"
+                        "playlist" -> "歌单"
+                        "album" -> "专辑"
+                        "djradio" -> "播客"
+                        else -> "音乐列表"
+                    },
+                    actionIcon = if (type == "liked") {
+                        {
+                            androidx.wear.compose.material3.CompactButton(
                                 onClick = { viewModel.loadLiked(forceRefresh = true) },
-                                modifier = Modifier.size(36.dp),
-                                colors = androidx.wear.compose.material3.IconButtonDefaults.filledTonalIconButtonColors()
+                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
                             ) {
                                 androidx.wear.compose.material3.Icon(
                                     imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
                                     contentDescription = "Refresh", 
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(16.dp),
+                                    tint = Color.White
                                 )
                             }
                         }
-                    }
-                }
-
-                items(songs.size, key = { songs[it].id }) { index ->
-                    val song = songs[index]
-                    com.example.claudwecho.ui.components.SharedSongItem(
-                        song = song,
-                        onClick = { onNavigateToPlayer(songs, index) }
-                    )
-                }
+                    } else null
+                )
             }
         }
     }

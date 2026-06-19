@@ -140,7 +140,7 @@ fun <T> CollectionListBase(
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(top = 56.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                    contentPadding = PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
                 ) {
                     items(items, key = { keySelector(it) }) { item ->
                         itemContent(item)

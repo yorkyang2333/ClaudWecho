@@ -66,7 +66,7 @@ fun SearchScreen(
             modifier = Modifier.fillMaxWidth(),
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 72.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
         ) {
 
         if (isLoading) {
