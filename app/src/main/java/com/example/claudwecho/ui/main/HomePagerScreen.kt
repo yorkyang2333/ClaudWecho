@@ -75,11 +75,26 @@ fun HomePagerScreen(
             // Add a dark overlay so text is readable
             Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
         } else {
-            // Default gradient if no artwork
+            // Default fluid gradient if no artwork
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF1E2124))
+                    .graphicsLayer {
+                        rotationZ = rotation
+                        scaleX = scale
+                        scaleY = scale
+                    }
+                    .blur(60.dp)
+                    .background(
+                        androidx.compose.ui.graphics.Brush.sweepGradient(
+                            listOf(
+                                Color(0xFF1E2124),
+                                Color(0xFF3A3F47),
+                                Color(0xFF2A2E35),
+                                Color(0xFF1E2124)
+                            )
+                        )
+                    )
             )
         }
 
