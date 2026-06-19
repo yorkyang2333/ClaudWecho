@@ -62,4 +62,5 @@ val networkModule = module {
     viewModel { com.example.claudwecho.ui.collection.MyCollectionViewModel(get()) }
     viewModel { com.example.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
     viewModel { com.example.claudwecho.ui.recent.RecentlyPlayedViewModel(get()) }
+    viewModel { com.example.claudwecho.ui.settings.SettingsViewModel(androidContext()) }
 }

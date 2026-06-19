@@ -144,7 +144,10 @@ fun AppNavigation(
                 }
             )
         }
-        composable("settings") { DummyScreen("设置", navController) }
+        composable("settings") { 
+            val vm: com.example.claudwecho.ui.settings.SettingsViewModel = koinViewModel()
+            com.example.claudwecho.ui.settings.SettingsScreen(viewModel = vm)
+        }
         
         composable(
             route = "playlist/{id}",
