@@ -100,7 +100,6 @@ class PlayerViewModel(
 
     private var pendingSongs: List<com.yorkyang2333.claudwecho.data.api.Song>? = null
     private var pendingIndex: Int = 0
-    private var currentPlaylist: List<com.yorkyang2333.claudwecho.data.api.Song> = emptyList()
 
     val repeatMode = MutableStateFlow(playbackStateManager.getRepeatMode())
     val shuffleModeEnabled = MutableStateFlow(playbackStateManager.getShuffleMode())
@@ -119,8 +118,10 @@ class PlayerViewModel(
                 val songId = mediaItem?.mediaId?.toLongOrNull()
                 playbackStateManager.currentTrackId.value = songId
                 updateLikeStatus()
+                val currentIndex = player?.currentMediaItemIndex ?: 0
+                _currentMediaItemIndex.value = currentIndex
                 if (songId != null) {
-                    val song = currentPlaylist.find { it.id == songId }
+                    val song = _currentPlaylist.value.find { it.id == songId }
                     if (song != null) {
                         _isCurrentSongPodcast.value = song.isPodcast
                         viewModelScope.launch {
@@ -129,8 +130,7 @@ class PlayerViewModel(
                     } else {
                         _isCurrentSongPodcast.value = false
                     }
-                    val currentIndex = player?.currentMediaItemIndex ?: 0
-                    playbackStateManager.saveState(currentPlaylist, currentIndex)
+                    playbackStateManager.saveState(_currentPlaylist.value, currentIndex)
                     fetchMoreFmIfNeeded()
                     _lyrics.value = emptyList()
                     _currentLyricIndex.value = -1
@@ -172,7 +172,7 @@ class PlayerViewModel(
         } else {
             val lastPlaylist = playbackStateManager.getLastPlaylist()
             if (lastPlaylist != null && lastPlaylist.isNotEmpty()) {
-                currentPlaylist = lastPlaylist
+                _currentPlaylist.value = lastPlaylist
                 val mediaItems = lastPlaylist.map { song ->
                     val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
                     MediaItem.Builder()
@@ -213,6 +213,12 @@ class PlayerViewModel(
         }
     }
 
+    private val _currentPlaylist = MutableStateFlow<List<com.yorkyang2333.claudwecho.data.api.Song>>(emptyList())
+    val currentPlaylist: StateFlow<List<com.yorkyang2333.claudwecho.data.api.Song>> = _currentPlaylist.asStateFlow()
+
+    private val _currentMediaItemIndex = MutableStateFlow(0)
+    val currentMediaItemIndex: StateFlow<Int> = _currentMediaItemIndex.asStateFlow()
+
     fun playOrPause() {
         player?.let {
             if (it.isPlaying) {
@@ -229,6 +235,17 @@ class PlayerViewModel(
 
     fun skipToPrevious() {
         player?.seekToPreviousMediaItem()
+    }
+    
+    fun playQueueItem(index: Int) {
+        player?.seekToDefaultPosition(index)
+        player?.play()
+    }
+    
+    fun clearQueue() {
+        player?.clearMediaItems()
+        _currentPlaylist.value = emptyList()
+        playbackStateManager.saveState(emptyList(), 0)
     }
 
     fun seekTo(positionMs: Long) {
@@ -280,7 +297,7 @@ class PlayerViewModel(
 
     fun playPlaylist(songs: List<com.yorkyang2333.claudwecho.data.api.Song>, startIndex: Int) {
         _isPersonalFmMode.value = false
-        currentPlaylist = songs
+        _currentPlaylist.value = songs
         if (player == null) {
             pendingSongs = songs
             pendingIndex = startIndex
@@ -315,7 +332,7 @@ class PlayerViewModel(
         viewModelScope.launch {
             val songs = repository.getPersonalFm()
             if (songs.isNotEmpty()) {
-                currentPlaylist = songs
+                _currentPlaylist.value = songs
                 val mediaItems = songs.map { song ->
                     val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
                     MediaItem.Builder()
@@ -374,7 +391,7 @@ class PlayerViewModel(
             viewModelScope.launch {
                 val newSongs = repository.getPersonalFm()
                 if (newSongs.isNotEmpty()) {
-                    currentPlaylist = currentPlaylist + newSongs
+                    _currentPlaylist.value = _currentPlaylist.value + newSongs
                     val mediaItems = newSongs.map { song ->
                         val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
                         MediaItem.Builder()

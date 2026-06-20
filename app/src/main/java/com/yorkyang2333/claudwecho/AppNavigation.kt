@@ -93,6 +93,16 @@ fun AppNavigation(
                 }
             )
         }
+        composable("queue") {
+            com.yorkyang2333.claudwecho.ui.queue.QueueScreen(
+                viewModel = playerViewModel,
+                onNavigateToPlayer = {
+                    navController.navigate("player") {
+                        popUpTo("player") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("personal_fm") {
             androidx.compose.runtime.LaunchedEffect(Unit) {
                 playerViewModel.playPersonalFm()

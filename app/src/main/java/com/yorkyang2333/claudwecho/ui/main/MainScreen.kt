@@ -37,6 +37,8 @@ import androidx.wear.compose.material3.Text
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
+import androidx.compose.material.icons.rounded.QueueMusic
+
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel(),
@@ -116,6 +118,13 @@ fun MainScreen(
                 }
 
                 // Main Features
+                item {
+                    FeatureButton(
+                        icon = Icons.Rounded.QueueMusic,
+                        text = "播放队列",
+                        onClick = { onNavigateToFeature("queue") }
+                    )
+                }
                 item {
                     FeatureButton(
                         icon = Icons.Rounded.Favorite,
