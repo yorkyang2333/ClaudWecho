@@ -48,50 +48,50 @@ fun SettingsScreen(
         else -> "自动检测"
     }
 
-    ScalingLazyColumn(
-        autoCentering = null,
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            Text(
-                text = "设置",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        }
-        
-        item {
-            Button(
-                onClick = { viewModel.toggleScreenShape() },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("屏幕形状: $shapeText") },
-                icon = { Icon(Icons.Rounded.Build, null, tint = MaterialTheme.colorScheme.primary) }
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        ScalingLazyColumn(
+            autoCentering = null,
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            item {
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(72.dp))
+            }
+            
+            item {
+                Button(
+                    onClick = { viewModel.toggleScreenShape() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("屏幕形状: $shapeText") },
+                    icon = { Icon(Icons.Rounded.Build, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
 
-        item {
-            Button(
-                onClick = { showConfirm = true },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("清除缓存") },
-                secondaryLabel = { Text(cacheSize) },
-                icon = { Icon(Icons.Rounded.Delete, null, tint = MaterialTheme.colorScheme.primary) }
-            )
-        }
+            item {
+                Button(
+                    onClick = { showConfirm = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("清除缓存") },
+                    secondaryLabel = { Text(cacheSize) },
+                    icon = { Icon(Icons.Rounded.Delete, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
 
-        item {
-            Button(
-                onClick = { viewModel.logout() },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("退出登录") },
-                icon = { Icon(Icons.AutoMirrored.Rounded.ExitToApp, null, tint = MaterialTheme.colorScheme.primary) }
-            )
+            item {
+                Button(
+                    onClick = { viewModel.logout() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { Text("退出登录") },
+                    icon = { Icon(Icons.AutoMirrored.Rounded.ExitToApp, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
         }
+        com.example.claudwecho.ui.components.PinnedHeader(title = "设置")
     }
 
     if (showConfirm) {
