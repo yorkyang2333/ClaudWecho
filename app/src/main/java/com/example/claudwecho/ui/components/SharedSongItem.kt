@@ -69,7 +69,7 @@ fun SharedSongItem(
         },
         secondaryLabel = {
             Text(
-                text = song.ar.firstOrNull()?.name ?: "Unknown Artist",
+                text = song.displayArtists.firstOrNull()?.name ?: "Unknown Artist",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -78,7 +78,7 @@ fun SharedSongItem(
         },
         icon = {
             AsyncImage(
-                model = song.al?.picUrl ?: "",
+                model = song.displayAlbum?.picUrl ?: "",
                 contentDescription = "Album Art",
                 modifier = Modifier
                     .size(36.dp)

@@ -111,7 +111,7 @@ fun SearchScreen(
                             .focusRequester(focusRequester),
                         textStyle = MaterialTheme.typography.titleMedium.copy(
                             color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Start
                         ),
                         singleLine = true,
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
@@ -129,15 +129,21 @@ fun SearchScreen(
                             Row(
                                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
+                                horizontalArrangement = Arrangement.Start
                             ) {
-                                if (localQuery.isEmpty()) {
-                                    Text(
-                                        text = "输入搜索...",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                } else {
+                                Icon(
+                                    imageVector = Icons.Rounded.Search,
+                                    contentDescription = "搜索",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Box(modifier = Modifier.padding(start = 8.dp).weight(1f)) {
+                                    if (localQuery.isEmpty()) {
+                                        Text(
+                                            text = "输入搜索...",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                     innerTextField()
                                 }
                             }
@@ -168,17 +174,24 @@ fun SearchScreen(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                         colors = ButtonDefaults.filledTonalButtonColors()
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Search,
-                            contentDescription = "搜索",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Text(
-                            text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",
-                            modifier = Modifier.padding(start = 8.dp),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Search,
+                                contentDescription = "搜索",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",
+                                modifier = Modifier.padding(start = 8.dp).weight(1f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                textAlign = TextAlign.Start
+                            )
+                        }
                     }
                 }
             }
