@@ -86,6 +86,26 @@ class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
             }
         }
     }
+
+    fun sendCaptcha(phone: String, onSent: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = repository.sendCaptcha(phone)
+            onSent(success)
+        }
+    }
+
+    fun loginWithCaptcha(phone: String, captcha: String) {
+        _uiState.value = LoginState.LOGGING_IN
+        viewModelScope.launch {
+            val success = repository.loginWithCaptcha(phone, captcha)
+            if (success) {
+                _uiState.value = LoginState.LOGGED_IN
+            } else {
+                _errorMessage.value = "Login failed"
+                _uiState.value = LoginState.ERROR
+            }
+        }
+    }
     
     fun setPhoneInputState() {
         _uiState.value = LoginState.PHONE_INPUT

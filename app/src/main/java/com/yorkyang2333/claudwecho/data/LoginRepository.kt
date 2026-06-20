@@ -39,6 +39,24 @@ class LoginRepository(private val api: NeteaseApi) {
         }
     }
 
+    suspend fun sendCaptcha(phone: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val res = api.sendCaptcha(phone)
+            res.code == 200
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun loginWithCaptcha(phone: String, captcha: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val res = api.loginCellphoneCaptcha(phone, captcha)
+            res.code == 200
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun logout(): Boolean = withContext(Dispatchers.IO) {
         try {
             api.logout()

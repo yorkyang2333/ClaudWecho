@@ -35,6 +35,12 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): LoginResponse
 
+    @GET("/captcha/sent")
+    suspend fun sendCaptcha(
+        @Query("phone") phone: String,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
+
     @GET("/login/status")
     suspend fun getLoginStatus(@Query("timestamp") timestamp: Long = System.currentTimeMillis()): LoginStatusResponse
 
