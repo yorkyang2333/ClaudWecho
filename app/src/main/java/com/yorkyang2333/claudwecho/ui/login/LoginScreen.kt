@@ -230,73 +230,74 @@ fun LoginPhonePasswordScreen(
                 var phone by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
 
-                ScalingLazyColumn(
-                    scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                        edgeScale = 0.3f,
-                        minTransitionArea = 0.4f
-                    ),
-                    autoCentering = null,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp, top = 24.dp)
-                ) {
-                    item {
-                        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "密码登录")
-                        Spacer(modifier = Modifier.height(32.dp))
-                    }
-                    item {
-                        androidx.compose.foundation.text.BasicTextField(
-                            value = phone,
-                            onValueChange = { phone = it },
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
-                            textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                            decorationBox = { innerTextField ->
-                                Box(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    if (phone.isEmpty()) Text("输入手机号", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                    innerTextField()
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ScalingLazyColumn(
+                        scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                            edgeScale = 0.3f,
+                            minTransitionArea = 0.4f
+                        ),
+                        autoCentering = null,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(48.dp))
+                        }
+                        item {
+                            androidx.compose.foundation.text.BasicTextField(
+                                value = phone,
+                                onValueChange = { phone = it },
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
+                                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
+                                decorationBox = { innerTextField ->
+                                    Box(
+                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        if (phone.isEmpty()) Text("输入手机号", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                                        innerTextField()
+                                    }
                                 }
-                            }
-                        )
-                    }
-                    item {
-                        androidx.compose.foundation.text.BasicTextField(
-                            value = password,
-                            onValueChange = { password = it },
-                            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
-                            textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                            decorationBox = { innerTextField ->
-                                Box(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    if (password.isEmpty()) Text("输入密码", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                    innerTextField()
+                            )
+                        }
+                        item {
+                            androidx.compose.foundation.text.BasicTextField(
+                                value = password,
+                                onValueChange = { password = it },
+                                visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
+                                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
+                                decorationBox = { innerTextField ->
+                                    Box(
+                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        if (password.isEmpty()) Text("输入密码", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                                        innerTextField()
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
+                        item {
+                            Button(
+                                onClick = { viewModel.loginWithPhone(phone, password) },
+                                modifier = Modifier.fillMaxWidth().height(40.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                label = { Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary) }
+                            )
+                        }
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(
-                            onClick = { viewModel.loginWithPhone(phone, password) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                            label = { Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary) }
-                        )
-                    }
+                    com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "密码登录")
                 }
             }
             LoginState.LOGGING_IN -> {
@@ -347,91 +348,92 @@ fun LoginPhoneCaptchaScreen(
                 var captcha by remember { mutableStateOf("") }
                 var isSending by remember { mutableStateOf(false) }
 
-                ScalingLazyColumn(
-                    scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                        edgeScale = 0.3f,
-                        minTransitionArea = 0.4f
-                    ),
-                    autoCentering = null,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp, top = 24.dp)
-                ) {
-                    item {
-                        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "验证码登录")
-                        Spacer(modifier = Modifier.height(32.dp))
-                    }
-                    item {
-                        androidx.compose.foundation.text.BasicTextField(
-                            value = phone,
-                            onValueChange = { phone = it },
-                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
-                            textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                            decorationBox = { innerTextField ->
-                                Box(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    if (phone.isEmpty()) Text("输入手机号", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                    innerTextField()
-                                }
-                            }
-                        )
-                    }
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ScalingLazyColumn(
+                        scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                            edgeScale = 0.3f,
+                            minTransitionArea = 0.4f
+                        ),
+                        autoCentering = null,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(48.dp))
+                        }
+                        item {
                             androidx.compose.foundation.text.BasicTextField(
-                                value = captcha,
-                                onValueChange = { captcha = it },
-                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                                value = phone,
+                                onValueChange = { phone = it },
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
                                 textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
+                                    .fillMaxWidth()
+                                    .height(40.dp)
                                     .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
                                 decorationBox = { innerTextField ->
                                     Box(
                                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                                         contentAlignment = Alignment.CenterStart
                                     ) {
-                                        if (captcha.isEmpty()) Text("验证码", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                                        if (phone.isEmpty()) Text("输入手机号", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
                                         innerTextField()
                                     }
                                 }
                             )
-                            Button(
-                                onClick = {
-                                    if (phone.isNotEmpty() && !isSending) {
-                                        isSending = true
-                                        viewModel.sendCaptcha(phone) { success ->
-                                            isSending = false
+                        }
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                androidx.compose.foundation.text.BasicTextField(
+                                    value = captcha,
+                                    onValueChange = { captcha = it },
+                                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
+                                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(40.dp)
+                                        .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
+                                    decorationBox = { innerTextField ->
+                                        Box(
+                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            if (captcha.isEmpty()) Text("验证码", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+                                            innerTextField()
                                         }
                                     }
-                                },
-                                modifier = Modifier.height(48.dp),
-                                colors = ButtonDefaults.filledTonalButtonColors(),
-                                label = { Text(if (isSending) "发送中" else "获取", style = MaterialTheme.typography.bodyMedium) }
+                                )
+                                Button(
+                                    onClick = {
+                                        if (phone.isNotEmpty() && !isSending) {
+                                            isSending = true
+                                            viewModel.sendCaptcha(phone) { success ->
+                                                isSending = false
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier.height(40.dp),
+                                    colors = ButtonDefaults.filledTonalButtonColors(),
+                                    label = { Text(if (isSending) "发送中" else "获取", style = MaterialTheme.typography.bodyMedium) }
+                                )
+                            }
+                        }
+                        item {
+                            Button(
+                                onClick = { viewModel.loginWithCaptcha(phone, captcha) },
+                                modifier = Modifier.fillMaxWidth().height(40.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                label = { Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary) }
                             )
                         }
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(
-                            onClick = { viewModel.loginWithCaptcha(phone, captcha) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                            label = { Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary) }
-                        )
-                    }
+                    com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "验证码登录")
                 }
             }
             LoginState.LOGGING_IN -> {
