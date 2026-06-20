@@ -178,7 +178,7 @@ data class RecentSongsData(val list: List<RecentSongItem> = emptyList())
 data class RecentSongItem(val resourceId: String, val data: Song)
 
 @Serializable
-data class AlbumDetailResponse(val code: Int, val songs: List<Song>? = null)
+data class AlbumDetailResponse(val code: Int, val album: Album? = null, val songs: List<Song>? = null)
 
 @Serializable
 data class DjProgramResponse(val code: Int, val programs: List<DjProgram>? = null)
@@ -273,7 +273,7 @@ data class Playlist(val id: Long, val name: String, val coverImgUrl: String, val
 data class PlaylistDetailResponse(val code: Int, val playlist: PlaylistDetail)
 
 @Serializable
-data class PlaylistDetail(val tracks: List<Song>)
+data class PlaylistDetail(val name: String? = null, val tracks: List<Song>)
 
 @Serializable
 data class LyricResponse(val code: Int, val lrc: LrcData? = null, val tlyric: LrcData? = null)

@@ -33,6 +33,7 @@ fun PlaylistDetailScreen(
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
+    val title by viewModel.title.collectAsState()
 
     LaunchedEffect(playlistId, type) {
         when (type) {
@@ -78,7 +79,7 @@ fun PlaylistDetailScreen(
                 }
 
                 com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
-                    title = when (type) {
+                    title = title ?: when (type) {
                         "liked" -> "我喜欢的音乐"
                         "playlist" -> "歌单"
                         "album" -> "专辑"

@@ -63,6 +63,11 @@ class MainRepository(
     }
 
     private val cachedPlaylistTracks = mutableMapOf<Long, List<Song>>()
+    private val cachedPlaylistTitles = mutableMapOf<Long, String>()
+    private val cachedAlbumTitles = mutableMapOf<Long, String>()
+
+    fun getCachedPlaylistTitle(id: Long): String? = cachedPlaylistTitles[id]
+    fun getCachedAlbumTitle(id: Long): String? = cachedAlbumTitles[id]
 
     suspend fun getPlaylistTracks(id: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
         if (!forceRefresh && cachedPlaylistTracks.containsKey(id)) {
@@ -71,6 +76,9 @@ class MainRepository(
         try {
             val response = api.getPlaylistDetail(id)
             val list = if (response.code == 200) response.playlist.tracks else emptyList()
+            if (response.code == 200 && response.playlist.name != null) {
+                cachedPlaylistTitles[id] = response.playlist.name
+            }
             if (list.isNotEmpty() || forceRefresh) {
                 cachedPlaylistTracks[id] = list
             }
@@ -135,6 +143,9 @@ class MainRepository(
     suspend fun getAlbumTracks(id: Long): List<Song> = withContext(Dispatchers.IO) {
         try {
             val response = api.getAlbumDetail(id)
+            if (response.code == 200 && response.album?.name != null) {
+                cachedAlbumTitles[id] = response.album.name
+            }
             if (response.code == 200) response.songs ?: emptyList() else emptyList()
         } catch (e: Exception) {
             emptyList()

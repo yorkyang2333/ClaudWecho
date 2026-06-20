@@ -16,11 +16,15 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
 
     private val _songs = MutableStateFlow<List<Song>>(emptyList())
     val songs: StateFlow<List<Song>> = _songs.asStateFlow()
+    
+    private val _title = MutableStateFlow<String?>(null)
+    val title: StateFlow<String?> = _title.asStateFlow()
 
     fun loadPlaylist(id: Long, forceRefresh: Boolean = false) {
         _isLoading.value = true
         viewModelScope.launch {
             _songs.value = repository.getPlaylistTracks(id, forceRefresh)
+            _title.value = repository.getCachedPlaylistTitle(id)
             _isLoading.value = false
         }
     }
@@ -29,6 +33,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
         _isLoading.value = true
         viewModelScope.launch {
             _songs.value = repository.getAlbumTracks(id) // Not cached yet, but can be
+            _title.value = repository.getCachedAlbumTitle(id)
             _isLoading.value = false
         }
     }
@@ -37,6 +42,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
         _isLoading.value = true
         viewModelScope.launch {
             _songs.value = repository.getDjRadioPrograms(id) // Not cached yet
+            _title.value = "播客" // Default for DjRadio, as we haven't cached its title
             _isLoading.value = false
         }
     }
@@ -50,6 +56,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
                 val likedId = pl.firstOrNull()?.id
                 if (likedId != null) {
                     _songs.value = repository.getPlaylistTracks(likedId, forceRefresh)
+                    _title.value = repository.getCachedPlaylistTitle(likedId) ?: "我喜欢的音乐"
                 }
             }
             _isLoading.value = false
