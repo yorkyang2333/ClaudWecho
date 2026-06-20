@@ -83,7 +83,6 @@ fun ErrorState(
 @Composable
 fun LoginOptionsScreen(
     onNavigateToQr: () -> Unit,
-    onNavigateToPhonePassword: () -> Unit,
     onNavigateToPhoneCaptcha: () -> Unit
 ) {
     Box(
@@ -130,29 +129,7 @@ fun LoginOptionsScreen(
                         }
                     )
                 }
-                item {
-                    Button(
-                        onClick = onNavigateToPhonePassword,
-                        colors = ButtonDefaults.filledTonalButtonColors(),
-                        modifier = Modifier.fillMaxWidth(),
-                        label = {
-                            Text(
-                                text = "手机密码登录",
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Phone,
-                                contentDescription = "手机密码登录",
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    )
-                }
+
                 item {
                     Button(
                         onClick = onNavigateToPhoneCaptcha,
@@ -178,7 +155,7 @@ fun LoginOptionsScreen(
                 }
             }
             
-            com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "ClaudWecho")
+            com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "登录")
         }
     }
 }
@@ -255,125 +232,7 @@ fun LoginQrScreen(
     }
 }
 
-@Composable
-fun LoginPhonePasswordScreen(
-    viewModel: LoginViewModel = koinViewModel(),
-    onLoginSuccess: () -> Unit,
-    onNavigateToQr: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    val error by viewModel.errorMessage.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.setPhoneInputState()
-    }
-
-    LaunchedEffect(uiState) {
-        if (uiState == LoginState.LOGGED_IN) {
-            onLoginSuccess()
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        when (uiState) {
-            LoginState.PHONE_INPUT, LoginState.IDLE -> {
-                var phone by remember { mutableStateOf("") }
-                var password by remember { mutableStateOf("") }
-
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ScalingLazyColumn(
-                        scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                            edgeScale = 0.3f,
-                            minTransitionArea = 0.4f
-                        ),
-                        autoCentering = null,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp)
-                    ) {
-                        item {
-                            Spacer(modifier = Modifier.height(56.dp))
-                        }
-                        item {
-                            androidx.compose.foundation.text.BasicTextField(
-                                value = phone,
-                                onValueChange = { phone = it },
-                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
-                                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                                decorationBox = { innerTextField ->
-                                    Box(
-                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                        contentAlignment = Alignment.CenterStart
-                                    ) {
-                                        if (phone.isEmpty()) Text("输入手机号", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                        innerTextField()
-                                    }
-                                }
-                            )
-                        }
-                        item {
-                            androidx.compose.foundation.text.BasicTextField(
-                                value = password,
-                                onValueChange = { password = it },
-                                visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
-                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
-                                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                                decorationBox = { innerTextField ->
-                                    Box(
-                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                        contentAlignment = Alignment.CenterStart
-                                    ) {
-                                        if (password.isEmpty()) Text("输入密码", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                        innerTextField()
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    
-                    androidx.wear.compose.material3.EdgeButton(
-                        onClick = { viewModel.loginWithPhone(phone, password) },
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
-                    }
-
-                    com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "密码登录")
-                }
-            }
-            LoginState.LOGGING_IN -> {
-                androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
-            }
-            LoginState.ERROR -> {
-                ErrorState(
-                    error = error,
-                    onRetry = { viewModel.setPhoneInputState() },
-                    onSecondaryAction = onNavigateToQr,
-                    secondaryActionLabel = "去扫码登录"
-                )
-            }
-            LoginState.LOGGED_IN -> {
-                Text("登录成功！")
-            }
-            else -> {}
-        }
-    }
-}
 
 @Composable
 fun LoginPhoneCaptchaScreen(

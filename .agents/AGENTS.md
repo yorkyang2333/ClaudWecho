@@ -38,5 +38,3 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
          Icon(imageVector = ..., modifier = Modifier.size(18.dp), tint = Color.White)
      }
      ```
-
-6. **Error Color**: ALWAYS use `Color(0xFFC64545)` for error states, text, and icons, as defined in the brand guidelines.

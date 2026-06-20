@@ -63,9 +63,6 @@ fun AppNavigation(
                 onNavigateToQr = {
                     navController.navigate("login_qr")
                 },
-                onNavigateToPhonePassword = {
-                    navController.navigate("login_phone_password")
-                },
                 onNavigateToPhoneCaptcha = {
                     navController.navigate("login_phone_captcha")
                 }
@@ -78,18 +75,7 @@ fun AppNavigation(
                 }
             )
         }
-        composable("login_phone_password") {
-            com.yorkyang2333.claudwecho.ui.login.LoginPhonePasswordScreen(
-                onLoginSuccess = {
-                    navController.popBackStack("main", inclusive = false)
-                },
-                onNavigateToQr = {
-                    navController.navigate("login_qr") {
-                        popUpTo("login")
-                    }
-                }
-            )
-        }
+
         composable("login_phone_captcha") {
             com.yorkyang2333.claudwecho.ui.login.LoginPhoneCaptchaScreen(
                 onLoginSuccess = {
