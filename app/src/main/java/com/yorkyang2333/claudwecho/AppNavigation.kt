@@ -181,6 +181,11 @@ fun AppNavigation(
             com.yorkyang2333.claudwecho.ui.profile.UserProfileScreen(
                 viewModel = userProfileViewModel,
                 onNavigateToLogin = {
+                    try {
+                        navController.getBackStackEntry("main").savedStateHandle.set("login_success", true)
+                    } catch (e: Exception) {
+                        // Ignore
+                    }
                     navController.navigate("login") {
                         popUpTo("main") { inclusive = false }
                     }

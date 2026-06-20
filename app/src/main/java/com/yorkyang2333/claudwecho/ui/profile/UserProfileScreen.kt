@@ -25,7 +25,13 @@ import coil.compose.AsyncImage
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.background
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Check
 @Composable
 fun UserProfileScreen(
     viewModel: UserProfileViewModel,
@@ -33,6 +39,7 @@ fun UserProfileScreen(
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
     val vipInfo by viewModel.vipInfo.collectAsState()
+    var showLogoutConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.logoutEvent.collect {
@@ -132,7 +139,7 @@ fun UserProfileScreen(
             
             item {
                 Button(
-                    onClick = { viewModel.logout() },
+                    onClick = { showLogoutConfirm = true },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
                     label = { 
@@ -148,5 +155,45 @@ fun UserProfileScreen(
             }
         }
         com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "个人中心")
+    }
+
+    if (showLogoutConfirm) {
+        Dialog(
+            onDismissRequest = { showLogoutConfirm = false }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "确认退出登录？",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(
+                        onClick = { showLogoutConfirm = false },
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.Rounded.Close, null)
+                    }
+                    Button(
+                        onClick = {
+                            viewModel.logout()
+                            showLogoutConfirm = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.Rounded.Check, null)
+                    }
+                }
+            }
+        }
     }
 }
