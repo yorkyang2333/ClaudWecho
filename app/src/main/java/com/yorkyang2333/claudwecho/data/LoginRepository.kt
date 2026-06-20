@@ -30,12 +30,22 @@ class LoginRepository(private val api: NeteaseApi) {
         }
     }
     
-    suspend fun loginWithPhone(phone: String, password: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun loginWithPhone(phone: String, password: String): Pair<Boolean, String?> = withContext(Dispatchers.IO) {
         try {
             val res = api.loginCellphonePassword(phone, password)
-            res.code == 200
+            Pair(res.code == 200, res.message)
+        } catch (e: retrofit2.HttpException) {
+            var errorMsg: String? = null
+            try {
+                val errorBody = e.response()?.errorBody()?.string()
+                if (errorBody != null) {
+                    val json = org.json.JSONObject(errorBody)
+                    errorMsg = json.optString("message", null) ?: json.optString("msg", null)
+                }
+            } catch (ignored: Exception) {}
+            Pair(false, errorMsg)
         } catch (e: Exception) {
-            false
+            Pair(false, null)
         }
     }
 
@@ -48,12 +58,22 @@ class LoginRepository(private val api: NeteaseApi) {
         }
     }
 
-    suspend fun loginWithCaptcha(phone: String, captcha: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun loginWithCaptcha(phone: String, captcha: String): Pair<Boolean, String?> = withContext(Dispatchers.IO) {
         try {
             val res = api.loginCellphoneCaptcha(phone, captcha)
-            res.code == 200
+            Pair(res.code == 200, res.message)
+        } catch (e: retrofit2.HttpException) {
+            var errorMsg: String? = null
+            try {
+                val errorBody = e.response()?.errorBody()?.string()
+                if (errorBody != null) {
+                    val json = org.json.JSONObject(errorBody)
+                    errorMsg = json.optString("message", null) ?: json.optString("msg", null)
+                }
+            } catch (ignored: Exception) {}
+            Pair(false, errorMsg)
         } catch (e: Exception) {
-            false
+            Pair(false, null)
         }
     }
 

@@ -21,6 +21,51 @@ import android.util.Base64
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Warning
+
+@Composable
+fun ErrorState(
+    error: String?,
+    onRetry: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        ScalingLazyColumn(
+            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                edgeScale = 0.3f,
+                minTransitionArea = 0.4f
+            ),
+            autoCentering = null,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp, top = 40.dp)
+        ) {
+            item {
+                Icon(
+                    imageVector = Icons.Rounded.Warning,
+                    contentDescription = "Error",
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+            item {
+                Text(
+                    text = error ?: "未知错误",
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+        androidx.wear.compose.material3.EdgeButton(
+            onClick = onRetry,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+        ) {
+            Text("重试", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
 
 @Composable
 fun LoginOptionsScreen(
@@ -187,11 +232,7 @@ fun LoginQrScreen(
                 }
             }
             LoginState.ERROR -> {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = error ?: "未知错误", color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { viewModel.loadQrCode() }, label = { Text("重试") })
-                }
+                ErrorState(error = error, onRetry = { viewModel.loadQrCode() })
             }
             LoginState.LOGGED_IN -> {
                 Text("登录成功！")
@@ -305,11 +346,7 @@ fun LoginPhonePasswordScreen(
                 androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
             }
             LoginState.ERROR -> {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = error ?: "未知错误", color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { viewModel.setPhoneInputState() }, label = { Text("重试") })
-                }
+                ErrorState(error = error, onRetry = { viewModel.setPhoneInputState() })
             }
             LoginState.LOGGED_IN -> {
                 Text("登录成功！")
@@ -442,11 +479,7 @@ fun LoginPhoneCaptchaScreen(
                 androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
             }
             LoginState.ERROR -> {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = error ?: "未知错误", color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { viewModel.setPhoneInputState() }, label = { Text("重试") })
-                }
+                ErrorState(error = error, onRetry = { viewModel.setPhoneInputState() })
             }
             LoginState.LOGGED_IN -> {
                 Text("登录成功！")
