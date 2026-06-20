@@ -41,11 +41,19 @@ fun MyCollectionScreen(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             ScalingLazyColumn(
-                autoCentering = null,
+                autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 1),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(top = 72.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
             ) {
+                item {
+                    androidx.wear.compose.material3.ListHeader {
+                        Text(
+                            "我的收藏",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
                 item {
                     CollectionFeatureButton(
                         icon = Icons.Rounded.LibraryMusic,
@@ -68,7 +76,6 @@ fun MyCollectionScreen(
                     )
                 }
             }
-            com.example.claudwecho.ui.components.PinnedHeader(title = "我的收藏")
         }
     }
 }
