@@ -72,14 +72,18 @@ fun RecentlyPlayedScreen(
                 com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
                     title = "最近播放",
                     actionIcon = {
-                        androidx.wear.compose.material3.CompactButton(
-                            onClick = { viewModel.loadData(forceRefresh = true) },
-                            colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D))
+                        androidx.compose.foundation.layout.Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(androidx.compose.foundation.shape.CircleShape)
+                                .background(Color(0xFF2D2D2D))
+                                .clickable { viewModel.loadData(forceRefresh = true) },
+                            contentAlignment = Alignment.Center
                         ) {
                             androidx.wear.compose.material3.Icon(
                                 imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
                                 contentDescription = "Refresh", 
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(18.dp),
                                 tint = Color.White
                             )
                         }

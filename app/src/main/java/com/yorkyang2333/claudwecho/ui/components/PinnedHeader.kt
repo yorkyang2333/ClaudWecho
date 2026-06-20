@@ -26,9 +26,7 @@ fun PinnedHeader(
                         MaterialTheme.colorScheme.background,
                         MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
                         MaterialTheme.colorScheme.background.copy(alpha = 0f)
-                    ),
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
+                    )
                 )
             )
             .padding(top = 16.dp, bottom = 24.dp), // Increased bottom padding to make gradient longer
