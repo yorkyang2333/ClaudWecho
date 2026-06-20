@@ -8,10 +8,10 @@ plugins {
 }
 
 android {
-    namespace = "com.example.claudwecho"
+    namespace = "com.yorkyang2333.claudwecho"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.example.claudwecho"
+        applicationId = "com.yorkyang2333.claudwecho"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
