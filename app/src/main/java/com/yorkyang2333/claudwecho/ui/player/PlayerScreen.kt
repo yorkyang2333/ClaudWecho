@@ -90,13 +90,14 @@ fun PlayerScreen(
             )
         )
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Spacer(modifier = Modifier.height(36.dp))
-            
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 24.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 32.dp)
+                    .padding(horizontal = 24.dp)
+            ) {
                 Text(
                     text = currentTitle ?: "暂无播放内容",
                     style = MaterialTheme.typography.titleMedium,
@@ -115,131 +116,130 @@ fun PlayerScreen(
                 }
             }
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Playback Controls
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (isFmMode) {
-                        IconButton(
-                            onClick = {
-                                viewModel.trashCurrentFmSong()
-                                android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
-                            },
-                            modifier = Modifier.size(56.dp),
-                            enabled = currentTitle != null
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Delete,
-                                contentDescription = "Trash",
-                                tint = if (currentTitle == null) Color.Gray else Color.White,
-                                modifier = Modifier.size(36.dp)
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            onClick = { viewModel.skipToPrevious() },
-                            modifier = Modifier.size(56.dp),
-                            enabled = currentTitle != null
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.SkipPrevious,
-                                contentDescription = "Previous",
-                                tint = if (currentTitle == null) Color.Gray else Color.White,
-                                modifier = Modifier.size(36.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
+            // Playback Controls
+            Row(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isFmMode) {
                     IconButton(
                         onClick = {
-                            viewModel.playOrPause()
+                            viewModel.trashCurrentFmSong()
+                            android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
                         },
-                        modifier = Modifier.size(64.dp),
-                        enabled = currentTitle != null,
-                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                        )
-                    ) {
-                        Icon(
-                            imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                            contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = if (currentTitle == null) Color.Gray else Color.White,
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    IconButton(
-                        onClick = { viewModel.skipToNext() },
                         modifier = Modifier.size(56.dp),
                         enabled = currentTitle != null
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.SkipNext,
-                            contentDescription = "Next",
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = "Trash",
+                            tint = if (currentTitle == null) Color.Gray else Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                } else {
+                    IconButton(
+                        onClick = { viewModel.skipToPrevious() },
+                        modifier = Modifier.size(56.dp),
+                        enabled = currentTitle != null
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.SkipPrevious,
+                            contentDescription = "Previous",
                             tint = if (currentTitle == null) Color.Gray else Color.White,
                             modifier = Modifier.size(36.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                // Bottom Menu Row
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                IconButton(
+                    onClick = {
+                        viewModel.playOrPause()
+                    },
+                    modifier = Modifier.size(64.dp),
+                    enabled = currentTitle != null,
+                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    )
                 ) {
-                    IconButton(
-                        onClick = { if (!isPodcast) viewModel.toggleLikeCurrentSong() },
-                        modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                        enabled = currentTitle != null && !isPodcast,
-                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
-                    ) {
-                        Icon(
-                            imageVector = if (!isPodcast && isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                            contentDescription = "Like",
-                            tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) Color.Red else Color.White,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onMenuClick,
-                        modifier = Modifier.size(44.dp).offset(y = 4.dp),
-                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Home,
-                            contentDescription = "Home",
-                            tint = Color.White,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onSettingsClick,
-                        modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Menu,
-                            contentDescription = "Menu",
-                            tint = Color.White,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        tint = if (currentTitle == null) Color.Gray else Color.White,
+                        modifier = Modifier.size(36.dp)
+                    )
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = { viewModel.skipToNext() },
+                    modifier = Modifier.size(56.dp),
+                    enabled = currentTitle != null
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.SkipNext,
+                        contentDescription = "Next",
+                        tint = if (currentTitle == null) Color.Gray else Color.White,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
             }
+
+            // Bottom Menu Row
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp)
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { if (!isPodcast) viewModel.toggleLikeCurrentSong() },
+                    modifier = Modifier.size(44.dp).offset(y = (-8).dp),
+                    enabled = currentTitle != null && !isPodcast,
+                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                ) {
+                    Icon(
+                        imageVector = if (!isPodcast && isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                        contentDescription = "Like",
+                        tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) Color.Red else Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onMenuClick,
+                    modifier = Modifier.size(44.dp).offset(y = 4.dp),
+                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Home,
+                        contentDescription = "Home",
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier.size(44.dp).offset(y = (-8).dp),
+                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Menu,
+                        contentDescription = "Menu",
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+        }
     }
 }
