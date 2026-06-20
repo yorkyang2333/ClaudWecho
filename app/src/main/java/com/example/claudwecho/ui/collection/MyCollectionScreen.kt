@@ -41,9 +41,10 @@ fun MyCollectionScreen(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             ScalingLazyColumn(
+                autoCentering = null,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                contentPadding = PaddingValues(top = 72.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
             ) {
                 item {
                     CollectionFeatureButton(
