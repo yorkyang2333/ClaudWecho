@@ -12,6 +12,7 @@ class MainRepository(
     private val localRecentPlaysManager: LocalRecentPlaysManager
 ) {
     private var cachedProfile: UserProfile? = null
+    private var hasCheckedLogin: Boolean = false
     private var cachedDailyRecommend: List<Song>? = null
     private var cachedUserPlaylists: List<Playlist>? = null
     private var cachedHotSongs: List<Song>? = null
@@ -19,10 +20,11 @@ class MainRepository(
     private var cachedDjRadios: List<com.example.claudwecho.data.api.DjRadio>? = null
 
     suspend fun getLoginStatus(forceRefresh: Boolean = false): UserProfile? = withContext(Dispatchers.IO) {
-        if (!forceRefresh && cachedProfile != null) return@withContext cachedProfile
+        if (!forceRefresh && hasCheckedLogin) return@withContext cachedProfile
         try {
             val response = api.getLoginStatus()
             cachedProfile = response.data.profile
+            hasCheckedLogin = true
             cachedProfile
         } catch (e: Exception) {
             null

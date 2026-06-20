@@ -48,9 +48,7 @@ fun AppNavigation(
         composable("main") {
             MainScreen(
                 onNavigateToLogin = {
-                    navController.navigate("login") {
-                        popUpTo("main") { inclusive = true }
-                    }
+                    navController.navigate("login")
                 },
                 onNavigateToPlaylistDetail = { id ->
                     navController.navigate("playlist/$id")
@@ -63,9 +61,7 @@ fun AppNavigation(
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate("player") {
-                        popUpTo("login") { inclusive = true }
-                    }
+                    navController.popBackStack()
                 }
             )
         }
