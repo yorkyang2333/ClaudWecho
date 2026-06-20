@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Radio
@@ -67,36 +68,41 @@ fun MainScreen(
             ) {
                 // User Profile Section
                 item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp, start = 8.dp, end = 8.dp)
-                    ) {
-                        if (userProfile != null) {
-                            userProfile?.avatarUrl?.let {
-                                AsyncImage(
-                                    model = it,
+                    if (userProfile != null) {
+                        Button(
+                            onClick = { /* Do nothing for now */ },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors(),
+                            label = {
+                                Text(
+                                    text = userProfile?.nickname ?: "User",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            icon = {
+                                userProfile?.avatarUrl?.let {
+                                    AsyncImage(
+                                        model = it,
+                                        contentDescription = "Avatar",
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .clip(androidx.compose.foundation.shape.CircleShape)
+                                    )
+                                } ?: Icon(
+                                    imageVector = Icons.Rounded.AccountCircle,
                                     contentDescription = "Avatar",
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clip(CircleShape)
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = userProfile?.nickname ?: "User",
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        } else {
-                            Button(
-                                onClick = onNavigateToLogin,
-                                colors = ButtonDefaults.filledTonalButtonColors(),
-                                label = { Text("登录网易云") }
-                            )
-                        }
+                        )
+                    } else {
+                        FeatureButton(
+                            icon = Icons.Rounded.AccountCircle,
+                            text = "登录网易云",
+                            onClick = onNavigateToLogin
+                        )
                     }
                 }
 
