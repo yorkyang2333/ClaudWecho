@@ -47,52 +47,53 @@ fun PlayerMenuScreen(
         else -> Icons.AutoMirrored.Rounded.ArrowForward
     }
     
-    ScalingLazyColumn(
+    Box(modifier = Modifier.fillMaxSize()) {
+        ScalingLazyColumn(
             scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
                 edgeScale = 0.3f,
                 minTransitionArea = 0.4f
             ),
-        autoCentering = null,
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(top = 32.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
-    ) {
-        item {
-            Text(
-                text = "播放设置", 
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        }
-        item {
-            Button(
-                onClick = {
-                    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                    audioManager.adjustStreamVolume(
-                        AudioManager.STREAM_MUSIC,
-                        AudioManager.ADJUST_SAME,
-                        AudioManager.FLAG_SHOW_UI
-                    )
-                },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(),
-                label = { Text("调节音量") },
-                icon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, null, tint = MaterialTheme.colorScheme.primary) }
-            )
-        }
-        
-        if (!isFmMode) {
+            autoCentering = null,
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(48.dp))
+            }
             item {
                 Button(
                     onClick = {
-                        viewModel.cyclePlaybackMode()
+                        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                        audioManager.adjustStreamVolume(
+                            AudioManager.STREAM_MUSIC,
+                            AudioManager.ADJUST_SAME,
+                            AudioManager.FLAG_SHOW_UI
+                        )
                     },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text(playbackModeText) },
-                    icon = { Icon(playbackModeIcon, null, tint = MaterialTheme.colorScheme.primary) }
+                    label = { Text("调节音量") },
+                    icon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
+            
+            if (!isFmMode) {
+                item {
+                    Button(
+                        onClick = {
+                            viewModel.cyclePlaybackMode()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        label = { Text(playbackModeText) },
+                        icon = { Icon(playbackModeIcon, null, tint = MaterialTheme.colorScheme.primary) }
+                    )
+                }
+            }
         }
+        
+        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放设置")
     }
 }
