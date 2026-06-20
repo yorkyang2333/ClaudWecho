@@ -80,7 +80,7 @@ fun PlaylistDetailScreen(
 
                 com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
                     title = title ?: when (type) {
-                        "liked" -> "我喜欢的音乐"
+                        "liked" -> "我喜欢"
                         "playlist" -> "歌单"
                         "album" -> "专辑"
                         "djradio" -> "播客"

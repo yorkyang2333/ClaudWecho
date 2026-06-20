@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
+import androidx.compose.foundation.basicMarquee
+
 @Composable
 fun PinnedHeader(
     title: String,
@@ -34,12 +36,17 @@ fun PinnedHeader(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(horizontal = 24.dp)
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White
+                color = Color.White,
+                maxLines = 1,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .basicMarquee()
             )
             if (actionIcon != null) {
                 Spacer(modifier = Modifier.width(8.dp))

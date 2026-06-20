@@ -56,7 +56,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
                 val likedId = pl.firstOrNull()?.id
                 if (likedId != null) {
                     _songs.value = repository.getPlaylistTracks(likedId, forceRefresh)
-                    _title.value = repository.getCachedPlaylistTitle(likedId) ?: "我喜欢的音乐"
+                    _title.value = repository.getCachedPlaylistTitle(likedId) ?: "我喜欢"
                 }
             }
             _isLoading.value = false

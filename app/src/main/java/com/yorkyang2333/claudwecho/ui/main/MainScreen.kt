@@ -119,7 +119,7 @@ fun MainScreen(
                 item {
                     FeatureButton(
                         icon = Icons.Rounded.Favorite,
-                        text = "我喜欢的音乐",
+                        text = "我喜欢",
                         onClick = { onNavigateToFeature("liked") }
                     )
                 }
