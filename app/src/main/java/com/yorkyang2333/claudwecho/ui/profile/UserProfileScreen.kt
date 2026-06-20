@@ -135,7 +135,14 @@ fun UserProfileScreen(
                     onClick = { viewModel.logout() },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text("退出登录") },
+                    label = { 
+                        Text(
+                            text = "退出登录",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
                     icon = { Icon(Icons.AutoMirrored.Rounded.ExitToApp, null, tint = MaterialTheme.colorScheme.error) }
                 )
             }

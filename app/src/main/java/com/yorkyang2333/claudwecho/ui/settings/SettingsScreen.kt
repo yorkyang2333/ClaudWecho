@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.material3.MaterialTheme
@@ -63,7 +64,14 @@ fun SettingsScreen(
                     onClick = { viewModel.toggleScreenShape() },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text("屏幕形状: $shapeText") },
+                    label = { 
+                        Text(
+                            text = "屏幕形状: $shapeText",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
                     icon = { Icon(Icons.Rounded.Build, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
@@ -72,7 +80,14 @@ fun SettingsScreen(
                     onClick = { showConfirm = true },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text("清除缓存") },
+                    label = { 
+                        Text(
+                            text = "清除缓存",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
                     secondaryLabel = { Text(cacheSize) },
                     icon = { Icon(Icons.Rounded.Delete, null, tint = MaterialTheme.colorScheme.primary) }
                 )
