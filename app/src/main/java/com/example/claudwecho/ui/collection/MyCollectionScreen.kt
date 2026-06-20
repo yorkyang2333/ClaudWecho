@@ -45,7 +45,7 @@ fun MyCollectionScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
             ) {
                 item {
                     Spacer(modifier = Modifier.height(72.dp))

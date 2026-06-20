@@ -63,7 +63,7 @@ fun MainScreen(
         autoCentering = null,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(top = 48.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                contentPadding = PaddingValues(top = 48.dp, bottom = 32.dp, start = 8.dp, end = 8.dp)
             ) {
                 // User Profile Section
                 item {

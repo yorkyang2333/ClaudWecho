@@ -71,7 +71,7 @@ fun SearchScreen(
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(2.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
         ) {
             item {
                 Spacer(modifier = Modifier.height(88.dp))
