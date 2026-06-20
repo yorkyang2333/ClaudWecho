@@ -238,9 +238,9 @@ fun LoginPhonePasswordScreen(
                         ),
                         autoCentering = null,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                        contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp)
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(48.dp))
@@ -288,15 +288,16 @@ fun LoginPhonePasswordScreen(
                                 }
                             )
                         }
-                        item {
-                            Button(
-                                onClick = { viewModel.loginWithPhone(phone, password) },
-                                modifier = Modifier.fillMaxWidth().height(40.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                label = { Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary) }
-                            )
-                        }
                     }
+                    
+                    androidx.wear.compose.material3.EdgeButton(
+                        onClick = { viewModel.loginWithPhone(phone, password) },
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                    }
+
                     com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "密码登录")
                 }
             }
@@ -356,9 +357,9 @@ fun LoginPhoneCaptchaScreen(
                         ),
                         autoCentering = null,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
+                        contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp)
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(48.dp))
@@ -424,15 +425,16 @@ fun LoginPhoneCaptchaScreen(
                                 )
                             }
                         }
-                        item {
-                            Button(
-                                onClick = { viewModel.loginWithCaptcha(phone, captcha) },
-                                modifier = Modifier.fillMaxWidth().height(40.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                label = { Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary) }
-                            )
-                        }
                     }
+                    
+                    androidx.wear.compose.material3.EdgeButton(
+                        onClick = { viewModel.loginWithCaptcha(phone, captcha) },
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                    }
+
                     com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "验证码登录")
                 }
             }
