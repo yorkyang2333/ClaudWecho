@@ -62,6 +62,10 @@ fun MainScreen(
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 ScalingLazyColumn(
+            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                edgeScale = 0.3f,
+                minTransitionArea = 0.4f
+            ),
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -69,7 +73,7 @@ fun MainScreen(
                     contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(72.dp))
+                        Spacer(modifier = Modifier.height(48.dp))
                     }
                     // User Profile Section
                     item {

@@ -43,6 +43,10 @@ fun LoginScreen(
         when (uiState) {
             LoginState.IDLE -> {
                 ScalingLazyColumn(
+            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                edgeScale = 0.3f,
+                minTransitionArea = 0.4f
+            ),
         autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
@@ -113,6 +117,10 @@ fun LoginScreen(
                 var password by remember { mutableStateOf("") }
 
                 ScalingLazyColumn(
+            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                edgeScale = 0.3f,
+                minTransitionArea = 0.4f
+            ),
         autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()

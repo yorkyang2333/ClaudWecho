@@ -48,6 +48,10 @@ fun PlayerMenuScreen(
     }
     
     ScalingLazyColumn(
+            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                edgeScale = 0.3f,
+                minTransitionArea = 0.4f
+            ),
         autoCentering = null,
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -56,6 +56,10 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
             )
         } else {
             ScalingLazyColumn(
+            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                edgeScale = 0.3f,
+                minTransitionArea = 0.4f
+            ),
         autoCentering = null,
                 state = listState,
                 modifier = Modifier.fillMaxWidth(),
