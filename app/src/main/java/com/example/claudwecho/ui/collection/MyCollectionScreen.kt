@@ -44,7 +44,7 @@ fun MyCollectionScreen(
                 autoCentering = null,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                contentPadding = PaddingValues(top = 48.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
             ) {
                 item {
                     CollectionFeatureButton(
@@ -87,7 +87,7 @@ fun CollectionFeatureButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF252320)
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(50)
     ) {
         Row(
             modifier = Modifier
