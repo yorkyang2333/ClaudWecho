@@ -261,7 +261,7 @@ data class Song(
 data class Artist(val id: Long, val name: String)
 
 @Serializable
-data class Album(val id: Long, val name: String, val picUrl: String? = null)
+data class Album(val id: Long, val name: String? = null, val picUrl: String? = null)
 
 @Serializable
 data class UserPlaylistResponse(val playlist: List<Playlist>, val code: Int)

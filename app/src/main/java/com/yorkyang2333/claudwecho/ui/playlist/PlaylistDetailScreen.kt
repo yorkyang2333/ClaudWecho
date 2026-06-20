@@ -83,7 +83,7 @@ fun PlaylistDetailScreen(
                         "liked" -> "我喜欢的音乐"
                         "playlist" -> "歌单"
                         "album" -> "专辑"
-                        "djradio" -> "播客"
+                        "djradio" -> "博客"
                         else -> "音乐列表"
                     },
                     actionIcon = if (type == "liked") {

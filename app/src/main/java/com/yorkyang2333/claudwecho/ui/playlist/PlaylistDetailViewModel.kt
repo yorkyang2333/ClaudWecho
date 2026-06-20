@@ -42,7 +42,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
         _isLoading.value = true
         viewModelScope.launch {
             _songs.value = repository.getDjRadioPrograms(id) // Not cached yet
-            _title.value = "播客" // Default for DjRadio, as we haven't cached its title
+            _title.value = "博客" // Default for DjRadio, as we haven't cached its title
             _isLoading.value = false
         }
     }

@@ -75,7 +75,7 @@ fun MyCollectionAlbumsScreen(
         onRefresh = { viewModel.loadData(forceRefresh = true) },
         itemContent = { album ->
             CollectionItemRow(
-                title = album.name,
+                title = album.name ?: "未知专辑",
                 subtitle = "专辑",
                 imageUrl = album.picUrl ?: "",
                 onClick = { onNavigateToAlbumDetail(album.id) }
@@ -97,16 +97,16 @@ fun MyCollectionBlogsScreen(
     }
 
     CollectionListBase(
-        title = "订阅的播客",
+        title = "博客",
         items = djRadios,
         isLoading = isLoading,
-        emptyMessage = "暂无播客",
+        emptyMessage = "暂无博客",
         keySelector = { it.id },
         onRefresh = { viewModel.loadData(forceRefresh = true) },
         itemContent = { dj ->
             CollectionItemRow(
                 title = dj.name,
-                subtitle = "播客",
+                subtitle = "博客",
                 imageUrl = dj.picUrl,
                 onClick = { onNavigateToDjRadioDetail(dj.id) }
             )
