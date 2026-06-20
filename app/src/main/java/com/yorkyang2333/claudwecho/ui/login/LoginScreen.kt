@@ -42,38 +42,68 @@ fun LoginScreen(
     ) {
         when (uiState) {
             LoginState.IDLE -> {
-                ScalingLazyColumn(
-            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                edgeScale = 0.3f,
-                minTransitionArea = 0.4f
-            ),
-        autoCentering = null,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    item {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ScalingLazyColumn(
+                        scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                            edgeScale = 0.3f,
+                            minTransitionArea = 0.4f
+                        ),
+                        autoCentering = null,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(48.dp))
+                        }
+                        item {
+                            Button(
+                                onClick = { viewModel.loadQrCode() },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.Start) {
+                                    Text("QR Code Login", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                                }
+                            }
+                        }
+                        item {
+                            Button(
+                                onClick = { viewModel.setPhoneInputState() },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.Start) {
+                                    Text("Phone Login", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                                }
+                            }
+                        }
+                    }
+                    
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                androidx.compose.ui.graphics.Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.background,
+                                        MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
+                                        MaterialTheme.colorScheme.background.copy(alpha = 0f)
+                                    ),
+                                    startY = 0f,
+                                    endY = Float.POSITIVE_INFINITY
+                                )
+                            )
+                            .padding(top = 16.dp, bottom = 24.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
                         Text(
                             text = "ClaudWecho",
                             color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                            style = MaterialTheme.typography.labelMedium
                         )
-                    }
-                    item {
-                        Button(
-                            onClick = { viewModel.loadQrCode() },
-                            modifier = Modifier.fillMaxWidth(0.8f).padding(bottom = 8.dp)
-                        ) {
-                            Text("QR Code Login")
-                        }
-                    }
-                    item {
-                        Button(
-                            onClick = { viewModel.setPhoneInputState() },
-                            modifier = Modifier.fillMaxWidth(0.8f)
-                        ) {
-                            Text("Phone Login")
-                        }
                     }
                 }
             }
