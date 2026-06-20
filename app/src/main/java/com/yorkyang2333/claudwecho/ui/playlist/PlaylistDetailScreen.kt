@@ -21,6 +21,8 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Menu
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
@@ -45,6 +47,8 @@ fun PlaylistDetailScreen(
         }
     }
 
+    val showMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -68,6 +72,65 @@ fun PlaylistDetailScreen(
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(48.dp))
+                    }
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Search
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFF2D2D2D))
+                                    .clickable { /* TODO: Search */ },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                androidx.wear.compose.material3.Icon(
+                                    Icons.Rounded.Search,
+                                    contentDescription = "Search",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            // Count
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(40.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFF2D2D2D)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${songs.size}首",
+                                    color = Color.LightGray,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            // Menu
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFF2D2D2D))
+                                    .clickable { showMenu.value = true },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                androidx.wear.compose.material3.Icon(
+                                    Icons.Rounded.Menu,
+                                    contentDescription = "Menu",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
                     }
                     items(songs.size, key = { songs[it].id }) { index ->
                         val song = songs[index]
@@ -107,6 +170,17 @@ fun PlaylistDetailScreen(
                     } else null
                 )
             }
+            
+            PlaylistMenuDialog(
+                showDialog = showMenu.value,
+                onDismissRequest = { showMenu.value = false },
+                onPlayAll = {
+                    if (songs.isNotEmpty()) {
+                        onNavigateToPlayer(songs, 0)
+                        showMenu.value = false
+                    }
+                }
+            )
         }
     }
 }

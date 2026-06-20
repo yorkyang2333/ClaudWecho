@@ -367,6 +367,8 @@ class PlayerViewModel(
         }
         
         player?.setMediaItems(mediaItems, startIndex, androidx.media3.common.C.TIME_UNSET)
+        player?.repeatMode = playbackStateManager.getRepeatMode()
+        player?.shuffleModeEnabled = playbackStateManager.getShuffleMode()
         player?.prepare()
         player?.play()
     }
