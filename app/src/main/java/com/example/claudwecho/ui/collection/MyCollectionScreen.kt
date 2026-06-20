@@ -41,10 +41,14 @@ fun MyCollectionScreen(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             ScalingLazyColumn(
+                autoCentering = null,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(72.dp))
+                }
                 item {
                     CollectionFeatureButton(
                         icon = Icons.Rounded.LibraryMusic,
