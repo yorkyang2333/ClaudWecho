@@ -103,99 +103,43 @@ fun SearchScreen(
             }
             
             item {
-                if (fallbackInput) {
-                    BasicTextField(
-                        value = localQuery,
-                        onValueChange = { localQuery = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
-                            .height(48.dp)
-                            .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(24.dp))
-                            .focusRequester(focusRequester),
-                        textStyle = MaterialTheme.typography.titleMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Start
-                        ),
-                        singleLine = true,
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(
-                            onSearch = {
-                                keyboardController?.hide()
-                                fallbackInput = false
-                                if (localQuery.isNotBlank()) {
-                                    viewModel.performSearch(localQuery)
-                                }
-                            }
-                        ),
-                        decorationBox = { innerTextField ->
-                            Row(
-                                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Search,
-                                    contentDescription = "搜索",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Box(modifier = Modifier.padding(start = 8.dp).weight(1f)) {
-                                    if (localQuery.isEmpty()) {
-                                        Text(
-                                            text = "输入搜索...",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                    innerTextField()
-                                }
-                            }
+                Button(
+                    onClick = {
+                        val intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
+                        val remoteInputs = listOf(
+                            RemoteInput.Builder("search_query")
+                                .setLabel("搜索歌曲、歌手或专辑")
+                                .build()
+                        )
+                        RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
+                        try {
+                            launcher.launch(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            // Fallback for standard Android devices or emulators without Wear OS Voice Input
+                            fallbackInput = true
+                            localQuery = searchQuery
                         }
-                    )
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
-                        focusRequester.requestFocus()
-                        keyboardController?.show()
-                    }
-                } else {
-                    Button(
-                        onClick = {
-                            val intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
-                            val remoteInputs = listOf(
-                                RemoteInput.Builder("search_query")
-                                    .setLabel("搜索歌曲、歌手或专辑")
-                                    .build()
-                            )
-                            RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
-                            try {
-                                launcher.launch(intent)
-                            } catch (e: ActivityNotFoundException) {
-                                // Fallback for standard Android devices or emulators without Wear OS Voice Input
-                                fallbackInput = true
-                                localQuery = searchQuery
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                        colors = ButtonDefaults.filledTonalButtonColors()
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Search,
-                                contentDescription = "搜索",
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",
-                                modifier = Modifier.padding(start = 8.dp).weight(1f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Start
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Rounded.Search,
+                            contentDescription = "搜索",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",
+                            modifier = Modifier.padding(start = 8.dp).weight(1f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Start
+                        )
                     }
                 }
             }
@@ -227,6 +171,69 @@ fun SearchScreen(
                             onSongClick()
                         }
                     )
+                }
+            }
+        }
+
+        if (fallbackInput) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center
+            ) {
+                BasicTextField(
+                    value = localQuery,
+                    onValueChange = { localQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(48.dp)
+                        .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(24.dp))
+                        .focusRequester(focusRequester),
+                    textStyle = MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Start
+                    ),
+                    singleLine = true,
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            keyboardController?.hide()
+                            fallbackInput = false
+                            if (localQuery.isNotBlank()) {
+                                viewModel.performSearch(localQuery)
+                            }
+                        }
+                    ),
+                    decorationBox = { innerTextField ->
+                        Row(
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Search,
+                                contentDescription = "搜索",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Box(modifier = Modifier.padding(start = 8.dp).weight(1f)) {
+                                if (localQuery.isEmpty()) {
+                                    Text(
+                                        text = "输入搜索...",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
+                    }
+                )
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
                 }
             }
         }

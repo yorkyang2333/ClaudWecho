@@ -104,7 +104,7 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): LikeResponse
 
-    @GET("/search")
+    @GET("/cloudsearch")
     suspend fun search(
         @Query("keywords") keywords: String,
         @Query("limit") limit: Int = 30,
