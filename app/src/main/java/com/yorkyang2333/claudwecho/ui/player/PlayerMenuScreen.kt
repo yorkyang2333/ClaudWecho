@@ -74,7 +74,14 @@ fun PlayerMenuScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text("调节音量") },
+                    label = { 
+                        Text(
+                            text = "调节音量",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        ) 
+                    },
                     icon = { Icon(Icons.AutoMirrored.Rounded.VolumeUp, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
@@ -87,7 +94,14 @@ fun PlayerMenuScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.filledTonalButtonColors(),
-                        label = { Text(playbackModeText) },
+                        label = { 
+                            Text(
+                                text = playbackModeText,
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            ) 
+                        },
                         icon = { Icon(playbackModeIcon, null, tint = MaterialTheme.colorScheme.primary) }
                     )
                 }
