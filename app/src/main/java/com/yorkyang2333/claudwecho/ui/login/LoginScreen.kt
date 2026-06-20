@@ -238,12 +238,12 @@ fun LoginPhonePasswordScreen(
                         ),
                         autoCentering = null,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp)
                     ) {
                         item {
-                            Spacer(modifier = Modifier.height(48.dp))
+                            Spacer(modifier = Modifier.height(56.dp))
                         }
                         item {
                             androidx.compose.foundation.text.BasicTextField(
@@ -357,12 +357,12 @@ fun LoginPhoneCaptchaScreen(
                         ),
                         autoCentering = null,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp)
                     ) {
                         item {
-                            Spacer(modifier = Modifier.height(48.dp))
+                            Spacer(modifier = Modifier.height(56.dp))
                         }
                         item {
                             androidx.compose.foundation.text.BasicTextField(
