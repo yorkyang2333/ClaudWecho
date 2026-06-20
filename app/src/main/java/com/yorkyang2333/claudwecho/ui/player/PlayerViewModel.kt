@@ -62,6 +62,9 @@ class PlayerViewModel(
     private val _isPersonalFmMode = MutableStateFlow(false)
     val isPersonalFmMode: StateFlow<Boolean> = _isPersonalFmMode.asStateFlow()
 
+    private val _isCurrentSongPodcast = MutableStateFlow(false)
+    val isCurrentSongPodcast: StateFlow<Boolean> = _isCurrentSongPodcast.asStateFlow()
+
     init {
         initializeController()
         fetchLikedSongs()
@@ -119,9 +122,12 @@ class PlayerViewModel(
                 if (songId != null) {
                     val song = currentPlaylist.find { it.id == songId }
                     if (song != null) {
+                        _isCurrentSongPodcast.value = song.isPodcast
                         viewModelScope.launch {
                             repository.recordRecentPlay(song)
                         }
+                    } else {
+                        _isCurrentSongPodcast.value = false
                     }
                     val currentIndex = player?.currentMediaItemIndex ?: 0
                     playbackStateManager.saveState(currentPlaylist, currentIndex)

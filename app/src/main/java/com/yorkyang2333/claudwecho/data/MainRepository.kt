@@ -164,7 +164,8 @@ class MainRepository(
                         name = djSong.name,
                         ar = djSong.artists ?: emptyList(),
                         al = djSong.album,
-                        fee = 0
+                        fee = 0,
+                        isPodcast = true
                     )
                 }
             } else {

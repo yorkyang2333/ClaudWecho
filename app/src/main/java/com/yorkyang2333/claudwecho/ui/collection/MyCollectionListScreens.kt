@@ -97,16 +97,16 @@ fun MyCollectionBlogsScreen(
     }
 
     CollectionListBase(
-        title = "博客",
+        title = "播客",
         items = djRadios,
         isLoading = isLoading,
-        emptyMessage = "暂无博客",
+        emptyMessage = "暂无播客",
         keySelector = { it.id },
         onRefresh = { viewModel.loadData(forceRefresh = true) },
         itemContent = { dj ->
             CollectionItemRow(
                 title = dj.name,
-                subtitle = "博客",
+                subtitle = "播客",
                 imageUrl = dj.picUrl,
                 onClick = { onNavigateToDjRadioDetail(dj.id) }
             )

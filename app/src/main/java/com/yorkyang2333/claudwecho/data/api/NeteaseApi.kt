@@ -251,7 +251,8 @@ data class Song(
     val al: Album? = null, 
     val fee: Int = 0,
     val artists: List<Artist>? = null,
-    val album: Album? = null
+    val album: Album? = null,
+    val isPodcast: Boolean = false
 ) {
     val displayArtists: List<Artist> get() = ar.ifEmpty { artists ?: emptyList() }
     val displayAlbum: Album? get() = al ?: album

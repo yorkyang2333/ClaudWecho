@@ -55,6 +55,8 @@ fun PlayerScreen(
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
+    val isPodcast by viewModel.isCurrentSongPodcast.collectAsState()
+
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -196,18 +198,22 @@ fun PlayerScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = { viewModel.toggleLikeCurrentSong() },
-                        modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                        enabled = currentTitle != null,
-                        colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
-                    ) {
-                        Icon(
-                            imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                            contentDescription = "Like",
-                            tint = if (currentTitle == null) Color.Gray else if (isLiked) Color.Red else Color.White,
-                            modifier = Modifier.size(32.dp)
-                        )
+                    if (isPodcast) {
+                        Box(modifier = Modifier.size(44.dp).offset(y = (-8).dp))
+                    } else {
+                        IconButton(
+                            onClick = { viewModel.toggleLikeCurrentSong() },
+                            modifier = Modifier.size(44.dp).offset(y = (-8).dp),
+                            enabled = currentTitle != null,
+                            colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                        ) {
+                            Icon(
+                                imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                                contentDescription = "Like",
+                                tint = if (currentTitle == null) Color.Gray else if (isLiked) Color.Red else Color.White,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
                     }
 
                     IconButton(
