@@ -109,7 +109,10 @@ class PlayerViewModel(
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _isPlaying.value = isPlaying
             }
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            override fun onMediaItemTransition(mediaItem: androidx.media3.common.MediaItem?, reason: Int) {
+                val currentOriginalIndex = player?.currentMediaItemIndex ?: 0
+                _currentMediaItemIndex.value = currentOriginalIndex
+                _displayCurrentIndex.value = displayToOriginalMap.indexOf(currentOriginalIndex).takeIf { it >= 0 } ?: 0
                 _currentTrackTitle.value = mediaItem?.mediaMetadata?.title?.toString()
                 _currentArtistName.value = mediaItem?.mediaMetadata?.artist?.toString()
                 _currentArtworkUri.value = mediaItem?.mediaMetadata?.artworkUri?.toString()
@@ -154,10 +157,15 @@ class PlayerViewModel(
             }
             override fun onRepeatModeChanged(mode: Int) {
                 repeatMode.value = mode
-                playbackStateManager.savePlaybackMode(mode, shuffleModeEnabled.value)
+                playbackStateManager.savePlaybackMode(mode, player?.shuffleModeEnabled ?: false)
             }
             override fun onShuffleModeEnabledChanged(isShuffleEnabled: Boolean) {
-                // Ignore ExoPlayer's internal shuffle changes, we manage shuffleModeEnabled manually
+                this@PlayerViewModel.shuffleModeEnabled.value = isShuffleEnabled
+                playbackStateManager.savePlaybackMode(player?.repeatMode ?: androidx.media3.common.Player.REPEAT_MODE_OFF, isShuffleEnabled)
+                player?.currentTimeline?.let { updateDisplayPlaylist(it) }
+            }
+            override fun onTimelineChanged(timeline: androidx.media3.common.Timeline, reason: Int) {
+                updateDisplayPlaylist(timeline)
             }
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                 android.util.Log.e("PlayerViewModel", "Player error: ${error.message}", error)
@@ -189,7 +197,7 @@ class PlayerViewModel(
                 val lastIndex = playbackStateManager.getLastIndex()
                 player?.setMediaItems(mediaItems, lastIndex, androidx.media3.common.C.TIME_UNSET)
                 player?.repeatMode = playbackStateManager.getRepeatMode()
-                player?.shuffleModeEnabled = false // We handle shuffle physically
+                player?.shuffleModeEnabled = playbackStateManager.getShuffleMode()
                 player?.prepare()
             }
         }
@@ -215,8 +223,45 @@ class PlayerViewModel(
     private val _currentPlaylist = MutableStateFlow<List<com.yorkyang2333.claudwecho.data.api.Song>>(emptyList())
     val currentPlaylist: StateFlow<List<com.yorkyang2333.claudwecho.data.api.Song>> = _currentPlaylist.asStateFlow()
 
+    private val _displayPlaylist = MutableStateFlow<List<com.yorkyang2333.claudwecho.data.api.Song>>(emptyList())
+    val displayPlaylist: StateFlow<List<com.yorkyang2333.claudwecho.data.api.Song>> = _displayPlaylist.asStateFlow()
+
     private val _currentMediaItemIndex = MutableStateFlow(0)
     val currentMediaItemIndex: StateFlow<Int> = _currentMediaItemIndex.asStateFlow()
+
+    private val _displayCurrentIndex = MutableStateFlow(0)
+    val displayCurrentIndex: StateFlow<Int> = _displayCurrentIndex.asStateFlow()
+    
+    private var displayToOriginalMap = listOf<Int>()
+    
+    private fun updateDisplayPlaylist(timeline: androidx.media3.common.Timeline) {
+        val originalList = _currentPlaylist.value
+        if (originalList.isEmpty() || timeline.isEmpty) {
+            _displayPlaylist.value = emptyList()
+            _displayCurrentIndex.value = 0
+            displayToOriginalMap = emptyList()
+            return
+        }
+
+        val isShuffle = player?.shuffleModeEnabled ?: false
+        val displayList = mutableListOf<com.yorkyang2333.claudwecho.data.api.Song>()
+        val indexMap = mutableListOf<Int>()
+
+        var index = timeline.getFirstWindowIndex(isShuffle)
+        while (index != androidx.media3.common.C.INDEX_UNSET) {
+            if (index in originalList.indices) {
+                displayList.add(originalList[index])
+                indexMap.add(index)
+            }
+            index = timeline.getNextWindowIndex(index, androidx.media3.common.Player.REPEAT_MODE_OFF, isShuffle)
+        }
+
+        _displayPlaylist.value = displayList
+        displayToOriginalMap = indexMap
+        
+        val currentOriginalIndex = player?.currentMediaItemIndex ?: 0
+        _displayCurrentIndex.value = displayToOriginalMap.indexOf(currentOriginalIndex).takeIf { it >= 0 } ?: 0
+    }
 
     fun playOrPause() {
         player?.let {
@@ -236,9 +281,12 @@ class PlayerViewModel(
         player?.seekToPreviousMediaItem()
     }
     
-    fun playQueueItem(index: Int) {
-        player?.seekToDefaultPosition(index)
-        player?.play()
+    fun playQueueItem(displayIndex: Int) {
+        if (displayIndex in displayToOriginalMap.indices) {
+            val originalIndex = displayToOriginalMap[displayIndex]
+            player?.seekToDefaultPosition(originalIndex)
+            player?.play()
+        }
     }
     
     fun clearQueue() {
@@ -254,59 +302,24 @@ class PlayerViewModel(
     fun cyclePlaybackMode() {
         val player = player ?: return
         val currentRepeat = player.repeatMode
-        val currentShuffle = shuffleModeEnabled.value
+        val currentShuffle = player.shuffleModeEnabled
 
         if (!currentShuffle && currentRepeat == androidx.media3.common.Player.REPEAT_MODE_ALL) {
             // "列表循环" -> "单曲循环"
             player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ONE
-            shuffleModeEnabled.value = false
+            player.shuffleModeEnabled = false
         } else if (!currentShuffle && currentRepeat == androidx.media3.common.Player.REPEAT_MODE_ONE) {
             // "单曲循环" -> "随机播放"
             player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ALL
-            shuffleModeEnabled.value = true
-            shuffleRemainingItems()
+            player.shuffleModeEnabled = true
         } else if (currentShuffle) {
             // "随机播放" -> "播完即止"
             player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_OFF
-            shuffleModeEnabled.value = false
+            player.shuffleModeEnabled = false
         } else {
             // "播完即止" or unknown -> "列表循环"
             player.repeatMode = androidx.media3.common.Player.REPEAT_MODE_ALL
-            shuffleModeEnabled.value = false
-        }
-        
-        player.shuffleModeEnabled = false
-        playbackStateManager.savePlaybackMode(player.repeatMode, shuffleModeEnabled.value)
-    }
-    
-    private fun shuffleRemainingItems() {
-        val player = player ?: return
-        val currentIndex = player.currentMediaItemIndex
-        val currentList = _currentPlaylist.value
-        
-        if (currentIndex in 0 until (currentList.size - 1)) {
-            val remaining = currentList.subList(currentIndex + 1, currentList.size).shuffled()
-            val newPlaylist = currentList.subList(0, currentIndex + 1) + remaining
-            _currentPlaylist.value = newPlaylist
-            
-            val newMediaItems = remaining.map { song ->
-                val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-                MediaItem.Builder()
-                    .setMediaId(song.id.toString())
-                    .setUri("netease://song/${song.id}")
-                    .setMediaMetadata(
-                        androidx.media3.common.MediaMetadata.Builder()
-                            .setTitle(song.name)
-                            .setArtist(song.displayArtists.joinToString { it.name })
-                            .setArtworkUri(artworkUri)
-                            .build()
-                    )
-                    .build()
-            }
-            
-            player.removeMediaItems(currentIndex + 1, currentList.size)
-            player.addMediaItems(currentIndex + 1, newMediaItems)
-            playbackStateManager.saveState(newPlaylist, currentIndex)
+            player.shuffleModeEnabled = false
         }
     }
 
@@ -331,27 +344,14 @@ class PlayerViewModel(
 
     fun playPlaylist(songs: List<com.yorkyang2333.claudwecho.data.api.Song>, startIndex: Int) {
         _isPersonalFmMode.value = false
-        
-        var targetSongs = songs
-        var targetIndex = startIndex
-        
-        if (shuffleModeEnabled.value && songs.isNotEmpty() && startIndex in songs.indices) {
-            val first = songs[startIndex]
-            val remaining = songs.toMutableList()
-            remaining.removeAt(startIndex)
-            remaining.shuffle()
-            targetSongs = listOf(first) + remaining
-            targetIndex = 0
-        }
-        
-        _currentPlaylist.value = targetSongs
+        _currentPlaylist.value = songs
         if (player == null) {
-            pendingSongs = targetSongs
-            pendingIndex = targetIndex
+            pendingSongs = songs
+            pendingIndex = startIndex
             return
         }
         
-        val mediaItems = targetSongs.map { song ->
+        val mediaItems = songs.map { song ->
             val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
             MediaItem.Builder()
                 .setMediaId(song.id.toString())
@@ -366,8 +366,7 @@ class PlayerViewModel(
                 .build()
         }
         
-        player?.setMediaItems(mediaItems, targetIndex, androidx.media3.common.C.TIME_UNSET)
-        player?.shuffleModeEnabled = false // Ensure ExoPlayer internal shuffle is off
+        player?.setMediaItems(mediaItems, startIndex, androidx.media3.common.C.TIME_UNSET)
         player?.prepare()
         player?.play()
     }

@@ -31,8 +31,8 @@ fun QueueScreen(
     viewModel: PlayerViewModel,
     onNavigateToPlayer: () -> Unit
 ) {
-    val songs by viewModel.currentPlaylist.collectAsState()
-    val currentIndex by viewModel.currentMediaItemIndex.collectAsState()
+    val songs by viewModel.displayPlaylist.collectAsState()
+    val currentIndex by viewModel.displayCurrentIndex.collectAsState()
     
     val listState = rememberScalingLazyListState()
     val coroutineScope = rememberCoroutineScope()
