@@ -43,6 +43,7 @@ fun MyCollectionScreen(
             ScalingLazyColumn(
                 autoCentering = null,
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
             ) {
