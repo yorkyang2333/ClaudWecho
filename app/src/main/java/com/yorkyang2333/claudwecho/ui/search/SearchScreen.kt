@@ -150,7 +150,11 @@ fun SearchScreen(
                         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(36.dp),
+                            strokeWidth = 3.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             } else if (error != null) {
