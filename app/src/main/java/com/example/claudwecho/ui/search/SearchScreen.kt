@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
@@ -63,11 +65,15 @@ fun SearchScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         ScalingLazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            autoCentering = null,
+            modifier = Modifier.fillMaxSize(),
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.height(88.dp))
+            }
 
         if (isLoading) {
             item {

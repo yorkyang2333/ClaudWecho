@@ -139,9 +139,12 @@ fun <T> CollectionListBase(
                 ScalingLazyColumn(
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 32.dp, start = 16.dp, end = 16.dp)
                 ) {
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
+                    }
                     items(items, key = { keySelector(it) }) { item ->
                         itemContent(item)
                     }
