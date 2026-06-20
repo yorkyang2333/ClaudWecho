@@ -58,7 +58,7 @@ fun PlaylistDetailScreen(
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(top = 80.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
+                    contentPadding = PaddingValues(top = 96.dp, bottom = 32.dp, start = 16.dp, end = 16.dp)
                 ) {
                     items(songs.size, key = { songs[it].id }) { index ->
                         val song = songs[index]
