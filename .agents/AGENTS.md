@@ -26,3 +26,15 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
    - Buttons MUST use `colors = ButtonDefaults.filledTonalButtonColors()` for consistent background styling.
    - Icons MUST use the primary theme color: `tint = MaterialTheme.colorScheme.primary`.
    - The label `Text` inside the Button MUST use `style = MaterialTheme.typography.titleMedium`, `maxLines = 1`, and `overflow = TextOverflow.Ellipsis`.
+
+5. **PinnedHeader Action Icons**:
+   - When providing an `actionIcon` to `PinnedHeader`, do NOT use `CompactButton` or other components with large default padding/height. This will inflate the header height and cover the list items below.
+   - Instead, use a lightweight clickable `Box` to contain the icon. Example:
+     ```kotlin
+     Box(
+         modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFF2D2D2D)).clickable { /* ... */ },
+         contentAlignment = Alignment.Center
+     ) {
+         Icon(imageVector = ..., modifier = Modifier.size(18.dp), tint = Color.White)
+     }
+     ```

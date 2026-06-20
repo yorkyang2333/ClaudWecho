@@ -15,7 +15,7 @@ import androidx.wear.compose.material3.Text
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import com.yorkyang2333.claudwecho.ui.login.LoginScreen
+// removed import
 import com.yorkyang2333.claudwecho.ui.main.MainScreen
 import com.yorkyang2333.claudwecho.ui.player.PlayerScreen
 
@@ -59,9 +59,26 @@ fun AppNavigation(
             )
         }
         composable("login") {
-            LoginScreen(
+            com.yorkyang2333.claudwecho.ui.login.LoginOptionsScreen(
+                onNavigateToQr = {
+                    navController.navigate("login_qr")
+                },
+                onNavigateToPhone = {
+                    navController.navigate("login_phone")
+                }
+            )
+        }
+        composable("login_qr") {
+            com.yorkyang2333.claudwecho.ui.login.LoginQrScreen(
                 onLoginSuccess = {
-                    navController.popBackStack()
+                    navController.popBackStack("main", inclusive = false)
+                }
+            )
+        }
+        composable("login_phone") {
+            com.yorkyang2333.claudwecho.ui.login.LoginPhoneScreen(
+                onLoginSuccess = {
+                    navController.popBackStack("main", inclusive = false)
                 }
             )
         }

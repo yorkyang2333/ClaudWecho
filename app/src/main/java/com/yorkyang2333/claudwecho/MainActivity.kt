@@ -10,8 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material3.MaterialTheme
 import com.yorkyang2333.claudwecho.theme.ClaudWechoTheme
-import com.yorkyang2333.claudwecho.ui.login.LoginScreen
-
+// removed import
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
