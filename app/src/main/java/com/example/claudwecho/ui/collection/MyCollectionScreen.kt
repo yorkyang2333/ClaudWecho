@@ -89,21 +89,8 @@ fun CollectionFeatureButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF252320)
         ),
-        shape = RoundedCornerShape(50)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.size(24.dp),
-                tint = Color(0xFFcc785c)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
+        shape = RoundedCornerShape(50),
+        label = {
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
@@ -111,6 +98,14 @@ fun CollectionFeatureButton(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        },
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = Modifier.size(24.dp),
+                tint = Color(0xFFcc785c)
+            )
         }
-    }
+    )
 }
