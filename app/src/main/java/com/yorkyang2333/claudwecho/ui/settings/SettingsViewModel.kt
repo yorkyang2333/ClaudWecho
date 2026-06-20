@@ -11,9 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.viewModelScope
 
 class SettingsViewModel(
-    private val context: Context,
-    private val loginRepository: com.yorkyang2333.claudwecho.data.LoginRepository,
-    private val cookieJar: com.yorkyang2333.claudwecho.data.api.PersistentCookieJar
+    private val context: Context
 ) : ViewModel() {
     private val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
 
@@ -22,9 +20,6 @@ class SettingsViewModel(
 
     private val _cacheSize = MutableStateFlow("0 MB")
     val cacheSize: StateFlow<String> = _cacheSize.asStateFlow()
-
-    private val _logoutEvent = kotlinx.coroutines.flow.MutableSharedFlow<Unit>()
-    val logoutEvent = _logoutEvent.asSharedFlow()
 
     init {
         calculateCacheSize()
@@ -79,13 +74,5 @@ class SettingsViewModel(
         val nextShape = shapes[nextIndex]
         prefs.edit().putString("screen_shape", nextShape).apply()
         _screenShape.value = nextShape
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            loginRepository.logout()
-            cookieJar.clear()
-            _logoutEvent.emit(Unit)
-        }
     }
 }

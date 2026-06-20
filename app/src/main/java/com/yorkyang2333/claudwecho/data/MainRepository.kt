@@ -207,4 +207,13 @@ class MainRepository(
             false
         }
     }
+
+    suspend fun getVipInfo(): com.yorkyang2333.claudwecho.data.api.VipInfoData? = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getVipInfo()
+            if (response.code == 200) response.data else null
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

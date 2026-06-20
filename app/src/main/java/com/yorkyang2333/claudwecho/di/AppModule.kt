@@ -57,11 +57,12 @@ val networkModule = module {
     // ViewModels
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
+    viewModel { com.yorkyang2333.claudwecho.ui.profile.UserProfileViewModel(get(), get(), get()) }
     viewModel { PlayerViewModel(androidContext(), get(), get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.playlist.PlaylistDetailViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.collection.MyCollectionViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recent.RecentlyPlayedViewModel(get()) }
-    viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidContext(), get(), get()) }
+    viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidContext()) }
     viewModel { com.yorkyang2333.claudwecho.ui.search.SearchViewModel(get()) }
 }

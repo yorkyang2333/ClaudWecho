@@ -38,127 +38,64 @@ fun ErrorState(
             ),
             autoCentering = null,
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp, top = 40.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp, top = 32.dp)
         ) {
             item {
                 Icon(
                     imageVector = Icons.Rounded.Warning,
                     contentDescription = "Error",
-                    tint = Color(0xFFC64545),
-                    modifier = Modifier.size(36.dp)
+                    tint = Color(0xFFCC785C),
+                    modifier = Modifier.size(32.dp).padding(bottom = 4.dp)
                 )
             }
             item {
                 Text(
                     text = error ?: "未知错误",
-                    color = Color(0xFFC64545),
+                    color = Color(0xFFCC785C),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 12.dp)
+                )
+            }
+            item {
+                Button(
+                    onClick = onRetry,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCC785C), contentColor = Color.White),
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            text = "重试",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
                 )
             }
             if (onSecondaryAction != null && secondaryActionLabel != null) {
                 item {
                     Button(
                         onClick = onSecondaryAction,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D)),
-                        modifier = Modifier.fillMaxWidth().height(40.dp)
-                    ) {
-                        Text(secondaryActionLabel, style = MaterialTheme.typography.bodyMedium, color = Color.White)
-                    }
-                }
-            }
-        }
-        androidx.wear.compose.material3.EdgeButton(
-            onClick = onRetry,
-            modifier = Modifier.align(Alignment.BottomCenter),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
-        ) {
-            Text("重试", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-        }
-    }
-}
-
-@Composable
-fun LoginOptionsScreen(
-    onNavigateToQr: () -> Unit,
-    onNavigateToPhoneCaptcha: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            ScalingLazyColumn(
-                scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                    edgeScale = 0.3f,
-                    minTransitionArea = 0.4f
-                ),
-                autoCentering = null,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
-                item {
-                    Button(
-                        onClick = onNavigateToQr,
                         colors = ButtonDefaults.filledTonalButtonColors(),
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
-                                text = "扫码登录",
+                                text = secondaryActionLabel,
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.QrCodeScanner,
-                                contentDescription = "扫码登录",
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    )
-                }
-
-                item {
-                    Button(
-                        onClick = onNavigateToPhoneCaptcha,
-                        colors = ButtonDefaults.filledTonalButtonColors(),
-                        modifier = Modifier.fillMaxWidth(),
-                        label = {
-                            Text(
-                                text = "手机验证码登录",
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Phone,
-                                contentDescription = "手机验证码登录",
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     )
                 }
             }
-            
-            com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "登录")
         }
     }
 }
+
+
 
 @Composable
 fun LoginQrScreen(
@@ -234,141 +171,4 @@ fun LoginQrScreen(
 
 
 
-@Composable
-fun LoginPhoneCaptchaScreen(
-    viewModel: LoginViewModel = koinViewModel(),
-    onLoginSuccess: () -> Unit,
-    onNavigateToQr: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    val error by viewModel.errorMessage.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.setPhoneInputState()
-    }
-
-    LaunchedEffect(uiState) {
-        if (uiState == LoginState.LOGGED_IN) {
-            onLoginSuccess()
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        when (uiState) {
-            LoginState.PHONE_INPUT, LoginState.IDLE -> {
-                var phone by remember { mutableStateOf("") }
-                var captcha by remember { mutableStateOf("") }
-                var isSending by remember { mutableStateOf(false) }
-
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ScalingLazyColumn(
-                        scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                            edgeScale = 0.3f,
-                            minTransitionArea = 0.4f
-                        ),
-                        autoCentering = null,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(bottom = 60.dp, start = 16.dp, end = 16.dp)
-                    ) {
-                        item {
-                            Spacer(modifier = Modifier.height(56.dp))
-                        }
-                        item {
-                            androidx.compose.foundation.text.BasicTextField(
-                                value = phone,
-                                onValueChange = { phone = it },
-                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone),
-                                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                                decorationBox = { innerTextField ->
-                                    Box(
-                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                        contentAlignment = Alignment.CenterStart
-                                    ) {
-                                        if (phone.isEmpty()) Text("输入手机号", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                        innerTextField()
-                                    }
-                                }
-                            )
-                        }
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                androidx.compose.foundation.text.BasicTextField(
-                                    value = captcha,
-                                    onValueChange = { captcha = it },
-                                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
-                                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.White),
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(40.dp)
-                                        .background(Color(0xFF2D2D2D), androidx.compose.foundation.shape.CircleShape),
-                                    decorationBox = { innerTextField ->
-                                        Box(
-                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                            contentAlignment = Alignment.CenterStart
-                                        ) {
-                                            if (captcha.isEmpty()) Text("验证码", color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
-                                            innerTextField()
-                                        }
-                                    }
-                                )
-                                Button(
-                                    onClick = {
-                                        if (phone.isNotEmpty() && !isSending) {
-                                            isSending = true
-                                            viewModel.sendCaptcha(phone) { success ->
-                                                isSending = false
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier.height(40.dp),
-                                    colors = ButtonDefaults.filledTonalButtonColors(),
-                                    label = { Text(if (isSending) "发送中" else "获取", style = MaterialTheme.typography.bodyMedium) }
-                                )
-                            }
-                        }
-                    }
-                    
-                    androidx.wear.compose.material3.EdgeButton(
-                        onClick = { viewModel.loginWithCaptcha(phone, captcha) },
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text("登录", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
-                    }
-
-                    com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "验证码登录")
-                }
-            }
-            LoginState.LOGGING_IN -> {
-                androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
-            }
-            LoginState.ERROR -> {
-                ErrorState(
-                    error = error,
-                    onRetry = { viewModel.setPhoneInputState() },
-                    onSecondaryAction = onNavigateToQr,
-                    secondaryActionLabel = "去扫码登录"
-                )
-            }
-            LoginState.LOGGED_IN -> {
-                Text("登录成功！")
-            }
-            else -> {}
-        }
-    }
-}

@@ -36,12 +36,6 @@ fun SettingsScreen(
     val cacheSize by viewModel.cacheSize.collectAsState()
     var showConfirm by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.logoutEvent.collect {
-            onNavigateToLogin()
-        }
-    }
-
     val shapeText = when (screenShape) {
         "round" -> "圆屏"
         "square" -> "方屏"
@@ -73,7 +67,6 @@ fun SettingsScreen(
                     icon = { Icon(Icons.Rounded.Build, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
-
             item {
                 Button(
                     onClick = { showConfirm = true },
@@ -82,16 +75,6 @@ fun SettingsScreen(
                     label = { Text("清除缓存") },
                     secondaryLabel = { Text(cacheSize) },
                     icon = { Icon(Icons.Rounded.Delete, null, tint = MaterialTheme.colorScheme.primary) }
-                )
-            }
-
-            item {
-                Button(
-                    onClick = { viewModel.logout() },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = { Text("退出登录") },
-                    icon = { Icon(Icons.AutoMirrored.Rounded.ExitToApp, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
         }

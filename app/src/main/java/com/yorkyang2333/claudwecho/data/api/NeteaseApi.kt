@@ -134,7 +134,27 @@ interface NeteaseApi {
     suspend fun logout(
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): BaseResponse
+    @GET("/vip/info")
+    suspend fun getVipInfo(
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): VipInfoResponse
 }
+
+@Serializable
+data class VipInfoResponse(val data: VipInfoData? = null, val code: Int)
+
+@Serializable
+data class VipInfoData(
+    val redVipLevel: Int? = null,
+    val redVipAnnualCount: Int? = null,
+    val musicPackage: VipMusicPackage? = null
+)
+
+@Serializable
+data class VipMusicPackage(
+    val expireTime: Long? = null,
+    val vipCode: Int? = null
+)
 
 @Serializable
 data class LikeListResponse(val ids: List<Long> = emptyList(), val code: Int)
@@ -200,7 +220,7 @@ data class LoginStatusResponse(val data: LoginStatusData)
 data class LoginStatusData(val profile: UserProfile?, val account: UserAccount?)
 
 @Serializable
-data class UserProfile(val userId: Long, val nickname: String, val avatarUrl: String?)
+data class UserProfile(val userId: Long, val nickname: String, val avatarUrl: String?, val vipType: Int? = null)
 
 @Serializable
 data class UserAccount(val id: Long)

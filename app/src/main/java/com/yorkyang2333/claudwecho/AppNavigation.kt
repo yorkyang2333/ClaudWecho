@@ -45,8 +45,21 @@ fun AppNavigation(
                 }
             )
         }
-        composable("main") {
+        composable("main") { backStackEntry ->
+            val mainViewModel: com.yorkyang2333.claudwecho.ui.main.MainViewModel = koinViewModel()
+            
+            val savedStateHandle = backStackEntry.savedStateHandle
+            val loginSuccess = savedStateHandle.get<Boolean>("login_success")
+            
+            androidx.compose.runtime.LaunchedEffect(loginSuccess) {
+                if (loginSuccess == true) {
+                    mainViewModel.loadData(forceRefresh = true)
+                    savedStateHandle.remove<Boolean>("login_success")
+                }
+            }
+
             MainScreen(
+                viewModel = mainViewModel,
                 onNavigateToLogin = {
                     navController.navigate("login")
                 },
@@ -59,32 +72,10 @@ fun AppNavigation(
             )
         }
         composable("login") {
-            com.yorkyang2333.claudwecho.ui.login.LoginOptionsScreen(
-                onNavigateToQr = {
-                    navController.navigate("login_qr")
-                },
-                onNavigateToPhoneCaptcha = {
-                    navController.navigate("login_phone_captcha")
-                }
-            )
-        }
-        composable("login_qr") {
             com.yorkyang2333.claudwecho.ui.login.LoginQrScreen(
                 onLoginSuccess = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("login_success", true)
                     navController.popBackStack("main", inclusive = false)
-                }
-            )
-        }
-
-        composable("login_phone_captcha") {
-            com.yorkyang2333.claudwecho.ui.login.LoginPhoneCaptchaScreen(
-                onLoginSuccess = {
-                    navController.popBackStack("main", inclusive = false)
-                },
-                onNavigateToQr = {
-                    navController.navigate("login_qr") {
-                        popUpTo("login")
-                    }
                 }
             )
         }
@@ -185,13 +176,24 @@ fun AppNavigation(
                 }
             )
         }
-        composable("settings") { 
-            val vm: com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel = koinViewModel()
-            com.yorkyang2333.claudwecho.ui.settings.SettingsScreen(
-                viewModel = vm,
+        composable("profile") {
+            val userProfileViewModel: com.yorkyang2333.claudwecho.ui.profile.UserProfileViewModel = koinViewModel()
+            com.yorkyang2333.claudwecho.ui.profile.UserProfileScreen(
+                viewModel = userProfileViewModel,
                 onNavigateToLogin = {
                     navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo("main") { inclusive = false }
+                    }
+                }
+            )
+        }
+        composable("settings") { 
+            val settingsViewModel: com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel = koinViewModel()
+            com.yorkyang2333.claudwecho.ui.settings.SettingsScreen(
+                viewModel = settingsViewModel,
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo("main") { inclusive = false }
                     }
                 }
             )

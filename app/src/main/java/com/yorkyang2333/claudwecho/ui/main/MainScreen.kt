@@ -79,7 +79,7 @@ fun MainScreen(
                     item {
                         if (userProfile != null) {
                             Button(
-                                onClick = { /* Do nothing for now */ },
+                                onClick = { onNavigateToFeature("profile") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.filledTonalButtonColors(),
                             label = {
