@@ -18,6 +18,9 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.graphics.asImageBitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.icons.rounded.QrCodeScanner
 
 @Composable
 fun LoginScreen(
@@ -59,26 +62,50 @@ fun LoginScreen(
                         item {
                             Button(
                                 onClick = { viewModel.loadQrCode() },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                colors = ButtonDefaults.filledTonalButtonColors(),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.Start) {
-                                    Text("QR Code Login", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                                    .padding(bottom = 8.dp),
+                                label = {
+                                    Text(
+                                        text = "扫码登录",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.QrCodeScanner,
+                                        contentDescription = "扫码登录",
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
                                 }
-                            }
+                            )
                         }
                         item {
                             Button(
                                 onClick = { viewModel.setPhoneInputState() },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.Start) {
-                                    Text("Phone Login", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimary)
+                                colors = ButtonDefaults.filledTonalButtonColors(),
+                                modifier = Modifier.fillMaxWidth(),
+                                label = {
+                                    Text(
+                                        text = "手机验证码登录",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Phone,
+                                        contentDescription = "手机验证码登录",
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
                                 }
-                            }
+                            )
                         }
                     }
                     
