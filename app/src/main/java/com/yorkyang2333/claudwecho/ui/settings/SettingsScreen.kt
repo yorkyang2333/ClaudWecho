@@ -66,12 +66,13 @@ fun SettingsScreen(
                     colors = ButtonDefaults.filledTonalButtonColors(),
                     label = { 
                         Text(
-                            text = "屏幕形状: $shapeText",
+                            text = "屏幕形状",
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         ) 
                     },
+                    secondaryLabel = { Text(shapeText) },
                     icon = { Icon(Icons.Rounded.Build, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
