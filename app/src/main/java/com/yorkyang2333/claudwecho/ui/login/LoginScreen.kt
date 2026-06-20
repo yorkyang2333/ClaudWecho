@@ -26,7 +26,9 @@ import androidx.compose.material.icons.rounded.Warning
 @Composable
 fun ErrorState(
     error: String?,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onSecondaryAction: (() -> Unit)? = null,
+    secondaryActionLabel: String? = null
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ScalingLazyColumn(
@@ -44,17 +46,28 @@ fun ErrorState(
                 Icon(
                     imageVector = Icons.Rounded.Warning,
                     contentDescription = "Error",
-                    tint = MaterialTheme.colorScheme.error,
+                    tint = Color(0xFFC64545),
                     modifier = Modifier.size(36.dp)
                 )
             }
             item {
                 Text(
                     text = error ?: "未知错误",
-                    color = MaterialTheme.colorScheme.error,
+                    color = Color(0xFFC64545),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium
                 )
+            }
+            if (onSecondaryAction != null && secondaryActionLabel != null) {
+                item {
+                    Button(
+                        onClick = onSecondaryAction,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2D2D2D)),
+                        modifier = Modifier.fillMaxWidth().height(40.dp)
+                    ) {
+                        Text(secondaryActionLabel, style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    }
+                }
             }
         }
         androidx.wear.compose.material3.EdgeButton(
@@ -245,7 +258,8 @@ fun LoginQrScreen(
 @Composable
 fun LoginPhonePasswordScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToQr: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val error by viewModel.errorMessage.collectAsState()
@@ -346,7 +360,12 @@ fun LoginPhonePasswordScreen(
                 androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
             }
             LoginState.ERROR -> {
-                ErrorState(error = error, onRetry = { viewModel.setPhoneInputState() })
+                ErrorState(
+                    error = error,
+                    onRetry = { viewModel.setPhoneInputState() },
+                    onSecondaryAction = onNavigateToQr,
+                    secondaryActionLabel = "去扫码登录"
+                )
             }
             LoginState.LOGGED_IN -> {
                 Text("登录成功！")
@@ -359,7 +378,8 @@ fun LoginPhonePasswordScreen(
 @Composable
 fun LoginPhoneCaptchaScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToQr: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val error by viewModel.errorMessage.collectAsState()
@@ -479,7 +499,12 @@ fun LoginPhoneCaptchaScreen(
                 androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
             }
             LoginState.ERROR -> {
-                ErrorState(error = error, onRetry = { viewModel.setPhoneInputState() })
+                ErrorState(
+                    error = error,
+                    onRetry = { viewModel.setPhoneInputState() },
+                    onSecondaryAction = onNavigateToQr,
+                    secondaryActionLabel = "去扫码登录"
+                )
             }
             LoginState.LOGGED_IN -> {
                 Text("登录成功！")

@@ -82,6 +82,11 @@ fun AppNavigation(
             com.yorkyang2333.claudwecho.ui.login.LoginPhonePasswordScreen(
                 onLoginSuccess = {
                     navController.popBackStack("main", inclusive = false)
+                },
+                onNavigateToQr = {
+                    navController.navigate("login_qr") {
+                        popUpTo("login")
+                    }
                 }
             )
         }
@@ -89,6 +94,11 @@ fun AppNavigation(
             com.yorkyang2333.claudwecho.ui.login.LoginPhoneCaptchaScreen(
                 onLoginSuccess = {
                     navController.popBackStack("main", inclusive = false)
+                },
+                onNavigateToQr = {
+                    navController.navigate("login_qr") {
+                        popUpTo("login")
+                    }
                 }
             )
         }
