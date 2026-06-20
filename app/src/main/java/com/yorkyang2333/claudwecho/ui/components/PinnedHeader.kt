@@ -37,7 +37,7 @@ fun PinnedHeader(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier.fillMaxWidth(0.65f)
         ) {
             Text(
                 text = title,
