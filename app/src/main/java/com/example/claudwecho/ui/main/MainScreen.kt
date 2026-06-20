@@ -60,17 +60,22 @@ fun MainScreen(
         if (isLoading) {
             androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
         } else {
-            ScalingLazyColumn(
-        autoCentering = null,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(top = 48.dp, bottom = 32.dp, start = 8.dp, end = 8.dp)
-            ) {
-                // User Profile Section
-                item {
-                    if (userProfile != null) {
-                        Button(
-                            onClick = { /* Do nothing for now */ },
+            Box(modifier = Modifier.fillMaxSize()) {
+                ScalingLazyColumn(
+                    autoCentering = null,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
+                    }
+                    // User Profile Section
+                    item {
+                        if (userProfile != null) {
+                            Button(
+                                onClick = { /* Do nothing for now */ },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.filledTonalButtonColors(),
                             label = {
@@ -162,6 +167,8 @@ fun MainScreen(
                     )
                 }
             }
+            com.example.claudwecho.ui.components.PinnedHeader(title = "ClaudWecho")
+        }
         }
     }
 }
