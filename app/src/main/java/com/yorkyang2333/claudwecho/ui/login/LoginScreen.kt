@@ -53,8 +53,9 @@ fun LoginScreen(
                         ),
                         autoCentering = null,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(48.dp))
@@ -63,9 +64,7 @@ fun LoginScreen(
                             Button(
                                 onClick = { viewModel.loadQrCode() },
                                 colors = ButtonDefaults.filledTonalButtonColors(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp),
+                                modifier = Modifier.fillMaxWidth(),
                                 label = {
                                     Text(
                                         text = "扫码登录",
@@ -109,29 +108,7 @@ fun LoginScreen(
                         }
                     }
                     
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                androidx.compose.ui.graphics.Brush.verticalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.background,
-                                        MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
-                                        MaterialTheme.colorScheme.background.copy(alpha = 0f)
-                                    ),
-                                    startY = 0f,
-                                    endY = Float.POSITIVE_INFINITY
-                                )
-                            )
-                            .padding(top = 16.dp, bottom = 24.dp),
-                        contentAlignment = Alignment.TopCenter
-                    ) {
-                        Text(
-                            text = "ClaudWecho",
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+                    com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "ClaudWecho")
                 }
             }
             LoginState.LOADING_QR, LoginState.LOGGING_IN -> {
