@@ -77,11 +77,11 @@ class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
     fun loginWithPhone(phone: String, pass: String) {
         _uiState.value = LoginState.LOGGING_IN
         viewModelScope.launch {
-            val success = repository.loginWithPhone(phone, pass)
+            val success = repository.loginWithPhone(phone.trim(), pass.trim())
             if (success) {
                 _uiState.value = LoginState.LOGGED_IN
             } else {
-                _errorMessage.value = "Login failed"
+                _errorMessage.value = "登录失败，请检查账号密码"
                 _uiState.value = LoginState.ERROR
             }
         }
@@ -89,7 +89,7 @@ class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
 
     fun sendCaptcha(phone: String, onSent: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val success = repository.sendCaptcha(phone)
+            val success = repository.sendCaptcha(phone.trim())
             onSent(success)
         }
     }
@@ -97,11 +97,11 @@ class LoginViewModel(private val repository: LoginRepository) : ViewModel() {
     fun loginWithCaptcha(phone: String, captcha: String) {
         _uiState.value = LoginState.LOGGING_IN
         viewModelScope.launch {
-            val success = repository.loginWithCaptcha(phone, captcha)
+            val success = repository.loginWithCaptcha(phone.trim(), captcha.trim())
             if (success) {
                 _uiState.value = LoginState.LOGGED_IN
             } else {
-                _errorMessage.value = "Login failed"
+                _errorMessage.value = "登录失败，请检查验证码"
                 _uiState.value = LoginState.ERROR
             }
         }
