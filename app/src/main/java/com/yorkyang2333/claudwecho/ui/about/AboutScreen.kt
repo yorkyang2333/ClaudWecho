@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.*
 import coil.compose.AsyncImage
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -70,13 +73,48 @@ fun AboutScreen() {
                 )
             }
             item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(1.dp)
+                        .background(Color.DarkGray)
+                )
+            }
+            item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
             item {
                 Text(
-                    text = "开发者: yorkyang2333",
+                    text = "开发者",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.LightGray
+                )
+            }
+            item {
+                androidx.wear.compose.material3.Button(
+                    onClick = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                    label = { 
+                        Text(
+                            text = "yorkyang2333",
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
+                    icon = {
+                        AsyncImage(
+                            model = "https://github.com/yorkyang2333.png",
+                            contentDescription = "Avatar",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                        )
+                    }
                 )
             }
             item {
