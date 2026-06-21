@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.yorkyang2333.claudwecho.utils.PinyinUtil.getPinyinKey
 
 enum class SortMode { DEFAULT, TITLE, ALBUM, ARTIST }
 enum class SortOrder { ASC, DESC }

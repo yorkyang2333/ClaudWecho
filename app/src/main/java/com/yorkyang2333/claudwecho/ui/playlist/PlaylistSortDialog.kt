@@ -44,27 +44,38 @@ fun PlaylistSortDialog(
                 item {
                     Spacer(modifier = Modifier.height(48.dp))
                 }
+                
                 item {
-                    PinnedHeader(title = "排序方式")
+                    Button(
+                        onClick = {
+                            val newOrder = if (currentSortOrder == SortOrder.ASC) SortOrder.DESC else SortOrder.ASC
+                            onSortSelected(currentSortMode, newOrder)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors()
+                    ) {
+                        Text(
+                            text = if (currentSortOrder == SortOrder.ASC) "⬆\uFE0F 升序排序" else "⬇\uFE0F 降序排序",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1
+                        )
+                    }
                 }
                 
                 val options = listOf(
-                    Triple(SortMode.DEFAULT, SortOrder.ASC, "默认时间"),
-                    Triple(SortMode.TITLE, SortOrder.ASC, "标题 (A-Z)"),
-                    Triple(SortMode.TITLE, SortOrder.DESC, "标题 (Z-A)"),
-                    Triple(SortMode.ALBUM, SortOrder.ASC, "专辑 (A-Z)"),
-                    Triple(SortMode.ALBUM, SortOrder.DESC, "专辑 (Z-A)"),
-                    Triple(SortMode.ARTIST, SortOrder.ASC, "歌手 (A-Z)"),
-                    Triple(SortMode.ARTIST, SortOrder.DESC, "歌手 (Z-A)")
+                    Pair(SortMode.DEFAULT, "默认时间"),
+                    Pair(SortMode.TITLE, "按标题"),
+                    Pair(SortMode.ALBUM, "按专辑"),
+                    Pair(SortMode.ARTIST, "按歌手")
                 )
                 
                 items(options.size) { index ->
                     val option = options[index]
-                    val isSelected = currentSortMode == option.first && currentSortOrder == option.second
+                    val isSelected = currentSortMode == option.first
                     
                     Button(
                         onClick = {
-                            onSortSelected(option.first, option.second)
+                            onSortSelected(option.first, currentSortOrder)
                             onDismissRequest()
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -74,12 +85,15 @@ fun PlaylistSortDialog(
                         ) else ButtonDefaults.filledTonalButtonColors()
                     ) {
                         Text(
-                            text = option.third,
-                            style = MaterialTheme.typography.titleMedium
+                            text = option.second,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1
                         )
                     }
                 }
             }
+            
+            PinnedHeader(title = "排序方式")
         }
     }
 }

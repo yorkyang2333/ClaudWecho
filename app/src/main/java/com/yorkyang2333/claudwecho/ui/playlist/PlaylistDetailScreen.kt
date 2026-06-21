@@ -1,3 +1,5 @@
+package com.yorkyang2333.claudwecho.ui.playlist
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
