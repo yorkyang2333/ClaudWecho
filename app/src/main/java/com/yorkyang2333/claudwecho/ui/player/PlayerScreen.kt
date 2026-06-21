@@ -79,9 +79,18 @@ fun PlayerScreen(
     ) {
 
         // Circular Progress at edge
-        val progress = if (duration > 0) currentPosition.toFloat() / duration else 0f
+        val targetProgress = if (duration > 0) currentPosition.toFloat() / duration else 0f
+        val animatedProgress by androidx.compose.animation.core.animateFloatAsState(
+            targetValue = targetProgress,
+            animationSpec = androidx.compose.animation.core.tween(
+                durationMillis = 200, 
+                easing = androidx.compose.animation.core.LinearEasing
+            ),
+            label = "progressAnim"
+        )
+        
         androidx.wear.compose.material3.CircularProgressIndicator(
-            progress = { progress },
+            progress = { animatedProgress },
             modifier = Modifier.fillMaxSize(),
             strokeWidth = 6.dp,
             colors = androidx.wear.compose.material3.ProgressIndicatorDefaults.colors(
