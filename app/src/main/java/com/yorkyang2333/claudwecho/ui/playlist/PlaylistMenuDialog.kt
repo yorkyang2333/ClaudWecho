@@ -38,12 +38,8 @@ fun PlaylistMenuDialog(
             ScalingLazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                    edgeScale = 0.3f, 
-                    minTransitionArea = 0.4f
-                ),
                 contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
                 autoCentering = null
             ) {
                 item {

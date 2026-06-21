@@ -137,13 +137,9 @@ fun <T> CollectionListBase(
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 ScalingLazyColumn(
-            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                edgeScale = 0.3f,
-                minTransitionArea = 0.4f
-            ),
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
                 ) {

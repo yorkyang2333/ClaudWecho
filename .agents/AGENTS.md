@@ -15,9 +15,9 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
    - The overall page wrapper MUST be a `Box(modifier = Modifier.fillMaxSize())` with the `PinnedHeader` placed *after* the `ScalingLazyColumn` so it stays pinned at the top.
 
 2. **ScalingLazyColumn Layout Parameters**:
-   - `scalingParams`: MUST use `ScalingLazyColumnDefaults.scalingParams(edgeScale = 0.3f, minTransitionArea = 0.4f)` to ensure strong edge scaling/shrinking.
+   - `scalingParams`: Do not use custom `scalingParams` so it defaults to standard Wear OS scaling parameters (wider items, less edge shrinking).
    - `contentPadding`: MUST use exactly `PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)`.
-   - `verticalArrangement`: MUST use exactly `Arrangement.spacedBy(2.dp)` for spacing between buttons.
+   - `verticalArrangement`: MUST use exactly `Arrangement.spacedBy(6.dp)` for spacing between buttons.
 
 3. **Top Spacer**:
    - The first `item` in the `ScalingLazyColumn` MUST be a `Spacer(modifier = Modifier.height(48.dp))`. This prevents the first button from hiding behind the PinnedHeader.

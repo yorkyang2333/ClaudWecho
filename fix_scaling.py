@@ -1,27 +1,28 @@
 import os
-import glob
+import re
 
-directory = 'app/src/main/java/com/example/claudwecho/ui'
+directory = 'app/src/main/java/com/yorkyang2333/claudwecho/ui'
+count = 0
+
 for root, dirs, files in os.walk(directory):
     for file in files:
-        if file.endswith(".kt"):
-            filepath = os.path.join(root, file)
-            with open(filepath, 'r') as f:
+        if file.endswith('.kt'):
+            path = os.path.join(root, file)
+            with open(path, 'r') as f:
                 content = f.read()
             
-            modified = False
-            if '72.dp' in content:
-                content = content.replace('72.dp', '48.dp')
-                modified = True
+            original_content = content
             
-            if 'ScalingLazyColumn(' in content and 'scalingParams = ' not in content:
-                content = content.replace(
-                    'ScalingLazyColumn(\n',
-                    'ScalingLazyColumn(\n            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(\n                edgeScale = 0.3f,\n                minTransitionArea = 0.4f\n            ),\n'
-                )
-                modified = True
-                
-            if modified:
-                with open(filepath, 'w') as f:
+            # Remove scalingParams block
+            content = re.sub(r'\s*scalingParams\s*=\s*androidx\.wear\.compose\.foundation\.lazy\.ScalingLazyColumnDefaults\.scalingParams\s*\([^)]*\),?', '', content)
+            
+            # Adjust verticalArrangement
+            content = content.replace("Arrangement.spacedBy(2.dp)", "Arrangement.spacedBy(6.dp)")
+
+            if content != original_content:
+                with open(path, 'w') as f:
                     f.write(content)
-                print(f"Updated {filepath}")
+                count += 1
+                print(f"Updated {path}")
+
+print(f"Updated {count} files.")
