@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +74,8 @@ fun PlaylistDetailScreen(
     val showMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val showSort = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val showAlphabet = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    val showSearchDialog = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var tempSearchQuery by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
     
     val isMultiSelectMode = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val selectedSongs = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateListOf<Long>() }
@@ -168,7 +171,7 @@ fun PlaylistDetailScreen(
                                                 try {
                                                     searchLauncher.launch(intent)
                                                 } catch (e: Exception) {
-                                                    // Fallback
+                                                    showSearchDialog.value = true
                                                 }
                                             }
                                         },
@@ -325,6 +328,56 @@ fun PlaylistDetailScreen(
                     }
                 }
             )
+
+            if (showSearchDialog.value) {
+                androidx.compose.ui.window.Dialog(
+                    onDismissRequest = { showSearchDialog.value = false }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "搜索播放列表",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        androidx.compose.foundation.text.BasicTextField(
+                            value = tempSearchQuery,
+                            onValueChange = { tempSearchQuery = it },
+                            textStyle = androidx.compose.ui.text.TextStyle(color = androidx.compose.ui.graphics.Color.White),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .background(androidx.compose.ui.graphics.Color.DarkGray)
+                                .padding(8.dp)
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            androidx.wear.compose.material3.Button(
+                                onClick = { showSearchDialog.value = false },
+                                colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                androidx.wear.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Close, null)
+                            }
+                            androidx.wear.compose.material3.Button(
+                                onClick = {
+                                    viewModel.setSearchQuery(tempSearchQuery)
+                                    showSearchDialog.value = false
+                                },
+                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                androidx.wear.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Search, null)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

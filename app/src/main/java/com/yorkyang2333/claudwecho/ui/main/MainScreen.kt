@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -177,6 +178,14 @@ fun MainScreen(
                         icon = Icons.Rounded.Settings,
                         text = "设置",
                         onClick = { onNavigateToFeature("settings") }
+                    )
+                }
+
+                item {
+                    FeatureButton(
+                        icon = Icons.Rounded.Info,
+                        text = "关于",
+                        onClick = { onNavigateToFeature("about") }
                     )
                 }
             }

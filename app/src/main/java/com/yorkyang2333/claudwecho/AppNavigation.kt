@@ -213,6 +213,9 @@ fun AppNavigation(
                 }
             )
         }
+        composable("about") {
+            com.yorkyang2333.claudwecho.ui.about.AboutScreen()
+        }
         composable("player_menu") {
             com.yorkyang2333.claudwecho.ui.player.PlayerMenuScreen(viewModel = playerViewModel)
         }

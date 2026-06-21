@@ -44,7 +44,9 @@ class SettingsViewModel(
 
     private fun calculateCacheSize() {
         viewModelScope.launch(Dispatchers.IO) {
-            val size = getFolderSize(context.cacheDir)
+            val size = getFolderSize(context.cacheDir) + 
+                       getFolderSize(context.externalCacheDir) + 
+                       getFolderSize(context.codeCacheDir)
             val sizeInMb = size / (1024.0 * 1024.0)
             _cacheSize.value = String.format(java.util.Locale.US, "%.2f MB", sizeInMb)
         }
@@ -67,6 +69,8 @@ class SettingsViewModel(
     fun clearCache() {
         viewModelScope.launch(Dispatchers.IO) {
             deleteFolder(context.cacheDir)
+            deleteFolder(context.externalCacheDir)
+            deleteFolder(context.codeCacheDir)
             calculateCacheSize()
         }
     }
@@ -78,7 +82,7 @@ class SettingsViewModel(
                     deleteFolder(child)
                 }
             }
-            if (file != context.cacheDir) {
+            if (file != context.cacheDir && file != context.externalCacheDir && file != context.codeCacheDir) {
                 file.delete()
             }
         }

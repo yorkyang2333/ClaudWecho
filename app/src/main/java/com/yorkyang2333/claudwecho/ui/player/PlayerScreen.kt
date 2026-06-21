@@ -216,9 +216,9 @@ fun PlayerScreen(
                     colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
                 ) {
                     Icon(
-                        imageVector = if (!isPodcast && isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                        imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                         contentDescription = "Like",
-                        tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) Color.Red else Color.White,
+                        tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) MaterialTheme.colorScheme.primary else Color.White,
                         modifier = Modifier.size(32.dp)
                     )
                 }
