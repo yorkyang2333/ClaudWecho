@@ -127,16 +127,16 @@ fun PlaylistDetailScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 4.dp, vertical = 2.dp),
-                                horizontalArrangement = Arrangement.Center,
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // Search
                                 Box(
                                     modifier = Modifier
-                                        .size(40.dp)
+                                        .size(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0xFF2D2D2D))
+                                        .background(Color(0xFF1E1E1E))
                                         .clickable { /* TODO: Search */ },
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -147,29 +147,29 @@ fun PlaylistDetailScreen(
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }
-                                Spacer(modifier = Modifier.width(6.dp))
+                                
                                 // Count
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .height(40.dp)
+                                        .height(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0xFF2D2D2D)),
+                                        .background(Color(0xFF1E1E1E)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = "${songs.size}首",
-                                        color = Color.LightGray,
-                                        style = MaterialTheme.typography.bodyMedium
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.titleMedium
                                     )
                                 }
-                                Spacer(modifier = Modifier.width(6.dp))
+                                
                                 // Menu
                                 Box(
                                     modifier = Modifier
-                                        .size(40.dp)
+                                        .size(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(Color(0xFF2D2D2D))
+                                        .background(Color(0xFF1E1E1E))
                                         .clickable { showMenu.value = true },
                                     contentAlignment = Alignment.Center
                                 ) {
