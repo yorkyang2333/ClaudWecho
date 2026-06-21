@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,7 +44,7 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.wear.compose.material3.CircularProgressIndicator
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
@@ -146,11 +147,7 @@ fun SearchScreen(
                         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(36.dp),
-                            strokeWidth = 3.dp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        CircularProgressIndicator()
                     }
                 }
             } else if (error != null) {
@@ -176,18 +173,19 @@ fun SearchScreen(
         }
 
         if (fallbackInput) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 BasicTextField(
                     value = localQuery,
                     onValueChange = { localQuery = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
                         .height(48.dp)
                         .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(24.dp))
                         .focusRequester(focusRequester),
@@ -228,6 +226,20 @@ fun SearchScreen(
                                 }
                                 innerTextField()
                             }
+                        }
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
+                    onCancel = {
+                        keyboardController?.hide()
+                        fallbackInput = false
+                    },
+                    onConfirm = {
+                        keyboardController?.hide()
+                        fallbackInput = false
+                        if (localQuery.isNotBlank()) {
+                            viewModel.performSearch(localQuery)
                         }
                     }
                 )

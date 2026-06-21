@@ -1,4 +1,1 @@
-import androidx.wear.input.RemoteInputIntentHelper
-fun main() {
-    val x = RemoteInputIntentHelper.putRemoteInputsExtra(null, null)
-}
+import androidx.wear.compose.material3.CircularProgressIndicator

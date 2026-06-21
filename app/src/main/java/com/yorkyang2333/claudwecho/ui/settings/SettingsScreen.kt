@@ -217,26 +217,14 @@ fun SettingsScreen(
                         .background(androidx.compose.ui.graphics.Color.DarkGray)
                         .padding(8.dp)
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Button(
-                        onClick = { showUrlDialog = false },
-                        colors = ButtonDefaults.filledTonalButtonColors(),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(Icons.Rounded.Close, null)
+                com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
+                    onCancel = { showUrlDialog = false },
+                    onConfirm = {
+                        viewModel.setApiBaseUrl(tempUrl)
+                        android.widget.Toast.makeText(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效", android.widget.Toast.LENGTH_SHORT).show()
+                        showUrlDialog = false
                     }
-                    Button(
-                        onClick = {
-                            viewModel.setApiBaseUrl(tempUrl)
-                            android.widget.Toast.makeText(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效", android.widget.Toast.LENGTH_SHORT).show()
-                            showUrlDialog = false
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(Icons.Rounded.Check, null)
-                    }
-                }
+                )
             }
         }
     }

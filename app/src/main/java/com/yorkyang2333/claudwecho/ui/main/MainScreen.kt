@@ -61,7 +61,7 @@ fun MainScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            androidx.compose.material3.CircularProgressIndicator(modifier = Modifier.size(36.dp), strokeWidth = 3.dp, color = MaterialTheme.colorScheme.primary)
+            androidx.wear.compose.material3.CircularProgressIndicator()
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 ScalingLazyColumn(
