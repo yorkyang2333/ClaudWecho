@@ -86,7 +86,7 @@ val networkModule = module {
     viewModel { MainViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.profile.UserProfileViewModel(get(), get(), get()) }
     viewModel { PlayerViewModel(androidContext(), get(), get()) }
-    viewModel { com.yorkyang2333.claudwecho.ui.playlist.PlaylistDetailViewModel(get()) }
+    viewModel { PlaylistDetailViewModel(get(), androidContext()) }
     viewModel { com.yorkyang2333.claudwecho.ui.collection.MyCollectionViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recent.RecentlyPlayedViewModel(get()) }

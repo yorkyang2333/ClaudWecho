@@ -18,17 +18,22 @@ import com.yorkyang2333.claudwecho.utils.PinyinUtil.getPinyinKey
 enum class SortMode { DEFAULT, TITLE, ALBUM, ARTIST }
 enum class SortOrder { ASC, DESC }
 
-class PlaylistDetailViewModel(private val repository: MainRepository) : ViewModel() {
+class PlaylistDetailViewModel(
+    private val repository: MainRepository,
+    context: android.content.Context
+) : ViewModel() {
+
+    private val prefs = context.getSharedPreferences("playlist_sort_prefs", android.content.Context.MODE_PRIVATE)
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private val _originalSongs = MutableStateFlow<List<Song>>(emptyList())
     
-    private val _sortMode = MutableStateFlow(SortMode.DEFAULT)
+    private val _sortMode = MutableStateFlow(SortMode.valueOf(prefs.getString("sort_mode", SortMode.DEFAULT.name) ?: SortMode.DEFAULT.name))
     val sortMode: StateFlow<SortMode> = _sortMode.asStateFlow()
     
-    private val _sortOrder = MutableStateFlow(SortOrder.ASC)
+    private val _sortOrder = MutableStateFlow(SortOrder.valueOf(prefs.getString("sort_order", SortOrder.ASC.name) ?: SortOrder.ASC.name))
     val sortOrder: StateFlow<SortOrder> = _sortOrder.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -78,6 +83,7 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
     fun setSort(mode: SortMode, order: SortOrder) {
         _sortMode.value = mode
         _sortOrder.value = order
+        prefs.edit().putString("sort_mode", mode.name).putString("sort_order", order.name).apply()
     }
 
     private suspend fun checkOwnership(playlistId: Long) {
