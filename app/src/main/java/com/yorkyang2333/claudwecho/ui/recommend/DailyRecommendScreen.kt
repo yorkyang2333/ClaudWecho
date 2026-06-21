@@ -41,7 +41,7 @@ fun DailyRecommendScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            androidx.wear.compose.material.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            androidx.compose.material3.CircularProgressIndicator()
         } else if (songs.isEmpty()) {
             Text("暂无推荐", color = Color.Gray)
         } else {

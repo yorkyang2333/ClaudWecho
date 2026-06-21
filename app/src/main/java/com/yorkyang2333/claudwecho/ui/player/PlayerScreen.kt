@@ -89,11 +89,11 @@ fun PlayerScreen(
             label = "progressAnim"
         )
         
-        androidx.wear.compose.material.CircularProgressIndicator(
+        androidx.compose.material3.CircularProgressIndicator(
             progress = animatedProgress,
             modifier = Modifier.fillMaxSize(),
             strokeWidth = 6.dp,
-            indicatorColor = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.primary,
             trackColor = Color.White.copy(alpha = 0.2f)
         )
 

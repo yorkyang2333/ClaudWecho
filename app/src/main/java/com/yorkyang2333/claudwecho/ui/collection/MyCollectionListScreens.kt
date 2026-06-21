@@ -131,7 +131,7 @@ fun <T> CollectionListBase(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            androidx.wear.compose.material.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            androidx.compose.material3.CircularProgressIndicator()
         } else if (items.isEmpty()) {
             Text(emptyMessage, color = Color.Gray)
         } else {

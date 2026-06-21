@@ -90,7 +90,7 @@ fun PlaylistDetailScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            androidx.wear.compose.material.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            androidx.compose.material3.CircularProgressIndicator()
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 RotaryScalingLazyColumn(
