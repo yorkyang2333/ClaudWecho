@@ -21,6 +21,7 @@ import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
 fun LyricsScreen(viewModel: PlayerViewModel) {
@@ -57,8 +58,8 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
         } else {
             ScalingLazyColumn(
                 scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                    edgeScale = 0.3f,
-                    minTransitionArea = 0.4f
+                    edgeScale = 0.5f,
+                    minTransitionArea = 0.5f
                 ),
                 autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 0),
                 state = listState,
@@ -68,39 +69,58 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
             ) {
                 itemsIndexed(lyrics) { index, line ->
                     val isCurrent = index == currentLyricIndex
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        ) {
+                    
+                    val scale by androidx.compose.animation.core.animateFloatAsState(
+                        targetValue = if (isCurrent) 1.1f else 0.9f,
+                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 400),
+                        label = "scale"
+                    )
+                    
+                    val alpha by androidx.compose.animation.core.animateFloatAsState(
+                        targetValue = if (isCurrent) 1.0f else 0.4f,
+                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 400),
+                        label = "alpha"
+                    )
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                this.alpha = alpha
+                            }
+                    ) {
+                        Text(
+                            text = line.text,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                shadow = androidx.compose.ui.graphics.Shadow(
+                                    color = Color.Black.copy(alpha = 0.8f),
+                                    offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                                    blurRadius = 8f
+                                )
+                            ),
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                        if (line.tText != null) {
                             Text(
-                                text = line.text,
-                                style = (if (isCurrent) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium).copy(
+                                text = line.tText!!,
+                                style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                     shadow = androidx.compose.ui.graphics.Shadow(
                                         color = Color.Black.copy(alpha = 0.8f),
                                         offset = androidx.compose.ui.geometry.Offset(2f, 2f),
-                                        blurRadius = 8f
+                                        blurRadius = 6f
                                     )
                                 ),
-                                color = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White,
+                                color = Color.White.copy(alpha = 0.9f),
                                 textAlign = TextAlign.Center
                             )
-                            if (line.tText != null) {
-                                Text(
-                                    text = line.tText!!,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                        shadow = androidx.compose.ui.graphics.Shadow(
-                                            color = Color.Black.copy(alpha = 0.8f),
-                                            offset = androidx.compose.ui.geometry.Offset(2f, 2f),
-                                            blurRadius = 6f
-                                        )
-                                    ),
-                                    color = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.8f),
-                                    textAlign = TextAlign.Center
-                                )
-                            }
                         }
+                    }
                 }
             }
         }
