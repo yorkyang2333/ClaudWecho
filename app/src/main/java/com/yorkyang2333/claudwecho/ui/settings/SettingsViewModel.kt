@@ -25,7 +25,13 @@ class SettingsViewModel(
     val apiBaseUrl: StateFlow<String> = _apiBaseUrl.asStateFlow()
 
     fun setApiBaseUrl(url: String) {
-        val fixedUrl = if (url.endsWith("/")) url else "$url/"
+        var fixedUrl = url.trim()
+        if (!fixedUrl.startsWith("http://") && !fixedUrl.startsWith("https://")) {
+            fixedUrl = "http://$fixedUrl"
+        }
+        if (!fixedUrl.endsWith("/")) {
+            fixedUrl = "$fixedUrl/"
+        }
         prefs.edit().putString("api_base_url", fixedUrl).apply()
         _apiBaseUrl.value = fixedUrl
     }

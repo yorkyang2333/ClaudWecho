@@ -35,7 +35,8 @@ val networkModule = module {
             val customUrlStr = prefs.getString("api_base_url", null)
             
             if (!customUrlStr.isNullOrBlank()) {
-                val customHttpUrl = customUrlStr.toHttpUrlOrNull()
+                val urlToParse = if (!customUrlStr.startsWith("http")) "http://$customUrlStr" else customUrlStr
+                val customHttpUrl = urlToParse.toHttpUrlOrNull()
                 if (customHttpUrl != null) {
                     val defaultBaseUrl = BuildConfig.API_BASE_URL.toHttpUrlOrNull()
                     if (defaultBaseUrl != null) {
