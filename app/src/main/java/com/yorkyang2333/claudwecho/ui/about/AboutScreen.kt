@@ -13,7 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
@@ -36,7 +36,7 @@ fun AboutScreen() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        ScalingLazyColumn(
+        RotaryScalingLazyColumn(
             state = rememberScalingLazyListState(),
             autoCentering = null,
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -17,7 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
@@ -93,7 +93,7 @@ fun PlaylistDetailScreen(
             androidx.wear.compose.material.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
-                ScalingLazyColumn(
+                RotaryScalingLazyColumn(
                     state = listState,
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,

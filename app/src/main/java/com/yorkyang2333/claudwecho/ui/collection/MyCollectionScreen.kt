@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
@@ -40,7 +40,7 @@ fun MyCollectionScreen(
         contentAlignment = Alignment.Center
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            ScalingLazyColumn(
+            RotaryScalingLazyColumn(
                 autoCentering = null,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp),

@@ -16,7 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
@@ -46,7 +46,7 @@ fun DailyRecommendScreen(
             Text("暂无推荐", color = Color.Gray)
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
-                ScalingLazyColumn(
+                RotaryScalingLazyColumn(
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp),

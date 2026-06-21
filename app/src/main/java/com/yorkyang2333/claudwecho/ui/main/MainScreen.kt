@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
@@ -64,7 +64,7 @@ fun MainScreen(
             androidx.wear.compose.material.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
-                ScalingLazyColumn(
+                RotaryScalingLazyColumn(
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp),

@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.Button
@@ -64,7 +64,7 @@ fun SettingsScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        ScalingLazyColumn(
+        RotaryScalingLazyColumn(
             autoCentering = null,
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp),

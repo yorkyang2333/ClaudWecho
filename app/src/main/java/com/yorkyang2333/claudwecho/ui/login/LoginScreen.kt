@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.material3.*
 import coil.compose.rememberAsyncImagePainter
 import org.koin.androidx.compose.koinViewModel
@@ -31,7 +31,7 @@ fun ErrorState(
     secondaryActionLabel: String? = null
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ScalingLazyColumn(
+        RotaryScalingLazyColumn(
             autoCentering = null,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
