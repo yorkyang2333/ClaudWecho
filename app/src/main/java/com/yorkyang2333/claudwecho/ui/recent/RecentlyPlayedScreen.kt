@@ -41,7 +41,7 @@ fun RecentlyPlayedScreen(
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            androidx.wear.compose.material3.CircularProgressIndicator()
+            androidx.wear.compose.material3.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
         } else if (songs.isEmpty()) {
             Text("暂无播放记录", color = Color.Gray)
         } else {

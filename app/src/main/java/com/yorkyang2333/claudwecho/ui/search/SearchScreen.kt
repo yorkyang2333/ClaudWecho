@@ -143,11 +143,8 @@ fun SearchScreen(
 
             if (isLoading) {
                 item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
                     }
                 }
             } else if (error != null) {

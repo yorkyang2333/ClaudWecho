@@ -120,7 +120,7 @@ fun LoginQrScreen(
     ) {
         when (uiState) {
             LoginState.LOADING_QR, LoginState.LOGGING_IN, LoginState.IDLE -> {
-                androidx.wear.compose.material3.CircularProgressIndicator()
+                androidx.wear.compose.material3.CircularProgressIndicator(modifier = Modifier.fillMaxSize())
             }
             LoginState.QR_READY -> {
                 Column(
