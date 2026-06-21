@@ -38,6 +38,8 @@ fun SettingsScreen(
     val cacheSize by viewModel.cacheSize.collectAsState()
     val apiBaseUrl by viewModel.apiBaseUrl.collectAsState()
     var showConfirm by remember { mutableStateOf(false) }
+    var showUrlDialog by remember { mutableStateOf(false) }
+    var tempUrl by remember { mutableStateOf(apiBaseUrl) }
 
     val shapeText = when (screenShape) {
         "round" -> "圆屏"
@@ -90,7 +92,7 @@ fun SettingsScreen(
                         try {
                             urlLauncher.launch(intent)
                         } catch (e: Exception) {
-                            // Fallback
+                            showUrlDialog = true
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -181,6 +183,57 @@ fun SettingsScreen(
                         onClick = {
                             viewModel.clearCache()
                             showConfirm = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.Rounded.Check, null)
+                    }
+                }
+            }
+        }
+    }
+
+    if (showUrlDialog) {
+        Dialog(
+            onDismissRequest = { showUrlDialog = false }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "输入后端地址",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                androidx.compose.foundation.text.BasicTextField(
+                    value = tempUrl,
+                    onValueChange = { tempUrl = it },
+                    textStyle = androidx.compose.ui.text.TextStyle(color = androidx.compose.ui.graphics.Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .background(androidx.compose.ui.graphics.Color.DarkGray)
+                        .padding(8.dp)
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(
+                        onClick = { showUrlDialog = false },
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.Rounded.Close, null)
+                    }
+                    Button(
+                        onClick = {
+                            viewModel.setApiBaseUrl(tempUrl)
+                            android.widget.Toast.makeText(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效", android.widget.Toast.LENGTH_SHORT).show()
+                            showUrlDialog = false
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier.size(48.dp)
