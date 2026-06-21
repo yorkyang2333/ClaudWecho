@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.automirrored.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Link
 import androidx.wear.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.ui.window.Dialog
@@ -35,12 +36,29 @@ fun SettingsScreen(
 ) {
     val screenShape by viewModel.screenShape.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
+    val apiBaseUrl by viewModel.apiBaseUrl.collectAsState()
     var showConfirm by remember { mutableStateOf(false) }
 
     val shapeText = when (screenShape) {
         "round" -> "圆屏"
         "square" -> "方屏"
         else -> "自动检测"
+    }
+
+    val urlLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val data = result.data
+            if (data != null) {
+                val results = android.app.RemoteInput.getResultsFromIntent(data)
+                val url = results?.getCharSequence("api_url")?.toString()
+                if (!url.isNullOrBlank()) {
+                    viewModel.setApiBaseUrl(url)
+                    android.widget.Toast.makeText(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -57,6 +75,43 @@ fun SettingsScreen(
         ) {
             item {
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(48.dp))
+            }
+            
+            item {
+                Button(
+                    onClick = {
+                        val intent = androidx.wear.input.RemoteInputIntentHelper.createActionRemoteInputIntent()
+                        val remoteInputs = listOf(
+                            android.app.RemoteInput.Builder("api_url")
+                                .setLabel("输入后端地址")
+                                .build()
+                        )
+                        androidx.wear.input.RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
+                        try {
+                            urlLauncher.launch(intent)
+                        } catch (e: Exception) {
+                            // Fallback
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { 
+                        Text(
+                            text = "后端地址",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
+                    secondaryLabel = { 
+                        Text(
+                            text = apiBaseUrl,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
+                    icon = { Icon(Icons.Rounded.Link, null, tint = MaterialTheme.colorScheme.primary) }
+                )
             }
             
             item {

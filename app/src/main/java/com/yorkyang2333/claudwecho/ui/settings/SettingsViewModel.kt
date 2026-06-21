@@ -21,6 +21,17 @@ class SettingsViewModel(
     private val _cacheSize = MutableStateFlow("0 MB")
     val cacheSize: StateFlow<String> = _cacheSize.asStateFlow()
 
+    private val _apiBaseUrl = MutableStateFlow(prefs.getString("api_base_url", com.yorkyang2333.claudwecho.BuildConfig.API_BASE_URL) ?: com.yorkyang2333.claudwecho.BuildConfig.API_BASE_URL)
+    val apiBaseUrl: StateFlow<String> = _apiBaseUrl.asStateFlow()
+
+    fun setApiBaseUrl(url: String) {
+        val fixedUrl = if (url.endsWith("/")) url else "$url/"
+        prefs.edit().putString("api_base_url", fixedUrl).apply()
+        _apiBaseUrl.value = fixedUrl
+    }
+    
+    fun getApplicationContext(): Context = context.applicationContext
+
     init {
         calculateCacheSize()
     }

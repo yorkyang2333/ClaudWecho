@@ -15,6 +15,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -27,11 +28,37 @@ val networkModule = module {
     }
 
     single {
+        val context: android.content.Context = get()
+        val dynamicBaseUrlInterceptor = okhttp3.Interceptor { chain ->
+            var request = chain.request()
+            val prefs = context.getSharedPreferences("settings_prefs", android.content.Context.MODE_PRIVATE)
+            val customUrlStr = prefs.getString("api_base_url", null)
+            
+            if (!customUrlStr.isNullOrBlank()) {
+                val customHttpUrl = customUrlStr.toHttpUrlOrNull()
+                if (customHttpUrl != null) {
+                    val defaultBaseUrl = BuildConfig.API_BASE_URL.toHttpUrlOrNull()
+                    if (defaultBaseUrl != null) {
+                        val requestUrlStr = request.url.toString()
+                        val defaultBaseUrlStr = defaultBaseUrl.toString()
+                        if (requestUrlStr.startsWith(defaultBaseUrlStr)) {
+                            val newUrlStr = customHttpUrl.toString().trimEnd('/') + "/" + requestUrlStr.substring(defaultBaseUrlStr.length).trimStart('/')
+                            val newUrl = newUrlStr.toHttpUrlOrNull()
+                            if (newUrl != null) {
+                                request = request.newBuilder().url(newUrl).build()
+                            }
+                        }
+                    }
+                }
+            }
+            chain.proceed(request)
+        }        
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
         OkHttpClient.Builder()
             .cookieJar(get<PersistentCookieJar>())
+            .addInterceptor(dynamicBaseUrlInterceptor)
             .addInterceptor(logging)
             .build()
     }
@@ -40,7 +67,6 @@ val networkModule = module {
         val json = Json { ignoreUnknownKeys = true; isLenient = true }
         val contentType = "application/json".toMediaType()
         
-        // User's own Vercel API instance
         Retrofit.Builder()
             .baseUrl(BuildConfig.API_BASE_URL)
             .client(get())
