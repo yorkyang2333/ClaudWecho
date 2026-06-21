@@ -31,13 +31,26 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
     private val _sortOrder = MutableStateFlow(SortOrder.ASC)
     val sortOrder: StateFlow<SortOrder> = _sortOrder.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
     val songs: StateFlow<List<Song>> = combine(
-        _originalSongs, _sortMode, _sortOrder
-    ) { original, mode, order ->
-        if (mode == SortMode.DEFAULT) {
-            if (order == SortOrder.ASC) original else original.reversed()
+        _originalSongs, _sortMode, _sortOrder, _searchQuery
+    ) { original, mode, order, query ->
+        val filtered = if (query.isBlank()) {
+            original
         } else {
-            val sorted = original.sortedBy { song ->
+            original.filter { song ->
+                song.name.contains(query, ignoreCase = true) ||
+                song.displayArtists.any { it.name.contains(query, ignoreCase = true) } ||
+                (song.displayAlbum?.name?.contains(query, ignoreCase = true) == true)
+            }
+        }
+        
+        if (mode == SortMode.DEFAULT) {
+            if (order == SortOrder.ASC) filtered else filtered.reversed()
+        } else {
+            val sorted = filtered.sortedBy { song ->
                 val text = when (mode) {
                     SortMode.TITLE -> song.name
                     SortMode.ALBUM -> song.displayAlbum?.name ?: ""
@@ -49,6 +62,10 @@ class PlaylistDetailViewModel(private val repository: MainRepository) : ViewMode
             if (order == SortOrder.ASC) sorted else sorted.reversed()
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
     
     private val _title = MutableStateFlow<String?>(null)
     val title: StateFlow<String?> = _title.asStateFlow()

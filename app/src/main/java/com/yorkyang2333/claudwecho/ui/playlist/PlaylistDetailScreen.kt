@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Close
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import kotlinx.coroutines.launch
@@ -42,6 +43,7 @@ fun PlaylistDetailScreen(
     val isOwned by viewModel.isOwnedPlaylist.collectAsState()
     val sortMode by viewModel.sortMode.collectAsState()
     val sortOrder by viewModel.sortOrder.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
 
     LaunchedEffect(playlistId, type) {
         when (type) {
@@ -50,6 +52,21 @@ fun PlaylistDetailScreen(
             "djradio" -> viewModel.loadDjRadio(playlistId)
             "liked" -> viewModel.loadLiked()
             else -> viewModel.loadPlaylist(playlistId)
+        }
+    }
+
+    val searchLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val data = result.data
+            if (data != null) {
+                val results = android.app.RemoteInput.getResultsFromIntent(data)
+                val query = results?.getCharSequence("search_query")?.toString()
+                if (query != null) {
+                    viewModel.setSearchQuery(query)
+                }
+            }
         }
     }
 
@@ -137,18 +154,35 @@ fun PlaylistDetailScreen(
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
                                         .background(Color(0xFF1E1E1E))
-                                        .clickable { /* TODO: Search */ },
+                                        .clickable {
+                                            if (searchQuery.isNotEmpty()) {
+                                                viewModel.setSearchQuery("")
+                                            } else {
+                                                val intent = androidx.wear.input.RemoteInputIntentHelper.createActionRemoteInputIntent()
+                                                val remoteInputs = listOf(
+                                                    android.app.RemoteInput.Builder("search_query")
+                                                        .setLabel("搜索播放列表")
+                                                        .build()
+                                                )
+                                                androidx.wear.input.RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
+                                                try {
+                                                    searchLauncher.launch(intent)
+                                                } catch (e: Exception) {
+                                                    // Fallback
+                                                }
+                                            }
+                                        },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     androidx.wear.compose.material3.Icon(
-                                        Icons.Rounded.Search,
-                                        contentDescription = "Search",
+                                        imageVector = if (searchQuery.isNotEmpty()) androidx.compose.material.icons.Icons.Rounded.Close else Icons.Rounded.Search,
+                                        contentDescription = if (searchQuery.isNotEmpty()) "Clear Search" else "Search",
                                         tint = Color.White,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }
                                 
-                                // Count
+                                // Count or Query
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
@@ -158,9 +192,11 @@ fun PlaylistDetailScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "${songs.size}首",
+                                        text = if (searchQuery.isNotEmpty()) searchQuery else "${songs.size}首",
                                         color = Color.White,
-                                        style = MaterialTheme.typography.titleMedium
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                     )
                                 }
                                 
