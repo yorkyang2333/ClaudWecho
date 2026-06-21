@@ -42,9 +42,6 @@ fun AlphabetIndexDialog(
                 item {
                     Spacer(modifier = Modifier.height(48.dp))
                 }
-                item {
-                    PinnedHeader(title = "字母索引")
-                }
                 
                 val letters = listOf("#") + ('A'..'Z').map { it.toString() }
                 
@@ -66,6 +63,8 @@ fun AlphabetIndexDialog(
                     }
                 }
             }
+            
+            PinnedHeader(title = "字母索引")
         }
     }
 }

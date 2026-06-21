@@ -50,9 +50,6 @@ fun PlaylistMenuDialog(
                     Spacer(modifier = Modifier.height(48.dp))
                 }
                 item {
-                    PinnedHeader(title = "菜单")
-                }
-                item {
                     Button(
                         onClick = onPlayAll,
                         modifier = Modifier.fillMaxWidth(),
@@ -118,6 +115,8 @@ fun PlaylistMenuDialog(
                     }
                 }
             }
+            
+            PinnedHeader(title = "菜单")
         }
     }
 }

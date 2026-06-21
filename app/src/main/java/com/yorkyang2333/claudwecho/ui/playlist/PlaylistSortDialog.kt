@@ -14,6 +14,9 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 
 @Composable
 fun PlaylistSortDialog(
@@ -52,10 +55,17 @@ fun PlaylistSortDialog(
                             onSortSelected(currentSortMode, newOrder)
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.filledTonalButtonColors()
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        icon = {
+                            androidx.wear.compose.material3.Icon(
+                                imageVector = if (currentSortOrder == SortOrder.ASC) androidx.compose.material.icons.Icons.Rounded.KeyboardArrowUp else androidx.compose.material.icons.Icons.Rounded.KeyboardArrowDown,
+                                contentDescription = "Sort Order",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     ) {
                         Text(
-                            text = if (currentSortOrder == SortOrder.ASC) "⬆\uFE0F 升序排序" else "⬇\uFE0F 降序排序",
+                            text = if (currentSortOrder == SortOrder.ASC) "升序排序" else "降序排序",
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1
                         )
