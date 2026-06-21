@@ -38,3 +38,10 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
          Icon(imageVector = ..., modifier = Modifier.size(18.dp), tint = Color.White)
      }
      ```
+
+6. **Progress Indicators**:
+   - MUST use the native `androidx.wear.compose.material3.CircularProgressIndicator` instead of the non-wear one (`androidx.compose.material3...`), to leverage the native Wear OS "shape-shifting" fluid animations during indeterminate loading states.
+
+7. **Dialog Action Buttons**:
+   - For bottom confirm/cancel actions (like in input fallback dialogs or settings), MUST use the shared `com.yorkyang2333.claudwecho.ui.components.DialogActionButtons` component.
+   - This ensures the standard Wear OS Material 3 pattern (squircle dark cancel button on the left, circular primary confirm button on the right).
