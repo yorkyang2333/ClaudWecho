@@ -15,12 +15,18 @@ import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 
 @Composable
 fun PlaylistMenuDialog(
     showDialog: Boolean,
+    isOwned: Boolean,
     onDismissRequest: () -> Unit,
-    onPlayAll: () -> Unit
+    onPlayAll: () -> Unit,
+    onMultiSelect: () -> Unit,
+    onAlphabetIndex: () -> Unit,
+    onSortBy: () -> Unit,
+    currentSort: String
 ) {
     Dialog(
         showDialog = showDialog,
@@ -44,6 +50,9 @@ fun PlaylistMenuDialog(
                     Spacer(modifier = Modifier.height(48.dp))
                 }
                 item {
+                    PinnedHeader(title = "菜单")
+                }
+                item {
                     Button(
                         onClick = onPlayAll,
                         modifier = Modifier.fillMaxWidth(),
@@ -57,23 +66,25 @@ fun PlaylistMenuDialog(
                         )
                     }
                 }
-                item {
-                    Button(
-                        onClick = { onDismissRequest() },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.filledTonalButtonColors()
-                    ) {
-                        Text(
-                            text = "多选删除",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                if (isOwned) {
+                    item {
+                        Button(
+                            onClick = onMultiSelect,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors()
+                        ) {
+                            Text(
+                                text = "多选删除",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
                 item {
                     Button(
-                        onClick = { onDismissRequest() },
+                        onClick = onAlphabetIndex,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.filledTonalButtonColors()
                     ) {
@@ -87,7 +98,7 @@ fun PlaylistMenuDialog(
                 }
                 item {
                     Button(
-                        onClick = { onDismissRequest() },
+                        onClick = onSortBy,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.filledTonalButtonColors()
                     ) {
@@ -99,16 +110,14 @@ fun PlaylistMenuDialog(
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = "标题",
+                                text = currentSort,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
                 }
             }
-
-            com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "菜单")
         }
     }
 }

@@ -14,11 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
-import androidx.wear.compose.material3.MaterialTheme
-import androidx.wear.compose.material3.Text
-import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.wear.compose.material3.Icon
@@ -27,6 +26,8 @@ import com.yorkyang2333.claudwecho.data.api.Song
 @Composable
 fun SharedSongItem(
     song: Song,
+    isMultiSelectMode: Boolean = false,
+    isSelected: Boolean = false,
     onClick: () -> Unit
 ) {
     val playbackStateManager: com.yorkyang2333.claudwecho.data.PlaybackStateManager = org.koin.compose.koinInject()
@@ -39,7 +40,7 @@ fun SharedSongItem(
         colors = ButtonDefaults.filledTonalButtonColors(),
         label = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (isPlaying) {
+                if (isPlaying && !isMultiSelectMode) {
                     Icon(
                         imageVector = Icons.Rounded.PlayArrow,
                         contentDescription = "Playing",
@@ -50,7 +51,7 @@ fun SharedSongItem(
                 Text(
                     text = song.name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (isPlaying) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                    color = if (isPlaying && !isMultiSelectMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     maxLines = 1,
                     modifier = Modifier.weight(1f, fill = false).basicMarquee()
                 )
@@ -77,13 +78,22 @@ fun SharedSongItem(
             )
         },
         icon = {
-            AsyncImage(
-                model = song.displayAlbum?.picUrl ?: "",
-                contentDescription = "Album Art",
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(4.dp))
-            )
+            if (isMultiSelectMode) {
+                Icon(
+                    imageVector = if (isSelected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                    contentDescription = "Select",
+                    tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+                    modifier = Modifier.size(36.dp)
+                )
+            } else {
+                AsyncImage(
+                    model = song.displayAlbum?.picUrl ?: "",
+                    contentDescription = "Album Art",
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                )
+            }
         }
     )
 }

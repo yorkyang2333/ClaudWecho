@@ -99,6 +99,10 @@ dependencies {
 
   // Coil
   implementation(libs.coil.compose)
+
+  // Pinyin
+  implementation("com.belerweb:pinyin4j:2.5.1")
+
   // Tooling
   debugImplementation(libs.androidx.compose.ui.tooling)
   // Instrumented tests

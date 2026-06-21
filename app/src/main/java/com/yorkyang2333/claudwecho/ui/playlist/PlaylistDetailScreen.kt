@@ -1,5 +1,3 @@
-package com.yorkyang2333.claudwecho.ui.playlist
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.compose.material.icons.Icons
@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Menu
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PlaylistDetailScreen(
@@ -36,6 +37,9 @@ fun PlaylistDetailScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
     val title by viewModel.title.collectAsState()
+    val isOwned by viewModel.isOwnedPlaylist.collectAsState()
+    val sortMode by viewModel.sortMode.collectAsState()
+    val sortOrder by viewModel.sortOrder.collectAsState()
 
     LaunchedEffect(playlistId, type) {
         when (type) {
@@ -48,6 +52,14 @@ fun PlaylistDetailScreen(
     }
 
     val showMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    val showSort = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    val showAlphabet = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    
+    val isMultiSelectMode = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    val selectedSongs = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateListOf<Long>() }
+    
+    val listState = rememberScalingLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -60,10 +72,11 @@ fun PlaylistDetailScreen(
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 ScalingLazyColumn(
-            scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
-                edgeScale = 0.3f,
-                minTransitionArea = 0.4f
-            ),
+                    state = listState,
+                    scalingParams = androidx.wear.compose.foundation.lazy.ScalingLazyColumnDefaults.scalingParams(
+                        edgeScale = 0.3f,
+                        minTransitionArea = 0.4f
+                    ),
                     autoCentering = null,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -73,70 +86,118 @@ fun PlaylistDetailScreen(
                     item {
                         Spacer(modifier = Modifier.height(48.dp))
                     }
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Search
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFF2D2D2D))
-                                    .clickable { /* TODO: Search */ },
-                                contentAlignment = Alignment.Center
+                    if (isMultiSelectMode.value) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                androidx.wear.compose.material3.Icon(
-                                    Icons.Rounded.Search,
-                                    contentDescription = "Search",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
+                                androidx.wear.compose.material3.Button(
+                                    onClick = { 
+                                        isMultiSelectMode.value = false 
+                                        selectedSongs.clear()
+                                    },
+                                    colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                                ) {
+                                    Text("取消", style = MaterialTheme.typography.bodyMedium)
+                                }
+                                androidx.wear.compose.material3.Button(
+                                    onClick = { 
+                                        if (selectedSongs.isNotEmpty()) {
+                                            viewModel.removeSongs(selectedSongs.toList(), type == "liked")
+                                            selectedSongs.clear()
+                                            isMultiSelectMode.value = false
+                                        }
+                                    },
+                                    colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.error,
+                                        contentColor = MaterialTheme.colorScheme.onError
+                                    ),
+                                    modifier = Modifier.weight(1f).padding(start = 4.dp)
+                                ) {
+                                    Text("删除(${selectedSongs.size})", style = MaterialTheme.typography.bodyMedium)
+                                }
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            // Count
-                            Box(
+                        }
+                    } else {
+                        item {
+                            Row(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .height(40.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFF2D2D2D)),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = "${songs.size}首",
-                                    color = Color.LightGray,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            // Menu
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(Color(0xFF2D2D2D))
-                                    .clickable { showMenu.value = true },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                androidx.wear.compose.material3.Icon(
-                                    Icons.Rounded.Menu,
-                                    contentDescription = "Menu",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
+                                // Search
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0xFF2D2D2D))
+                                        .clickable { /* TODO: Search */ },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.wear.compose.material3.Icon(
+                                        Icons.Rounded.Search,
+                                        contentDescription = "Search",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
+                                // Count
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(40.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0xFF2D2D2D)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "${songs.size}首",
+                                        color = Color.LightGray,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
+                                // Menu
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0xFF2D2D2D))
+                                        .clickable { showMenu.value = true },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.wear.compose.material3.Icon(
+                                        Icons.Rounded.Menu,
+                                        contentDescription = "Menu",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
                         }
                     }
+                    
                     items(songs.size, key = { songs[it].id }) { index ->
                         val song = songs[index]
+                        val isSelected = selectedSongs.contains(song.id)
+                        
                         com.yorkyang2333.claudwecho.ui.components.SharedSongItem(
                             song = song,
-                            onClick = { onNavigateToPlayer(songs, index) }
+                            isMultiSelectMode = isMultiSelectMode.value,
+                            isSelected = isSelected,
+                            onClick = { 
+                                if (isMultiSelectMode.value) {
+                                    if (isSelected) selectedSongs.remove(song.id)
+                                    else selectedSongs.add(song.id)
+                                } else {
+                                    onNavigateToPlayer(songs, index)
+                                }
+                            }
                         )
                     }
                 }
@@ -171,13 +232,58 @@ fun PlaylistDetailScreen(
                 )
             }
             
+            val currentSortText = when (sortMode) {
+                SortMode.DEFAULT -> "默认时间"
+                SortMode.TITLE -> if (sortOrder == SortOrder.ASC) "标题 (A-Z)" else "标题 (Z-A)"
+                SortMode.ALBUM -> if (sortOrder == SortOrder.ASC) "专辑 (A-Z)" else "专辑 (Z-A)"
+                SortMode.ARTIST -> if (sortOrder == SortOrder.ASC) "歌手 (A-Z)" else "歌手 (Z-A)"
+            }
+
             PlaylistMenuDialog(
                 showDialog = showMenu.value,
+                isOwned = isOwned,
                 onDismissRequest = { showMenu.value = false },
                 onPlayAll = {
                     if (songs.isNotEmpty()) {
                         onNavigateToPlayer(songs, 0)
                         showMenu.value = false
+                    }
+                },
+                onMultiSelect = {
+                    isMultiSelectMode.value = true
+                    showMenu.value = false
+                },
+                onAlphabetIndex = {
+                    showAlphabet.value = true
+                    showMenu.value = false
+                },
+                onSortBy = {
+                    showSort.value = true
+                    showMenu.value = false
+                },
+                currentSort = currentSortText
+            )
+            
+            PlaylistSortDialog(
+                showDialog = showSort.value,
+                currentSortMode = sortMode,
+                currentSortOrder = sortOrder,
+                onDismissRequest = { showSort.value = false },
+                onSortSelected = { mode, order ->
+                    viewModel.setSort(mode, order)
+                }
+            )
+            
+            AlphabetIndexDialog(
+                showDialog = showAlphabet.value,
+                onDismissRequest = { showAlphabet.value = false },
+                onLetterSelected = { letter ->
+                    val index = viewModel.getFirstItemIndexByLetter(letter)
+                    if (index >= 0) {
+                        coroutineScope.launch {
+                            // index + 2 to account for spacer and header items
+                            listState.scrollToItem(index + 2)
+                        }
                     }
                 }
             )

@@ -138,6 +138,14 @@ interface NeteaseApi {
     suspend fun getVipInfo(
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): VipInfoResponse
+
+    @GET("/playlist/tracks")
+    suspend fun updatePlaylistTracks(
+        @Query("op") op: String, // "add" or "del"
+        @Query("pid") pid: Long,
+        @Query("tracks") tracks: String, // comma separated track ids
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
 }
 
 @Serializable
