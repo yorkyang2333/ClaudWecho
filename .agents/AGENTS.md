@@ -40,7 +40,7 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
      ```
 
 6. **Progress Indicators**:
-   - MUST use the native `androidx.compose.material3.CircularProgressIndicator` instead of the wear one for indeterminate loading states, as this preserves the fluid shape-shifting spinner animation expected on Wear OS. Do NOT use `modifier = Modifier.fillMaxSize()` on it unless you want to stretch it.
+   - MUST use the native `androidx.wear.compose.material3.CircularProgressIndicator` instead of the non-wear one for indeterminate loading states, as this preserves the fluid shape-shifting spinner animation expected on Wear OS and correctly uses the Wear Material 3 theme colors. Do NOT use `modifier = Modifier.fillMaxSize()` on it unless you want to stretch it into a full-screen arc.
 
 7. **Dialog Action Buttons**:
    - For bottom confirm/cancel actions (like in input fallback dialogs or settings), MUST use the shared `com.yorkyang2333.claudwecho.ui.components.DialogActionButtons` component.

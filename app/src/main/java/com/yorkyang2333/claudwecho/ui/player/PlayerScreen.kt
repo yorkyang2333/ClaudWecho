@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material3.CircularProgressIndicator
+import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.MaterialTheme
@@ -89,11 +89,11 @@ fun PlayerScreen(
             label = "progressAnim"
         )
         
-        androidx.compose.material3.CircularProgressIndicator(
+        androidx.wear.compose.material.CircularProgressIndicator(
             progress = animatedProgress,
             modifier = Modifier.fillMaxSize(),
             strokeWidth = 6.dp,
-            color = MaterialTheme.colorScheme.primary,
+            indicatorColor = MaterialTheme.colorScheme.primary,
             trackColor = Color.White.copy(alpha = 0.2f)
         )
 
