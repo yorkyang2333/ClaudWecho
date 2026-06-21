@@ -82,6 +82,18 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
                         label = "alpha"
                     )
 
+                    val textColor by androidx.compose.animation.animateColorAsState(
+                        targetValue = if (isCurrent) MaterialTheme.colorScheme.primary else Color.White,
+                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 400),
+                        label = "color"
+                    )
+                    
+                    val tTextColor by androidx.compose.animation.animateColorAsState(
+                        targetValue = if (isCurrent) MaterialTheme.colorScheme.primary.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.9f),
+                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 400),
+                        label = "tcolor"
+                    )
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -102,7 +114,7 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
                                     blurRadius = 8f
                                 )
                             ),
-                            color = Color.White,
+                            color = textColor,
                             textAlign = TextAlign.Center
                         )
                         if (line.tText != null) {
@@ -116,7 +128,7 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
                                         blurRadius = 6f
                                     )
                                 ),
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = tTextColor,
                                 textAlign = TextAlign.Center
                             )
                         }
