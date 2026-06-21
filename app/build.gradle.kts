@@ -22,7 +22,7 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(FileInputStream(localPropertiesFile))
         }
-        val apiBaseUrl = localProperties.getProperty("API_BASE_URL") ?: "\"http://10.0.2.2:3000/\""
+        val apiBaseUrl = localProperties.getProperty("API_BASE_URL") ?: "\"http://unconfigured.local/\""
         buildConfigField("String", "API_BASE_URL", apiBaseUrl)
     }
 
