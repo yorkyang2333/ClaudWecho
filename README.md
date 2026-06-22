@@ -1,6 +1,8 @@
 <div align="center">
   <!-- 🎨 [Logo Placeholder] -->
   <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="120" alt="ClaudWecho Logo Placeholder">
+  <br>
+  <sub>*(专属 App 图标待征集中...)*</sub>
   
   <h1>ClaudWecho</h1>
 
