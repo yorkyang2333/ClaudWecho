@@ -1,5 +1,12 @@
 # ClaudWecho
 
+<p align="left">
+  <img src="https://img.shields.io/badge/Platform-Wear%20OS-brightgreen.svg" alt="Platform">
+  <img src="https://img.shields.io/badge/Language-Kotlin-orange.svg" alt="Kotlin">
+  <img src="https://img.shields.io/badge/Architecture-MVVM-blue.svg" alt="MVVM">
+  <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
+</p>
+
 **ClaudWecho** (读作: /klɔːd ˈwɛkoʊ/) 是一款专为 Android 智能手表（Wear OS / Android Wear）打造的“某知名音乐软件”第三方客户端。致力于为腕上设备提供轻量、流畅、沉浸的音乐播放体验。
 
 项目名字源自 **Claud(e) + We(ar) + Echo** 的巧妙拼写组合，蕴含着它的诞生灵感：
