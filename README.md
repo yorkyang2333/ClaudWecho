@@ -5,6 +5,9 @@
   <img src="https://img.shields.io/badge/Language-Kotlin-orange.svg" alt="Kotlin">
   <img src="https://img.shields.io/badge/Architecture-MVVM-blue.svg" alt="MVVM">
   <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
+  <img src="https://img.shields.io/github/last-commit/yorkyang2333/ClaudWecho" alt="Last Commit">
+  <img src="https://img.shields.io/github/repo-size/yorkyang2333/ClaudWecho" alt="Repo Size">
+  <img src="https://img.shields.io/github/stars/yorkyang2333/ClaudWecho?style=social" alt="Stars">
 </p>
 
 **ClaudWecho** (读作: /klɔːd ˈwɛkoʊ/) 是一款专为 Android 智能手表（Wear OS / Android Wear）打造的“某知名音乐软件”第三方客户端。致力于为腕上设备提供轻量、流畅、沉浸的音乐播放体验。
@@ -41,7 +44,7 @@
 ### 编译与运行
 1. 克隆项目到本地：
    ```bash
-   git clone https://github.com/your-username/ClaudWecho.git
+   git clone https://github.com/yorkyang2333/ClaudWecho.git
    ```
 2. 使用 Android Studio 打开项目。
 3. 连接你的 Wear OS 设备或启动 Wear OS 模拟器。
