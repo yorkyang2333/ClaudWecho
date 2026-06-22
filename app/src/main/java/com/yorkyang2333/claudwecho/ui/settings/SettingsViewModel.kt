@@ -27,7 +27,7 @@ class SettingsViewModel(
     fun setApiBaseUrl(url: String) {
         var fixedUrl = url.trim()
         if (!fixedUrl.startsWith("http://") && !fixedUrl.startsWith("https://")) {
-            fixedUrl = "http://$fixedUrl"
+            fixedUrl = "https://$fixedUrl"
         }
         if (!fixedUrl.endsWith("/")) {
             fixedUrl = "$fixedUrl/"
