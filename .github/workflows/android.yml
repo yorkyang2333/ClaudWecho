@@ -37,11 +37,16 @@ jobs:
         fi
         ./gradlew assembleDebug assembleRelease
 
-    - name: Upload APKs
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v7
       with:
-        name: app-apks
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v7
+      with:
+        name: app-release
         path: |
-          app/build/outputs/apk/debug/app-debug.apk
           app/build/outputs/apk/release/app-release*-unsigned.apk
           app/build/outputs/apk/release/app-release.apk
