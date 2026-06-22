@@ -61,6 +61,16 @@
    ./gradlew installDebug
    ```
 
+### 后端部署与配置
+本项目依赖于第三方开源的增强版云音乐 API 接口。在编译应用之前，你需要自行部署后端服务并在本地配置接口地址：
+1. 请参考 [api-enhanced 仓库](https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced) 中的文档，将后端服务部署到你的服务器或本地（例如使用 Vercel 或 Docker 等方式）。
+2. 在项目根目录下创建 `local.properties` 文件（如果不存在）。
+3. 在 `local.properties` 中加入你部署好的 API 地址，例如：
+   ```properties
+   API_BASE_URL="https://your-api-domain.com/"
+   ```
+   *注意：必须包含双引号并以 `/` 结尾。如果没有配置，应用将默认使用无效占位地址，导致无法获取数据。*
+
 ## ⚠️ 目前的不足与已知问题 (Known Issues & Limitations)
 * **性能瓶颈**：在部分安卓手表（例如作者本人的 OPPO Watch X3）上，目前存在较为明显的性能问题和异常卡顿，可能与架构实现或系统适配有关。非常需要有性能调优或 Wear OS 开发经验的大佬提供支持与帮助。
 * **功能待完善**：目前仍有一些进阶功能（如“听歌识曲”等）尚未开发完成。
@@ -69,6 +79,10 @@
 如果你有好的想法、发现了 Bug，或是想为 ClaudWecho 贡献代码，非常欢迎提交 Issue 或 Pull Request。
 
 **🎨 图标征集中 (Icon Wanted!)**：项目目前还没有专属的 App 图标（目前使用默认的占位图）。如果你有设计特长，愿意为 ClaudWecho 设计一枚好看的专属图标，欢迎随时联系或提交 PR！
+
+## 🙏 致谢与参考 (Acknowledgements)
+* **后端 API 支持**：本项目的数据接口由 [NeteaseCloudMusicApiEnhanced/api-enhanced](https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced) 提供强力支持。
+* **UI 设计与功能灵感**：部分 UI 布局和功能实现参考了优秀的开源项目 [sky130/ZeroMusicApp](https://github.com/sky130/ZeroMusicApp)。
 
 ## 📝 声明 (Disclaimer)
 本项目为个人学习与研究所作的第三方客户端，不对任何因使用本软件造成的风险负责。请支持正版软件与正版数字音乐，同时也由衷希望官方能早日把自家的手表客户端做得更好用。
