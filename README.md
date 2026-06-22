@@ -1,14 +1,19 @@
-# ClaudWecho
+<div align="center">
+  <!-- 🎨 [Logo Placeholder] -->
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="120" alt="ClaudWecho Logo Placeholder">
+  
+  <h1>ClaudWecho</h1>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/Platform-Wear%20OS-brightgreen.svg" alt="Platform">
-  <img src="https://img.shields.io/badge/Language-Kotlin-orange.svg" alt="Kotlin">
-  <img src="https://img.shields.io/badge/Architecture-MVVM-blue.svg" alt="MVVM">
-  <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
-  <img src="https://img.shields.io/github/last-commit/yorkyang2333/ClaudWecho" alt="Last Commit">
-  <img src="https://img.shields.io/github/repo-size/yorkyang2333/ClaudWecho" alt="Repo Size">
-  <img src="https://img.shields.io/github/stars/yorkyang2333/ClaudWecho?style=social" alt="Stars">
-</p>
+  <p>
+    <img src="https://img.shields.io/badge/Platform-Wear%20OS-brightgreen.svg" alt="Platform">
+    <img src="https://img.shields.io/badge/Language-Kotlin-orange.svg" alt="Kotlin">
+    <img src="https://img.shields.io/badge/Architecture-MVVM-blue.svg" alt="MVVM">
+    <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
+    <img src="https://img.shields.io/github/last-commit/yorkyang2333/ClaudWecho" alt="Last Commit">
+    <img src="https://img.shields.io/github/repo-size/yorkyang2333/ClaudWecho" alt="Repo Size">
+    <img src="https://img.shields.io/github/stars/yorkyang2333/ClaudWecho?style=social" alt="Stars">
+  </p>
+</div>
 
 **ClaudWecho** (读作: /klɔːd ˈwɛkoʊ/) 是一款专为 Android 智能手表（Wear OS / Android Wear）打造的“某知名音乐软件”第三方客户端。致力于为腕上设备提供轻量、流畅、沉浸的音乐播放体验。
 
@@ -59,6 +64,8 @@
 
 ## 🤝 贡献与反馈 (Contributing)
 如果你有好的想法、发现了 Bug，或是想为 ClaudWecho 贡献代码，非常欢迎提交 Issue 或 Pull Request。
+
+**🎨 图标征集中 (Icon Wanted!)**：项目目前还没有专属的 App 图标（目前使用默认的占位图）。如果你有设计特长，愿意为 ClaudWecho 设计一枚好看的专属图标，欢迎随时联系或提交 PR！
 
 ## 📝 声明 (Disclaimer)
 本项目为个人学习与研究所作的第三方客户端，不对任何因使用本软件造成的风险负责。请支持正版软件与正版数字音乐，同时也由衷希望官方能早日把自家的手表客户端做得更好用。
