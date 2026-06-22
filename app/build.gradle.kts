@@ -22,7 +22,11 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(FileInputStream(localPropertiesFile))
         }
-        val apiBaseUrl = localProperties.getProperty("API_BASE_URL") ?: "\"http://unconfigured.local/\""
+        val apiBaseUrl = localProperties.getProperty("API_BASE_URL") 
+            ?: System.getenv("API_BASE_URL")
+            ?: throw GradleException("\n\n🚨 [ClaudWecho] Build Failed: API_BASE_URL is not configured!\n" +
+                "Please configure API_BASE_URL in your local.properties file.\n" +
+                "See the README.md for backend deployment and configuration instructions.\n\n")
         buildConfigField("String", "API_BASE_URL", apiBaseUrl)
     }
 

@@ -69,7 +69,7 @@
    ```properties
    API_BASE_URL="https://your-api-domain.com/"
    ```
-   *注意：必须包含双引号并以 `/` 结尾。如果没有配置，应用将默认使用无效占位地址，导致无法获取数据。*
+   *注意：必须包含双引号并以 `/` 结尾。如果没有配置该项，**项目将无法通过编译**并会抛出异常提醒。*
 
 ## ⚠️ 目前的不足与已知问题 (Known Issues & Limitations)
 * **性能瓶颈**：在部分安卓手表（例如作者本人的 OPPO Watch X3）上，目前存在较为明显的性能问题和异常卡顿，可能与架构实现或系统适配有关。非常需要有性能调优或 Wear OS 开发经验的大佬提供支持与帮助。
@@ -82,7 +82,7 @@
 
 ## 🙏 致谢与参考 (Acknowledgements)
 * **后端 API 支持**：本项目的数据接口由 [NeteaseCloudMusicApiEnhanced/api-enhanced](https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced) 提供强力支持。
-* **UI 设计与功能灵感**：部分 UI 布局和功能实现参考了优秀的开源项目 [sky130/ZeroMusicApp](https://github.com/sky130/ZeroMusicApp)。
+* **UI 设计与功能灵感**：部分 UI 布局和功能实现参考了优秀的第三方客户端 [sky130/ZeroMusicApp](https://github.com/sky130/ZeroMusicApp)。
 
 ## 📝 声明 (Disclaimer)
 本项目为个人学习与研究所作的第三方客户端，不对任何因使用本软件造成的风险负责。请支持正版软件与正版数字音乐，同时也由衷希望官方能早日把自家的手表客户端做得更好用。

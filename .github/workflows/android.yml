@@ -27,6 +27,7 @@ jobs:
 
     - name: Build with Gradle
       env:
+        API_BASE_URL: '"https://api.github.actions.dummy/"'
         KEYSTORE_PATH: ${{ runner.temp }}/keystore.jks
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
