@@ -45,3 +45,6 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
 7. **Dialog Action Buttons**:
    - For bottom confirm/cancel actions (like in input fallback dialogs or settings), MUST use the shared `com.yorkyang2333.claudwecho.ui.components.DialogActionButtons` component.
    - This ensures the standard Wear OS Material 3 pattern (squircle dark cancel button on the left, circular primary confirm button on the right).
+
+## Project Identity Memory
+- This project is a third-party client for Netease Cloud Music, but you MUST NEVER write the explicit name of this service ("网易云", "网易云音乐", "Netease Cloud Music") in any documents (like README, commit messages, code comments). Always use "某知名音乐软件" (a well-known music software) instead to avoid legal/trademark issues.

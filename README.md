@@ -1,8 +1,49 @@
-## ClaudWecho
+# ClaudWecho
 
-**ClaudWecho** 是一款专为 Android 智能手表（Wear OS / Android Wear）打造的某知名音乐软件第三方客户端。
+**ClaudWecho** 是一款专为 Android 智能手表（Wear OS / Android Wear）打造的“某知名音乐软件”第三方客户端。致力于为腕上设备提供轻量、流畅、沉浸的音乐播放体验。
 
-项目的名字蕴含着它的诞生灵感：
+项目名字蕴含着它的诞生灵感：
 * **Claud(e)**：由 AI 伙伴 Claude 启发并协力构建的极客产物；
 * **Wear**：专注于腕上设备的轻量化与高适配性；
 * **Echo**：让旋律在方寸之间的表盘上长久回响。
+
+## 🌟 核心特性 (Features)
+
+* **纯粹的腕上体验**：基于 Wear OS 最佳实践设计的用户交互，操作逻辑清晰流畅。
+* **原生性能体验**：采用标准 Android View 架构 (Activity + Fragment + XML)，结合 ViewBinding 实现高性能渲染，摆脱卡顿。
+* **音乐无缝播放**：深度集成 MediaSession 和前台服务，支持后台播放，随时随地享受音乐。
+* **现代技术栈**：基于 Kotlin 编写，使用 Koin 进行依赖注入，项目结构清晰，易于扩展与维护。
+
+## 🛠️ 技术架构 (Tech Stack)
+
+* **Language**: Kotlin
+* **Architecture**: MVVM
+* **UI**: Android View System (XML, RecyclerView, WearableRecyclerView, ViewBinding)
+* **Dependency Injection**: Koin
+* **Media**: ExoPlayer (Media3), MediaSession
+* **Networking/Data**: Retrofit, Kotlin Coroutines, Flow
+
+## 🚀 快速开始 (Getting Started)
+
+### 环境要求
+* Android Studio (推荐最新版)
+* JDK 17
+* Wear OS 模拟器或实体手表 (如 OPPO Watch 系列、Galaxy Watch 等)
+
+### 编译与运行
+1. 克隆项目到本地：
+   ```bash
+   git clone https://github.com/your-username/ClaudWecho.git
+   ```
+2. 使用 Android Studio 打开项目。
+3. 连接你的 Wear OS 设备或启动 Wear OS 模拟器。
+4. 点击 `Run` 按钮或在终端执行：
+   ```bash
+   ./gradlew installDebug
+   ```
+
+## 🤝 贡献与反馈 (Contributing)
+如果你有好的想法、发现了 Bug，或是想为 ClaudWecho 贡献代码，非常欢迎提交 Issue 或 Pull Request。
+
+## 📝 声明 (Disclaimer)
+本项目为个人学习与研究所作的第三方客户端，不对任何因使用本软件造成的风险负责。请支持正版软件与正版数字音乐。
