@@ -43,6 +43,10 @@
    ./gradlew installDebug
    ```
 
+## ⚠️ 目前的不足与已知问题 (Known Issues & Limitations)
+* **性能瓶颈**：在部分安卓手表（例如作者本人的 OPPO Watch X3）上，由于初版采用了 Jetpack Compose 架构，目前存在严重的性能问题和异常卡顿。这也是目前正在进行 XML 原生架构重构的原因。非常需要有性能调优或 Wear OS 开发经验的大佬提供支持与帮助。
+* **功能待完善**：目前仍有一些进阶功能（如“听歌识曲”等）尚未开发完成。
+
 ## 🤝 贡献与反馈 (Contributing)
 如果你有好的想法、发现了 Bug，或是想为 ClaudWecho 贡献代码，非常欢迎提交 Issue 或 Pull Request。
 
