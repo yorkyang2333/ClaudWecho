@@ -8,6 +8,7 @@
     <img src="https://img.shields.io/badge/Platform-Wear%20OS-brightgreen.svg" alt="Platform">
     <img src="https://img.shields.io/badge/Language-Kotlin-orange.svg" alt="Kotlin">
     <img src="https://img.shields.io/badge/Architecture-MVVM-blue.svg" alt="MVVM">
+    <img src="https://img.shields.io/badge/License-GPL%203.0-blue.svg" alt="License">
     <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg" alt="PRs Welcome">
     <img src="https://img.shields.io/github/last-commit/yorkyang2333/ClaudWecho" alt="Last Commit">
     <img src="https://img.shields.io/github/repo-size/yorkyang2333/ClaudWecho" alt="Repo Size">
@@ -69,3 +70,8 @@
 
 ## 📝 声明 (Disclaimer)
 本项目为个人学习与研究所作的第三方客户端，不对任何因使用本软件造成的风险负责。请支持正版软件与正版数字音乐，同时也由衷希望官方能早日把自家的手表客户端做得更好用。
+
+## 📄 开源协议与反倒卖声明 (License & Anti-Resale)
+本项目基于 **[GPL-3.0 License](LICENSE)** 开源。
+
+> **⚠️ 严正声明**：本软件**完全免费**且**开源**。**严禁任何人将本项目及打包后的 APK 用于任何形式的商业售卖（包括但不限于闲鱼、淘宝等平台）或打包盈利**。如果您是付费购买的本软件，说明您已被骗，请立即要求退款并向平台举报卖家！
