@@ -82,7 +82,7 @@
 
 ## 🙏 致谢与参考 (Acknowledgements)
 * **后端 API 支持**：本项目的数据接口由 [NeteaseCloudMusicApiEnhanced/api-enhanced](https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced) 提供强力支持。
-* **UI 设计与功能灵感**：部分 UI 布局和功能实现参考了优秀的第三方客户端 [sky130/ZeroMusicApp](https://github.com/sky130/ZeroMusicApp)。
+* **UI 设计与功能灵感**：部分 UI 布局和功能实现参考了优秀的本地音乐播放软件 [sky130/ZeroMusicApp](https://github.com/sky130/ZeroMusicApp)。
 
 ## 📝 声明 (Disclaimer)
 本项目为个人学习与研究所作的第三方客户端，不对任何因使用本软件造成的风险负责。请支持正版软件与正版数字音乐，同时也由衷希望官方能早日把自家的手表客户端做得更好用。
