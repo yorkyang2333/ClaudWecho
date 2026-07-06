@@ -67,7 +67,7 @@ fun SearchScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    val listState = rememberScalingLazyListState()
+    val listState = rememberScalingLazyListState(initialCenterItemIndex = 0)
     val context = LocalContext.current
 
     var fallbackInput by remember { mutableStateOf(false) }
