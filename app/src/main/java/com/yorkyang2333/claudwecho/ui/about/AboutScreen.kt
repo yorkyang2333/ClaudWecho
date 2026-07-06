@@ -1,6 +1,7 @@
 package com.yorkyang2333.claudwecho.ui.about
 
 import android.content.pm.PackageManager
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import coil.compose.AsyncImage
@@ -107,8 +108,8 @@ fun AboutScreen() {
                         ) 
                     },
                     icon = {
-                        AsyncImage(
-                            model = "https://github.com/yorkyang2333.png",
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_developer_avatar),
                             contentDescription = "Avatar",
                             modifier = Modifier
                                 .size(24.dp)
