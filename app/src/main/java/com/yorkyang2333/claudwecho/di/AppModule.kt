@@ -78,6 +78,7 @@ val networkModule = module {
     single { get<Retrofit>().create(NeteaseApi::class.java) }
     single { com.yorkyang2333.claudwecho.data.LocalRecentPlaysManager(androidContext()) }
     single { com.yorkyang2333.claudwecho.data.PlaybackStateManager(androidContext()) }
+    single { com.yorkyang2333.claudwecho.data.LocalSearchHistoryManager(androidContext()) }
     single { LoginRepository(get()) }
     single { MainRepository(get(), get()) }
     
@@ -91,5 +92,5 @@ val networkModule = module {
     viewModel { com.yorkyang2333.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recent.RecentlyPlayedViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidContext()) }
-    viewModel { com.yorkyang2333.claudwecho.ui.search.SearchViewModel(get()) }
+    viewModel { com.yorkyang2333.claudwecho.ui.search.SearchViewModel(get(), get()) }
 }

@@ -104,6 +104,6 @@ fun PlayerMenuScreen(
             }
         }
         
-        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放设置")
+        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放菜单")
     }
 }
