@@ -2,10 +2,9 @@
 
 ## Git and Deployment Workflow
 When completing a task or milestone, automatically:
-1. Install the application on the local emulator (`./gradlew installDebug` or similar appropriate command).
-2. If the build and installation are successful, commit the changes to git.
+1. Install the application on the local emulator or connected device (`./gradlew installDebug` or similar appropriate command). Do NOT automatically launch the application after installation unless explicitly asked by the user.
+2. If the build and installation are successful, commit the changes to git. All git commit messages MUST be written in English.
 3. Push the changes to the remote repository.
-4. Launch the application on the emulator so the user can immediately see the changes.
 
 ## ClaudWecho Wear OS UI Design Guidelines
 When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere to the following strict design standards to ensure pixel-perfect consistency across the app:
