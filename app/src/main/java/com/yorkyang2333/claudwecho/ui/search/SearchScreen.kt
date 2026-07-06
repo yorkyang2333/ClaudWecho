@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.Button
@@ -67,7 +68,7 @@ fun SearchScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    val listState = rememberScalingLazyListState(initialCenterItemIndex = 0)
+    val listState = rememberScalingLazyListState(initialCenterItemIndex = 1)
     val context = LocalContext.current
 
     var fallbackInput by remember { mutableStateOf(false) }
@@ -92,7 +93,7 @@ fun SearchScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         RotaryScalingLazyColumn(
-            autoCentering = null,
+            autoCentering = AutoCenteringParams(itemIndex = 1),
             modifier = Modifier.fillMaxSize(),
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
