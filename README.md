@@ -47,7 +47,7 @@
 ### 环境要求
 * Android Studio (推荐最新版)
 * JDK 17
-* Wear OS 模拟器或实体手表 (如 OPPO Watch 系列、Galaxy Watch 等)
+* Wear OS 2.0 及以上系统的模拟器或实体手表 (最低支持 Android 7.0 / API 24，如 OPPO Watch 系列、Galaxy Watch 等)
 
 ### 编译与运行
 1. 克隆项目到本地：
