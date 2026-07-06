@@ -11,6 +11,7 @@ class PlaybackStateManager(context: Context) {
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
     val currentTrackId = kotlinx.coroutines.flow.MutableStateFlow<Long?>(null)
+    val isPersonalFmMode = kotlinx.coroutines.flow.MutableStateFlow(false)
 
     fun saveState(songs: List<Song>, index: Int) {
         try {
@@ -45,7 +46,7 @@ class PlaybackStateManager(context: Context) {
     }
 
     fun getRepeatMode(): Int {
-        return prefs.getInt("repeat_mode", androidx.media3.common.Player.REPEAT_MODE_OFF)
+        return prefs.getInt("repeat_mode", androidx.media3.common.Player.REPEAT_MODE_ALL)
     }
 
     fun getShuffleMode(): Boolean {

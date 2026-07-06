@@ -59,7 +59,7 @@ class PlayerViewModel(
     private val _isCurrentSongLiked = MutableStateFlow(false)
     val isCurrentSongLiked: StateFlow<Boolean> = _isCurrentSongLiked.asStateFlow()
 
-    private val _isPersonalFmMode = MutableStateFlow(false)
+    private val _isPersonalFmMode = playbackStateManager.isPersonalFmMode
     val isPersonalFmMode: StateFlow<Boolean> = _isPersonalFmMode.asStateFlow()
 
     private val _isCurrentSongPodcast = MutableStateFlow(false)
@@ -110,6 +110,13 @@ class PlayerViewModel(
                 _isPlaying.value = isPlaying
             }
             override fun onMediaItemTransition(mediaItem: androidx.media3.common.MediaItem?, reason: Int) {
+                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO &&
+                    !_isPersonalFmMode.value &&
+                    player?.repeatMode == Player.REPEAT_MODE_OFF &&
+                    player?.shuffleModeEnabled == false
+                ) {
+                    player?.pause()
+                }
                 val currentOriginalIndex = player?.currentMediaItemIndex ?: 0
                 _currentMediaItemIndex.value = currentOriginalIndex
                 _displayCurrentIndex.value = displayToOriginalMap.indexOf(currentOriginalIndex).takeIf { it >= 0 } ?: 0
@@ -161,7 +168,7 @@ class PlayerViewModel(
             }
             override fun onShuffleModeEnabledChanged(isShuffleEnabled: Boolean) {
                 this@PlayerViewModel.shuffleModeEnabled.value = isShuffleEnabled
-                playbackStateManager.savePlaybackMode(player?.repeatMode ?: androidx.media3.common.Player.REPEAT_MODE_OFF, isShuffleEnabled)
+                playbackStateManager.savePlaybackMode(player?.repeatMode ?: androidx.media3.common.Player.REPEAT_MODE_ALL, isShuffleEnabled)
                 player?.currentTimeline?.let { updateDisplayPlaylist(it) }
             }
             override fun onTimelineChanged(timeline: androidx.media3.common.Timeline, reason: Int) {
