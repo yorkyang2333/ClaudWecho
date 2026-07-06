@@ -31,7 +31,8 @@ fun AppNavigation(
 
     SwipeDismissableNavHost(
         navController = navController,
-        startDestination = "player"
+        startDestination = "player",
+        userSwipeEnabled = true
     ) {
         composable("player") {
             HomePagerScreen(
