@@ -60,25 +60,38 @@ fun MainScreen(
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        if (isLoading) {
-            androidx.wear.compose.material3.CircularProgressIndicator()
-        } else {
-            Box(modifier = Modifier.fillMaxSize()) {
-                RotaryScalingLazyColumn(
-                    autoCentering = null,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
-                ) {
-                    item {
-                        Spacer(modifier = Modifier.height(48.dp))
-                    }
-                    // User Profile Section
-                    item {
-                        if (userProfile != null) {
-                            Button(
-                                onClick = { onNavigateToFeature("profile") },
+        Box(modifier = Modifier.fillMaxSize()) {
+            RotaryScalingLazyColumn(
+                autoCentering = null,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
+                // User Profile Section
+                item {
+                    if (isLoading) {
+                        Button(
+                            onClick = {},
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors(),
+                            label = {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.wear.compose.material3.CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+                        )
+                    } else if (userProfile != null) {
+                        Button(
+                            onClick = { onNavigateToFeature("profile") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.filledTonalButtonColors(),
                             label = {
@@ -186,7 +199,6 @@ fun MainScreen(
                 }
             }
             com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "ClaudWecho")
-        }
         }
     }
 }
