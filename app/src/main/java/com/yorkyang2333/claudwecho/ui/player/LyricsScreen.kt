@@ -61,7 +61,7 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
                 state = listState,
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(vertical = 32.dp, horizontal = 16.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 itemsIndexed(lyrics) { index, line ->
                     val isCurrent = index == currentLyricIndex
