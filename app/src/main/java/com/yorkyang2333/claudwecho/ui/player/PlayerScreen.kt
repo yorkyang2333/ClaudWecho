@@ -39,10 +39,11 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import kotlinx.coroutines.delay
 
 @Composable
 fun PlayerScreen(
@@ -261,13 +262,38 @@ private fun PlayerIconButton(
     content: @Composable BoxScope.() -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    var isVisualPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(interactionSource) {
+        var pressStartTime = 0L
+        interactionSource.interactions.collect { interaction ->
+            when (interaction) {
+                is PressInteraction.Press -> {
+                    pressStartTime = System.currentTimeMillis()
+                    isVisualPressed = true
+                }
+                is PressInteraction.Release, is PressInteraction.Cancel -> {
+                    val elapsed = System.currentTimeMillis() - pressStartTime
+                    val minDuration = 150L
+                    if (elapsed < minDuration) {
+                        delay(minDuration - elapsed)
+                    }
+                    isVisualPressed = false
+                }
+            }
+        }
+    }
+
     val scale by animateFloatAsState(
-        targetValue = if (isPressed && enabled) 0.88f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMediumLow
-        ),
+        targetValue = if (isVisualPressed && enabled) 0.88f else 1f,
+        animationSpec = if (isVisualPressed && enabled) {
+            tween(durationMillis = 100, easing = FastOutSlowInEasing)
+        } else {
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        },
         label = "pressScale"
     )
 
