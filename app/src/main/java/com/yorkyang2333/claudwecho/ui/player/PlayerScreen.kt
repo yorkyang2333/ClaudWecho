@@ -45,6 +45,7 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalConfiguration
 import kotlinx.coroutines.delay
 
 @Composable
@@ -61,6 +62,29 @@ fun PlayerScreen(
     val isLiked by viewModel.isCurrentSongLiked.collectAsState()
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember(context) { context.getSharedPreferences("settings_prefs", android.content.Context.MODE_PRIVATE) }
+    var screenShapeSetting by remember(prefs) { mutableStateOf(prefs.getString("screen_shape", "auto") ?: "auto") }
+
+    DisposableEffect(prefs) {
+        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == "screen_shape") {
+                screenShapeSetting = prefs.getString("screen_shape", "auto") ?: "auto"
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
+
+    val config = LocalConfiguration.current
+    val isRound = remember(screenShapeSetting, config) {
+        when (screenShapeSetting) {
+            "round" -> true
+            "square" -> false
+            else -> config.isScreenRound
+        }
+    }
 
     val isPodcast by viewModel.isCurrentSongPodcast.collectAsState()
     val isVip by viewModel.isCurrentSongVip.collectAsState()
@@ -97,13 +121,15 @@ fun PlayerScreen(
             label = "progressAnim"
         )
         
-        androidx.wear.compose.material.CircularProgressIndicator(
-            progress = animatedProgress,
-            modifier = Modifier.fillMaxSize(),
-            strokeWidth = 6.dp,
-            indicatorColor = MaterialTheme.colorScheme.primary,
-            trackColor = Color.White.copy(alpha = 0.2f)
-        )
+        if (isRound) {
+            androidx.wear.compose.material.CircularProgressIndicator(
+                progress = animatedProgress,
+                modifier = Modifier.fillMaxSize(),
+                strokeWidth = 6.dp,
+                indicatorColor = MaterialTheme.colorScheme.primary,
+                trackColor = Color.White.copy(alpha = 0.2f)
+            )
+        }
 
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -223,50 +249,74 @@ fun PlayerScreen(
             }
 
             // Bottom Menu Row
-            Row(
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(horizontal = 40.dp)
                     .padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                PlayerIconButton(
-                    onClick = { if (!isPodcast) viewModel.toggleLikeCurrentSong() },
-                    modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                    enabled = currentTitle != null && !isPodcast
-                ) {
-                    Icon(
-                        imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                        contentDescription = "Like",
-                        tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) MaterialTheme.colorScheme.primary else Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
+                if (!isRound) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                            .height(6.dp)
+                            .background(Color.White.copy(alpha = 0.2f), shape = RoundedCornerShape(3.dp))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(animatedProgress.coerceIn(0f, 1f))
+                                .fillMaxHeight()
+                                .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(3.dp))
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                PlayerIconButton(
-                    onClick = onMenuClick,
-                    modifier = Modifier.size(44.dp).offset(y = 4.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 40.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Home,
-                        contentDescription = "Home",
-                        tint = Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
+                    PlayerIconButton(
+                        onClick = { if (!isPodcast) viewModel.toggleLikeCurrentSong() },
+                        modifier = Modifier.size(44.dp).offset(y = (-8).dp),
+                        enabled = currentTitle != null && !isPodcast
+                    ) {
+                        Icon(
+                            imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                            contentDescription = "Like",
+                            tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) MaterialTheme.colorScheme.primary else Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
 
-                PlayerIconButton(
-                    onClick = onSettingsClick,
-                    modifier = Modifier.size(44.dp).offset(y = (-8).dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Menu,
-                        contentDescription = "Menu",
-                        tint = Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
+                    PlayerIconButton(
+                        onClick = onMenuClick,
+                        modifier = Modifier.size(44.dp).offset(y = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Home,
+                            contentDescription = "Home",
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
+                    PlayerIconButton(
+                        onClick = onSettingsClick,
+                        modifier = Modifier.size(44.dp).offset(y = (-8).dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Menu,
+                            contentDescription = "Menu",
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
                 }
             }
         }
