@@ -30,10 +30,10 @@ class PlaylistDetailViewModel(
 
     private val _originalSongs = MutableStateFlow<List<Song>>(emptyList())
     
-    private val _sortMode = MutableStateFlow(SortMode.valueOf(prefs.getString("sort_mode", SortMode.DEFAULT.name) ?: SortMode.DEFAULT.name))
+    private val _sortMode = MutableStateFlow(SortMode.DEFAULT)
     val sortMode: StateFlow<SortMode> = _sortMode.asStateFlow()
     
-    private val _sortOrder = MutableStateFlow(SortOrder.valueOf(prefs.getString("sort_order", SortOrder.ASC.name) ?: SortOrder.ASC.name))
+    private val _sortOrder = MutableStateFlow(SortOrder.ASC)
     val sortOrder: StateFlow<SortOrder> = _sortOrder.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
@@ -42,29 +42,34 @@ class PlaylistDetailViewModel(
     val songs: StateFlow<List<Song>> = combine(
         _originalSongs, _sortMode, _sortOrder, _searchQuery
     ) { original, mode, order, query ->
-        val filtered = if (query.isBlank()) {
-            original
-        } else {
-            original.filter { song ->
-                song.name.contains(query, ignoreCase = true) ||
-                song.displayArtists.any { it.name.contains(query, ignoreCase = true) } ||
-                (song.displayAlbum?.name?.contains(query, ignoreCase = true) == true)
-            }
-        }
-        
-        if (mode == SortMode.DEFAULT) {
-            if (order == SortOrder.ASC) filtered else filtered.reversed()
-        } else {
-            val sorted = filtered.sortedBy { song ->
-                val text = when (mode) {
-                    SortMode.TITLE -> song.name
-                    SortMode.ALBUM -> song.displayAlbum?.name ?: ""
-                    SortMode.ARTIST -> song.displayArtists.joinToString { it.name }
-                    else -> ""
+        withContext(Dispatchers.Default) {
+            val filtered = if (query.isBlank()) {
+                original
+            } else {
+                original.filter { song ->
+                    song.name.contains(query, ignoreCase = true) ||
+                    song.displayArtists.any { it.name.contains(query, ignoreCase = true) } ||
+                    (song.displayAlbum?.name?.contains(query, ignoreCase = true) == true)
                 }
-                getPinyinKey(text)
             }
-            if (order == SortOrder.ASC) sorted else sorted.reversed()
+            
+            if (mode == SortMode.DEFAULT) {
+                if (order == SortOrder.ASC) filtered else filtered.reversed()
+            } else {
+                val decorated = filtered.map { song ->
+                    val text = when (mode) {
+                        SortMode.TITLE -> song.name
+                        SortMode.ALBUM -> song.displayAlbum?.name ?: ""
+                        SortMode.ARTIST -> song.displayArtists.joinToString { it.name }
+                        SortMode.DEFAULT -> ""
+                    }
+                    val pinyinKey = getCachedPinyinKey(text)
+                    Pair(song, pinyinKey)
+                }
+                val sortedDecorated = decorated.sortedBy { it.second }
+                val sorted = sortedDecorated.map { it.first }
+                if (order == SortOrder.ASC) sorted else sorted.reversed()
+            }
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     
@@ -80,10 +85,23 @@ class PlaylistDetailViewModel(
 
     private var currentPlaylistId: Long = -1
 
+    private fun loadSortPrefs(id: Long) {
+        val modeName = prefs.getString("sort_mode_$id", SortMode.DEFAULT.name) ?: SortMode.DEFAULT.name
+        val orderName = prefs.getString("sort_order_$id", SortOrder.ASC.name) ?: SortOrder.ASC.name
+        _sortMode.value = SortMode.valueOf(modeName)
+        _sortOrder.value = SortOrder.valueOf(orderName)
+    }
+
     fun setSort(mode: SortMode, order: SortOrder) {
         _sortMode.value = mode
         _sortOrder.value = order
-        prefs.edit().putString("sort_mode", mode.name).putString("sort_order", order.name).apply()
+        val id = currentPlaylistId
+        if (id != -1L) {
+            prefs.edit()
+                .putString("sort_mode_$id", mode.name)
+                .putString("sort_order_$id", order.name)
+                .apply()
+        }
     }
 
     private suspend fun checkOwnership(playlistId: Long) {
@@ -97,6 +115,7 @@ class PlaylistDetailViewModel(
 
     fun loadPlaylist(id: Long, forceRefresh: Boolean = false) {
         currentPlaylistId = id
+        loadSortPrefs(id)
         _isLoading.value = true
         viewModelScope.launch {
             checkOwnership(id)
@@ -108,6 +127,7 @@ class PlaylistDetailViewModel(
 
     fun loadAlbum(id: Long, forceRefresh: Boolean = false) {
         currentPlaylistId = id
+        loadSortPrefs(id)
         _isLoading.value = true
         _isOwnedPlaylist.value = false
         viewModelScope.launch {
@@ -119,6 +139,7 @@ class PlaylistDetailViewModel(
 
     fun loadDjRadio(id: Long, forceRefresh: Boolean = false) {
         currentPlaylistId = id
+        loadSortPrefs(id)
         _isLoading.value = true
         _isOwnedPlaylist.value = false
         viewModelScope.launch {
@@ -138,6 +159,7 @@ class PlaylistDetailViewModel(
                 val likedId = pl.firstOrNull()?.id
                 if (likedId != null) {
                     currentPlaylistId = likedId
+                    loadSortPrefs(likedId)
                     _originalSongs.value = repository.getPlaylistTracks(likedId, forceRefresh)
                     _title.value = repository.getCachedPlaylistTitle(likedId) ?: "我喜欢"
                 }
@@ -185,6 +207,13 @@ class PlaylistDetailViewModel(
     }
 
     companion object {
+        private val pinyinCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+
+        fun getCachedPinyinKey(text: String?): String {
+            if (text.isNullOrBlank()) return "#"
+            return pinyinCache.getOrPut(text) { getPinyinKey(text) }
+        }
+
         fun getPinyinKey(text: String?): String {
             if (text.isNullOrBlank()) return "#"
             val sb = StringBuilder()
@@ -200,7 +229,7 @@ class PlaylistDetailViewModel(
         }
 
         fun getFirstLetter(text: String?): String {
-            val key = getPinyinKey(text)
+            val key = getCachedPinyinKey(text)
             if (key.isBlank()) return "#"
             val firstChar = key[0]
             return if (firstChar in 'A'..'Z') firstChar.toString() else "#"
