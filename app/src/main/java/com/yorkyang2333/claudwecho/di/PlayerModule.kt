@@ -2,7 +2,7 @@ package com.yorkyang2333.claudwecho.di
 
 import android.content.Context
 import androidx.media3.database.StandaloneDatabaseProvider
-import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
@@ -25,8 +25,8 @@ val playerModule = module {
     single {
         val context: Context = androidContext()
         val cache: SimpleCache = get()
-        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-            .setAllowCrossProtocolRedirects(true)
+        val okHttpClient: okhttp3.OkHttpClient = get()
+        val httpDataSourceFactory = OkHttpDataSource.Factory(okHttpClient)
             
         CacheDataSource.Factory()
             .setCache(cache)

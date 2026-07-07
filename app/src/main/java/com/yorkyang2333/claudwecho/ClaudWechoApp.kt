@@ -7,7 +7,9 @@ import org.koin.core.context.startKoin
 
 import com.yorkyang2333.claudwecho.di.playerModule
 
-class ClaudWechoApp : Application() {
+import org.koin.android.ext.android.inject
+
+class ClaudWechoApp : Application(), coil.ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         
@@ -15,5 +17,12 @@ class ClaudWechoApp : Application() {
             androidContext(this@ClaudWechoApp)
             modules(networkModule, playerModule)
         }
+    }
+
+    override fun newImageLoader(): coil.ImageLoader {
+        val okHttpClient: okhttp3.OkHttpClient by inject()
+        return coil.ImageLoader.Builder(this)
+            .okHttpClient(okHttpClient)
+            .build()
     }
 }

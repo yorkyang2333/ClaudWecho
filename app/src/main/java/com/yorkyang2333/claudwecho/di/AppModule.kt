@@ -57,9 +57,48 @@ val networkModule = module {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+        val ipv4PrioritizedDns = object : okhttp3.Dns {
+            override fun lookup(hostname: String): List<java.net.InetAddress> {
+                val addresses = okhttp3.Dns.SYSTEM.lookup(hostname)
+                // On Wear OS when connected via Bluetooth tethering/proxy, IPv6 routing is often broken or dropped by the phone bridge.
+                // Prioritizing IPv4 addresses prevents socket connection hangs and timeouts over Bluetooth.
+                return addresses.sortedBy { if (it is java.net.Inet4Address) 0 else 1 }
+            }
+        }
+        val bluetoothCompatibilityRetryInterceptor = okhttp3.Interceptor { chain ->
+            val request = chain.request()
+            var response: okhttp3.Response? = null
+            var exception: java.io.IOException? = null
+            val maxRetries = 2
+            var tryCount = 0
+
+            while (tryCount <= maxRetries && response == null) {
+                try {
+                    if (tryCount > 0) {
+                        try { java.lang.Thread.sleep(500L * tryCount) } catch (e: InterruptedException) { /* ignore */ }
+                    }
+                    response = chain.proceed(request)
+                } catch (e: java.io.IOException) {
+                    exception = e
+                    tryCount++
+                    if (tryCount > maxRetries || request.method != "GET") {
+                        throw e
+                    }
+                    android.util.Log.w("NetworkModule", "Network request failed over connection (try $tryCount/$maxRetries): ${e.message}, retrying...")
+                }
+            }
+            response ?: throw (exception ?: java.io.IOException("Unknown network error"))
+        }
         OkHttpClient.Builder()
             .cookieJar(get<PersistentCookieJar>())
+            .dns(ipv4PrioritizedDns)
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .connectionPool(okhttp3.ConnectionPool(15, 5, java.util.concurrent.TimeUnit.MINUTES))
             .addInterceptor(dynamicBaseUrlInterceptor)
+            .addInterceptor(bluetoothCompatibilityRetryInterceptor)
             .addInterceptor(logging)
             .build()
     }
