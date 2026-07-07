@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material3.Icon
-import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.compose.material.icons.Icons
@@ -39,6 +38,11 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 
 @Composable
 fun PlayerScreen(
@@ -130,7 +134,7 @@ fun PlayerScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (isFmMode) {
-                    IconButton(
+                    PlayerIconButton(
                         onClick = {
                             viewModel.trashCurrentFmSong()
                             android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
@@ -146,7 +150,7 @@ fun PlayerScreen(
                         )
                     }
                 } else {
-                    IconButton(
+                    PlayerIconButton(
                         onClick = { viewModel.skipToPrevious() },
                         modifier = Modifier.size(56.dp),
                         enabled = currentTitle != null
@@ -162,16 +166,14 @@ fun PlayerScreen(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                IconButton(
+                PlayerIconButton(
                     onClick = {
                         viewModel.playOrPause()
                     },
                     modifier = Modifier.size(64.dp),
                     enabled = currentTitle != null,
-                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    )
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
@@ -183,7 +185,7 @@ fun PlayerScreen(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                IconButton(
+                PlayerIconButton(
                     onClick = { viewModel.skipToNext() },
                     modifier = Modifier.size(56.dp),
                     enabled = currentTitle != null
@@ -207,11 +209,10 @@ fun PlayerScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
+                PlayerIconButton(
                     onClick = { if (!isPodcast) viewModel.toggleLikeCurrentSong() },
                     modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                    enabled = currentTitle != null && !isPodcast,
-                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    enabled = currentTitle != null && !isPodcast
                 ) {
                     Icon(
                         imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
@@ -221,10 +222,9 @@ fun PlayerScreen(
                     )
                 }
 
-                IconButton(
+                PlayerIconButton(
                     onClick = onMenuClick,
-                    modifier = Modifier.size(44.dp).offset(y = 4.dp),
-                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    modifier = Modifier.size(44.dp).offset(y = 4.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Home,
@@ -234,10 +234,9 @@ fun PlayerScreen(
                     )
                 }
 
-                IconButton(
+                PlayerIconButton(
                     onClick = onSettingsClick,
-                    modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                    colors = androidx.wear.compose.material3.IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    modifier = Modifier.size(44.dp).offset(y = (-8).dp)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Menu,
@@ -249,4 +248,44 @@ fun PlayerScreen(
             }
         }
     }
+}
+
+@Composable
+private fun PlayerIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    containerColor: Color = Color.Transparent,
+    disabledContainerColor: Color = Color.Transparent,
+    shape: Shape = CircleShape,
+    content: @Composable BoxScope.() -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && enabled) 0.88f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "pressScale"
+    )
+
+    Box(
+        modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .clip(shape)
+            .background(if (enabled) containerColor else disabledContainerColor)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = enabled,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center,
+        content = content
+    )
 }
