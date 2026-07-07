@@ -270,7 +270,7 @@ fun PlaylistDetailScreen(
             }
             
             val currentSortText = when (sortMode) {
-                SortMode.DEFAULT -> "默认时间"
+                SortMode.DEFAULT -> "添加时间"
                 SortMode.TITLE -> if (sortOrder == SortOrder.ASC) "标题 (A-Z)" else "标题 (Z-A)"
                 SortMode.ALBUM -> if (sortOrder == SortOrder.ASC) "专辑 (A-Z)" else "专辑 (Z-A)"
                 SortMode.ARTIST -> if (sortOrder == SortOrder.ASC) "歌手 (A-Z)" else "歌手 (Z-A)"
@@ -298,7 +298,8 @@ fun PlaylistDetailScreen(
                     showSort.value = true
                     showMenu.value = false
                 },
-                currentSort = currentSortText
+                currentSort = currentSortText,
+                isAlphabetIndexEnabled = sortMode != SortMode.DEFAULT
             )
             
             PlaylistSortDialog(

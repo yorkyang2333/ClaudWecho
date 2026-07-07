@@ -13,6 +13,7 @@ import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import androidx.compose.ui.text.style.TextOverflow
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 
 @Composable
@@ -40,22 +41,35 @@ fun AlphabetIndexDialog(
                 }
                 
                 val letters = listOf("#") + ('A'..'Z').map { it.toString() }
+                val rows = letters.chunked(3)
                 
-                items(letters.size) { index ->
-                    val letter = letters[index]
+                items(rows.size) { index ->
+                    val rowLetters = rows[index]
                     
-                    Button(
-                        onClick = {
-                            onLetterSelected(letter)
-                            onDismissRequest()
-                        },
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.filledTonalButtonColors()
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(
-                            text = letter,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        rowLetters.forEach { letter ->
+                            Button(
+                                onClick = {
+                                    onLetterSelected(letter)
+                                    onDismissRequest()
+                                },
+                                modifier = Modifier.weight(1f).aspectRatio(1f),
+                                colors = ButtonDefaults.filledTonalButtonColors()
+                            ) {
+                                Text(
+                                    text = letter,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                        repeat(3 - rowLetters.size) {
+                            Spacer(modifier = Modifier.weight(1f).aspectRatio(1f))
+                        }
                     }
                 }
             }

@@ -26,7 +26,8 @@ fun PlaylistMenuDialog(
     onMultiSelect: () -> Unit,
     onAlphabetIndex: () -> Unit,
     onSortBy: () -> Unit,
-    currentSort: String
+    currentSort: String,
+    isAlphabetIndexEnabled: Boolean = true
 ) {
     Dialog(
         showDialog = showDialog,
@@ -79,6 +80,7 @@ fun PlaylistMenuDialog(
                     Button(
                         onClick = onAlphabetIndex,
                         modifier = Modifier.fillMaxWidth(),
+                        enabled = isAlphabetIndexEnabled,
                         colors = ButtonDefaults.filledTonalButtonColors()
                     ) {
                         Text(

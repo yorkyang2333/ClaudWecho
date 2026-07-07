@@ -69,7 +69,7 @@ fun PlaylistSortDialog(
                 }
                 
                 val options = listOf(
-                    Pair(SortMode.DEFAULT, "默认时间"),
+                    Pair(SortMode.DEFAULT, "添加时间"),
                     Pair(SortMode.TITLE, "按标题"),
                     Pair(SortMode.ALBUM, "按专辑"),
                     Pair(SortMode.ARTIST, "按歌手")
