@@ -135,7 +135,7 @@ fun PlayerScreen(
                     lastRotaryHapticTime = currentTime
                 }
                 val basePos = targetSeekPos ?: currentPosition
-                val deltaMs = (event.verticalScrollPixels * 100).toLong()
+                val deltaMs = (event.verticalScrollPixels * 25).toLong()
                 val newPos = (basePos + deltaMs).coerceIn(0L, duration)
                 targetSeekPos = newPos
                 true
@@ -151,7 +151,7 @@ fun PlayerScreen(
                             lastRotaryHapticTime = currentTime
                         }
                         val basePos = targetSeekPos ?: currentPosition
-                        val deltaMs = (-vScroll * 2500f).toLong()
+                        val deltaMs = (-vScroll * 800f).toLong()
                         val newPos = (basePos + deltaMs).coerceIn(0L, duration)
                         targetSeekPos = newPos
                         true

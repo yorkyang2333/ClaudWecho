@@ -48,6 +48,7 @@ class PlayerViewModel(
 
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition: StateFlow<Long> = _currentPosition.asStateFlow()
+    private var lastSeekTimestamp = 0L
 
     private val _duration = MutableStateFlow(0L)
     val duration: StateFlow<Long> = _duration.asStateFlow()
@@ -222,7 +223,10 @@ class PlayerViewModel(
             while (true) {
                 if (player?.isPlaying == true) {
                     val pos = player?.currentPosition ?: 0L
-                    _currentPosition.value = pos
+                    val timeSinceSeek = System.currentTimeMillis() - lastSeekTimestamp
+                    if (timeSinceSeek > 4000L || Math.abs(pos - _currentPosition.value) < 1500L) {
+                        _currentPosition.value = pos
+                    }
                     _duration.value = player?.duration?.coerceAtLeast(0L) ?: 0L
                     val lrcList = _lyrics.value
                     if (lrcList.isNotEmpty()) {
@@ -311,6 +315,8 @@ class PlayerViewModel(
     }
 
     fun seekTo(positionMs: Long) {
+        _currentPosition.value = positionMs
+        lastSeekTimestamp = System.currentTimeMillis()
         player?.seekTo(positionMs)
     }
 
