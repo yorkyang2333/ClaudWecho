@@ -65,6 +65,9 @@ class PlayerViewModel(
     private val _isCurrentSongPodcast = MutableStateFlow(false)
     val isCurrentSongPodcast: StateFlow<Boolean> = _isCurrentSongPodcast.asStateFlow()
 
+    private val _isCurrentSongVip = MutableStateFlow(false)
+    val isCurrentSongVip: StateFlow<Boolean> = _isCurrentSongVip.asStateFlow()
+
     init {
         initializeController()
         fetchLikedSongs()
@@ -134,11 +137,13 @@ class PlayerViewModel(
                     val song = _currentPlaylist.value.find { it.id == songId }
                     if (song != null) {
                         _isCurrentSongPodcast.value = song.isPodcast
+                        _isCurrentSongVip.value = (song.fee == 1)
                         viewModelScope.launch {
                             repository.recordRecentPlay(song)
                         }
                     } else {
                         _isCurrentSongPodcast.value = false
+                        _isCurrentSongVip.value = false
                     }
                     playbackStateManager.saveState(_currentPlaylist.value, currentIndex)
                     fetchMoreFmIfNeeded()
@@ -160,6 +165,9 @@ class PlayerViewModel(
                             _lyrics.value = lines
                         }
                     }
+                } else {
+                    _isCurrentSongPodcast.value = false
+                    _isCurrentSongVip.value = false
                 }
             }
             override fun onRepeatModeChanged(mode: Int) {

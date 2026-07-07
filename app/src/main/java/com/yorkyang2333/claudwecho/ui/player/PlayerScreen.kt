@@ -2,8 +2,10 @@ package com.yorkyang2333.claudwecho.ui.player
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -61,6 +63,7 @@ fun PlayerScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val isPodcast by viewModel.isCurrentSongPodcast.collectAsState()
+    val isVip by viewModel.isCurrentSongVip.collectAsState()
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -115,16 +118,35 @@ fun PlayerScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
                     maxLines = 1,
-                    modifier = Modifier.basicMarquee()
+                    modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
                 )
                 if (currentTitle != null) {
-                    Text(
-                        text = currentArtist ?: "未知歌手",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.7f),
-                        maxLines = 1,
-                        modifier = Modifier.basicMarquee()
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = currentArtist ?: "未知歌手",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            modifier = Modifier
+                                .weight(1f, fill = false)
+                                .basicMarquee(iterations = Int.MAX_VALUE)
+                        )
+                        if (isVip) {
+                            Text(
+                                text = "VIP",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                                    .padding(horizontal = 2.dp)
+                            )
+                        }
+                    }
                 }
             }
 
