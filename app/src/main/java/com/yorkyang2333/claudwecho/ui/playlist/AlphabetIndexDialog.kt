@@ -54,7 +54,6 @@ fun AlphabetIndexDialog(
                             Button(
                                 onClick = {
                                     onLetterSelected(letter)
-                                    onDismissRequest()
                                 },
                                 modifier = Modifier.weight(1f).aspectRatio(1f),
                                 colors = ButtonDefaults.filledTonalButtonColors()
