@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.automirrored.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Link
+import androidx.compose.material.icons.rounded.WbSunny
 import androidx.wear.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.ui.window.Dialog
@@ -37,6 +38,7 @@ fun SettingsScreen(
     val screenShape by viewModel.screenShape.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
     val apiBaseUrl by viewModel.apiBaseUrl.collectAsState()
+    val keepScreenOn by viewModel.keepScreenOn.collectAsState()
     var showConfirm by remember { mutableStateOf(false) }
     var showUrlDialog by remember { mutableStateOf(false) }
     var tempUrl by remember { mutableStateOf(apiBaseUrl) }
@@ -127,6 +129,23 @@ fun SettingsScreen(
                     },
                     secondaryLabel = { Text(shapeText) },
                     icon = { Icon(Icons.Rounded.Build, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
+            item {
+                Button(
+                    onClick = { viewModel.toggleKeepScreenOn() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { 
+                        Text(
+                            text = "屏幕常亮",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
+                    secondaryLabel = { Text(if (keepScreenOn) "开启" else "关闭") },
+                    icon = { Icon(Icons.Rounded.WbSunny, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
             item {

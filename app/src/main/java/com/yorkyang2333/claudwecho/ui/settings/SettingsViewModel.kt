@@ -18,6 +18,9 @@ class SettingsViewModel(
     private val _screenShape = MutableStateFlow(prefs.getString("screen_shape", "auto") ?: "auto")
     val screenShape: StateFlow<String> = _screenShape.asStateFlow()
 
+    private val _keepScreenOn = MutableStateFlow(prefs.getBoolean("keep_screen_on", false))
+    val keepScreenOn: StateFlow<Boolean> = _keepScreenOn.asStateFlow()
+
     private val _cacheSize = MutableStateFlow("0 MB")
     val cacheSize: StateFlow<String> = _cacheSize.asStateFlow()
 
@@ -95,5 +98,11 @@ class SettingsViewModel(
         val nextShape = shapes[nextIndex]
         prefs.edit().putString("screen_shape", nextShape).apply()
         _screenShape.value = nextShape
+    }
+
+    fun toggleKeepScreenOn() {
+        val next = !_keepScreenOn.value
+        prefs.edit().putBoolean("keep_screen_on", next).apply()
+        _keepScreenOn.value = next
     }
 }
