@@ -23,6 +23,10 @@ import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.foundation.rotary.RotaryScrollableDefaults
 import androidx.wear.compose.foundation.rotary.rotaryScrollable
+import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 
@@ -41,6 +45,7 @@ fun RotaryScalingLazyColumn(
 ) {
     val focusRequester = remember { FocusRequester() }
     val view = LocalView.current
+    val coroutineScope = rememberCoroutineScope()
     var accumulatedRotaryPx by remember { mutableStateOf(0f) }
     var lastRotaryHapticTime by remember { mutableStateOf(0L) }
     
@@ -63,6 +68,31 @@ fun RotaryScalingLazyColumn(
                         lastRotaryHapticTime = currentTime
                     }
                     false
+                }
+                .pointerInteropFilter { event ->
+                    if (event.action == android.view.MotionEvent.ACTION_SCROLL) {
+                        val vScroll = event.getAxisValue(android.view.MotionEvent.AXIS_VSCROLL)
+                        if (vScroll != 0f) {
+                            val scrollFactor = android.view.ViewConfiguration.get(view.context).scaledVerticalScrollFactor
+                            val deltaPx = -vScroll * scrollFactor
+                            
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastRotaryHapticTime > 250L) {
+                                accumulatedRotaryPx = 0f
+                            }
+                            accumulatedRotaryPx += deltaPx
+                            if (Math.abs(accumulatedRotaryPx) >= 30f && currentTime - lastRotaryHapticTime >= 35L) {
+                                view.performRotaryHaptic()
+                                accumulatedRotaryPx = 0f
+                                lastRotaryHapticTime = currentTime
+                            }
+                            
+                            coroutineScope.launch {
+                                state.scrollBy(deltaPx)
+                            }
+                            true
+                        } else false
+                    } else false
                 }
                 .rotaryScrollable(RotaryScrollableDefaults.behavior(state), focusRequester)
                 .focusRequester(focusRequester)

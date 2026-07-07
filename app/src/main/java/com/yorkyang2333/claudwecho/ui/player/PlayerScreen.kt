@@ -16,6 +16,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -138,6 +139,24 @@ fun PlayerScreen(
                 val newPos = (basePos + deltaMs).coerceIn(0L, duration)
                 targetSeekPos = newPos
                 true
+            }
+            .pointerInteropFilter { event ->
+                if (event.action == android.view.MotionEvent.ACTION_SCROLL) {
+                    if (duration <= 0L) return@pointerInteropFilter false
+                    val vScroll = event.getAxisValue(android.view.MotionEvent.AXIS_VSCROLL)
+                    if (vScroll != 0f) {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastRotaryHapticTime >= 35L) {
+                            view.performRotaryHaptic()
+                            lastRotaryHapticTime = currentTime
+                        }
+                        val basePos = targetSeekPos ?: currentPosition
+                        val deltaMs = (-vScroll * 2500f).toLong()
+                        val newPos = (basePos + deltaMs).coerceIn(0L, duration)
+                        targetSeekPos = newPos
+                        true
+                    } else false
+                } else false
             }
             .focusRequester(focusRequester)
             .focusable(),
