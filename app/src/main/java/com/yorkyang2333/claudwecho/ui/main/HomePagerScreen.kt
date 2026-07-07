@@ -116,10 +116,14 @@ fun HomePagerScreen(
             when (page) {
                 0 -> PlayerScreen(
                     viewModel = playerViewModel,
+                    isActivePage = pagerState.currentPage == 0,
                     onMenuClick = onNavigateToMenu,
                     onSettingsClick = onSettingsClick
                 )
-                1 -> LyricsScreen(viewModel = playerViewModel)
+                1 -> LyricsScreen(
+                    viewModel = playerViewModel,
+                    isActivePage = pagerState.currentPage == 1
+                )
             }
         }
     }

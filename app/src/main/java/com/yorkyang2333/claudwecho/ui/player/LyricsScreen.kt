@@ -24,7 +24,7 @@ import androidx.wear.compose.material3.Text
 import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
-fun LyricsScreen(viewModel: PlayerViewModel) {
+fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
     val lyrics by viewModel.lyrics.collectAsState()
     val currentLyricIndex by viewModel.currentLyricIndex.collectAsState()
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
@@ -59,6 +59,7 @@ fun LyricsScreen(viewModel: PlayerViewModel) {
             RotaryScalingLazyColumn(
                 autoCentering = androidx.wear.compose.foundation.lazy.AutoCenteringParams(itemIndex = 0),
                 state = listState,
+                isActivePage = isActivePage,
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 contentPadding = PaddingValues(horizontal = 16.dp)

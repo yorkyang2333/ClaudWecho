@@ -55,6 +55,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun PlayerScreen(
     viewModel: PlayerViewModel,
+    isActivePage: Boolean = true,
     onMenuClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
@@ -97,8 +98,22 @@ fun PlayerScreen(
     val view = LocalView.current
     var accumulatedRotaryPx by remember { mutableStateOf(0f) }
     var lastRotaryHapticTime by remember { mutableStateOf(0L) }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    var targetSeekPos by remember { mutableStateOf<Long?>(null) }
+
+    LaunchedEffect(isActivePage) {
+        if (isActivePage) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(targetSeekPos) {
+        val target = targetSeekPos
+        if (target != null) {
+            delay(350)
+            viewModel.seekTo(target)
+            delay(600)
+            targetSeekPos = null
+        }
     }
 
     Box(
@@ -107,6 +122,7 @@ fun PlayerScreen(
             .background(Color.Transparent)
             .clipToBounds()
             .onRotaryScrollEvent { event ->
+                if (duration <= 0L) return@onRotaryScrollEvent false
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastRotaryHapticTime > 250L) {
                     accumulatedRotaryPx = 0f
@@ -117,9 +133,10 @@ fun PlayerScreen(
                     accumulatedRotaryPx = 0f
                     lastRotaryHapticTime = currentTime
                 }
+                val basePos = targetSeekPos ?: currentPosition
                 val deltaMs = (event.verticalScrollPixels * 100).toLong()
-                val newPos = (currentPosition + deltaMs).coerceIn(0L, duration)
-                viewModel.seekTo(newPos)
+                val newPos = (basePos + deltaMs).coerceIn(0L, duration)
+                targetSeekPos = newPos
                 true
             }
             .focusRequester(focusRequester)
@@ -128,11 +145,12 @@ fun PlayerScreen(
     ) {
 
         // Circular Progress at edge
-        val targetProgress = if (duration > 0) currentPosition.toFloat() / duration else 0f
+        val displayPosition = targetSeekPos ?: currentPosition
+        val targetProgress = if (duration > 0) displayPosition.toFloat() / duration else 0f
         val animatedProgress by androidx.compose.animation.core.animateFloatAsState(
             targetValue = targetProgress,
             animationSpec = androidx.compose.animation.core.tween(
-                durationMillis = 200, 
+                durationMillis = if (targetSeekPos != null) 80 else 200, 
                 easing = androidx.compose.animation.core.LinearEasing
             ),
             label = "progressAnim"
@@ -169,15 +187,27 @@ fun PlayerScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = currentArtist ?: "未知歌手",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.7f),
-                            maxLines = 1,
-                            modifier = Modifier
-                                .weight(1f, fill = false)
-                                .basicMarquee(iterations = Int.MAX_VALUE)
-                        )
+                        if (targetSeekPos != null) {
+                            Text(
+                                text = "${formatTime(targetSeekPos!!)} / ${formatTime(duration)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                maxLines = 1,
+                                modifier = Modifier
+                                    .weight(1f, fill = false)
+                                    .basicMarquee(iterations = Int.MAX_VALUE)
+                            )
+                        } else {
+                            Text(
+                                text = currentArtist ?: "未知歌手",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.7f),
+                                maxLines = 1,
+                                modifier = Modifier
+                                    .weight(1f, fill = false)
+                                    .basicMarquee(iterations = Int.MAX_VALUE)
+                            )
+                        }
                         if (isVip) {
                             Text(
                                 text = "VIP",
@@ -202,6 +232,7 @@ fun PlayerScreen(
                 if (isFmMode) {
                     PlayerIconButton(
                         onClick = {
+                            focusRequester.requestFocus()
                             viewModel.trashCurrentFmSong()
                             android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
                         },
@@ -217,7 +248,10 @@ fun PlayerScreen(
                     }
                 } else {
                     PlayerIconButton(
-                        onClick = { viewModel.skipToPrevious() },
+                        onClick = {
+                            focusRequester.requestFocus()
+                            viewModel.skipToPrevious()
+                        },
                         modifier = Modifier.size(56.dp),
                         enabled = currentTitle != null
                     ) {
@@ -234,6 +268,7 @@ fun PlayerScreen(
 
                 PlayerIconButton(
                     onClick = {
+                        focusRequester.requestFocus()
                         viewModel.playOrPause()
                     },
                     modifier = Modifier.size(64.dp),
@@ -252,7 +287,10 @@ fun PlayerScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 PlayerIconButton(
-                    onClick = { viewModel.skipToNext() },
+                    onClick = {
+                        focusRequester.requestFocus()
+                        viewModel.skipToNext()
+                    },
                     modifier = Modifier.size(56.dp),
                     enabled = currentTitle != null
                 ) {
@@ -299,7 +337,10 @@ fun PlayerScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     PlayerIconButton(
-                        onClick = { if (!isPodcast) viewModel.toggleLikeCurrentSong() },
+                        onClick = {
+                            focusRequester.requestFocus()
+                            if (!isPodcast) viewModel.toggleLikeCurrentSong()
+                        },
                         modifier = Modifier.size(44.dp).offset(y = (-8).dp),
                         enabled = currentTitle != null && !isPodcast
                     ) {
@@ -312,7 +353,10 @@ fun PlayerScreen(
                     }
 
                     PlayerIconButton(
-                        onClick = onMenuClick,
+                        onClick = {
+                            focusRequester.requestFocus()
+                            onMenuClick()
+                        },
                         modifier = Modifier.size(44.dp).offset(y = 4.dp)
                     ) {
                         Icon(
@@ -324,7 +368,10 @@ fun PlayerScreen(
                     }
 
                     PlayerIconButton(
-                        onClick = onSettingsClick,
+                        onClick = {
+                            focusRequester.requestFocus()
+                            onSettingsClick()
+                        },
                         modifier = Modifier.size(44.dp).offset(y = (-8).dp)
                     ) {
                         Icon(
@@ -403,4 +450,16 @@ private fun PlayerIconButton(
         contentAlignment = Alignment.Center,
         content = content
     )
+}
+
+private fun formatTime(ms: Long): String {
+    val totalSeconds = (ms / 1000).coerceAtLeast(0)
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+    return if (hours > 0) {
+        String.format("%d:%02d:%02d", hours, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
+    }
 }

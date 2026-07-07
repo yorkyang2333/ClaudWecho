@@ -36,6 +36,7 @@ fun RotaryScalingLazyColumn(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     userScrollEnabled: Boolean = true,
     autoCentering: AutoCenteringParams? = AutoCenteringParams(),
+    isActivePage: Boolean = true,
     content: ScalingLazyListScope.() -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -76,8 +77,10 @@ fun RotaryScalingLazyColumn(
             content = content
         )
         
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+        LaunchedEffect(isActivePage) {
+            if (isActivePage) {
+                focusRequester.requestFocus()
+            }
         }
     }
 }
