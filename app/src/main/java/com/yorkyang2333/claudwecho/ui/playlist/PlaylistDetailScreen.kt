@@ -292,11 +292,9 @@ fun PlaylistDetailScreen(
                 },
                 onAlphabetIndex = {
                     showAlphabet.value = true
-                    showMenu.value = false
                 },
                 onSortBy = {
                     showSort.value = true
-                    showMenu.value = false
                 },
                 currentSort = currentSortText,
                 isAlphabetIndexEnabled = sortMode != SortMode.DEFAULT
@@ -308,7 +306,6 @@ fun PlaylistDetailScreen(
                 currentSortOrder = sortOrder,
                 onDismissRequest = {
                     showSort.value = false
-                    showMenu.value = true
                 },
                 onSortSelected = { mode, order ->
                     viewModel.setSort(mode, order)
@@ -319,7 +316,6 @@ fun PlaylistDetailScreen(
                 showDialog = showAlphabet.value,
                 onDismissRequest = {
                     showAlphabet.value = false
-                    showMenu.value = true
                 },
                 onLetterSelected = { letter ->
                     val index = viewModel.getFirstItemIndexByLetter(letter)
@@ -330,6 +326,7 @@ fun PlaylistDetailScreen(
                         }
                     }
                     showAlphabet.value = false
+                    showMenu.value = false
                 }
             )
 
