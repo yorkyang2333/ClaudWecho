@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.clickable
+import com.yorkyang2333.claudwecho.ui.components.hapticClickable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -46,7 +46,7 @@ import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.material3.Button
+import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.CircularProgressIndicator
 import androidx.wear.compose.material3.Icon
@@ -198,7 +198,7 @@ fun SearchScreen(
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
-                                .clickable { viewModel.clearHistory() }
+                                .hapticClickable { viewModel.clearHistory() }
                                 .padding(vertical = 4.dp, horizontal = 4.dp)
                         )
                     }

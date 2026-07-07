@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
-import androidx.wear.compose.material3.Button
+import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme

@@ -22,6 +22,7 @@ import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.R
+import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 
 @Composable
@@ -95,7 +96,7 @@ fun AboutScreen() {
                 )
             }
             item {
-                androidx.wear.compose.material3.Button(
+                Button(
                     onClick = { },
                     modifier = Modifier.fillMaxWidth(),
                     colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),

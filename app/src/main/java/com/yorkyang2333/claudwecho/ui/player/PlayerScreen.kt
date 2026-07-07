@@ -46,6 +46,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
+import com.yorkyang2333.claudwecho.ui.components.hapticClickable
+import com.yorkyang2333.claudwecho.ui.components.performClickHaptic
+import com.yorkyang2333.claudwecho.ui.components.performRotaryHaptic
 import kotlinx.coroutines.delay
 
 @Composable
@@ -90,6 +94,9 @@ fun PlayerScreen(
     val isVip by viewModel.isCurrentSongVip.collectAsState()
 
     val focusRequester = remember { FocusRequester() }
+    val view = LocalView.current
+    var accumulatedRotaryPx by remember { mutableStateOf(0f) }
+    var lastRotaryHapticTime by remember { mutableStateOf(0L) }
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
@@ -100,6 +107,16 @@ fun PlayerScreen(
             .background(Color.Transparent)
             .clipToBounds()
             .onRotaryScrollEvent { event ->
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastRotaryHapticTime > 250L) {
+                    accumulatedRotaryPx = 0f
+                }
+                accumulatedRotaryPx += event.verticalScrollPixels
+                if (Math.abs(accumulatedRotaryPx) >= 30f && currentTime - lastRotaryHapticTime >= 35L) {
+                    view.performRotaryHaptic()
+                    accumulatedRotaryPx = 0f
+                    lastRotaryHapticTime = currentTime
+                }
                 val deltaMs = (event.verticalScrollPixels * 100).toLong()
                 val newPos = (currentPosition + deltaMs).coerceIn(0L, duration)
                 viewModel.seekTo(newPos)
@@ -377,7 +394,7 @@ private fun PlayerIconButton(
             }
             .clip(shape)
             .background(if (enabled) containerColor else disabledContainerColor)
-            .clickable(
+            .hapticClickable(
                 interactionSource = interactionSource,
                 indication = null,
                 enabled = enabled,

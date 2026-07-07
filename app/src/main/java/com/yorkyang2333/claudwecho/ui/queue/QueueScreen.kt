@@ -1,7 +1,7 @@
 package com.yorkyang2333.claudwecho.ui.queue
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import com.yorkyang2333.claudwecho.ui.components.hapticClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -68,7 +68,7 @@ fun QueueScreen(
                             .size(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFF1E1E1E))
-                            .clickable { viewModel.clearQueue() },
+                            .hapticClickable { viewModel.clearQueue() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -99,7 +99,7 @@ fun QueueScreen(
                             .size(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFF1E1E1E))
-                            .clickable { 
+                            .hapticClickable { 
                                 coroutineScope.launch { 
                                     if (songs.isNotEmpty()) {
                                         // +2 because of the Spacer and Header Row

@@ -1,7 +1,7 @@
 package com.yorkyang2333.claudwecho.ui.recent
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import com.yorkyang2333.claudwecho.ui.components.hapticClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -73,7 +73,7 @@ fun RecentlyPlayedScreen(
                                 .size(32.dp)
                                 .clip(androidx.compose.foundation.shape.CircleShape)
                                 .background(Color(0xFF2D2D2D))
-                                .clickable { viewModel.loadData(forceRefresh = true) },
+                                .hapticClickable { viewModel.loadData(forceRefresh = true) },
                             contentAlignment = Alignment.Center
                         ) {
                             androidx.wear.compose.material3.Icon(

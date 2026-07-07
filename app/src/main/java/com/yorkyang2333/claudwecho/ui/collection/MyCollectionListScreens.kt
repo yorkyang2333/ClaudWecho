@@ -1,7 +1,8 @@
 package com.yorkyang2333.claudwecho.ui.collection
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import com.yorkyang2333.claudwecho.ui.components.hapticClickable
+import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -159,7 +160,7 @@ fun <T> CollectionListBase(
                                 .size(32.dp)
                                 .clip(androidx.compose.foundation.shape.CircleShape)
                                 .background(Color(0xFF2D2D2D))
-                                .clickable { onRefresh() },
+                                .hapticClickable { onRefresh() },
                             contentAlignment = Alignment.Center
                         ) {
                             androidx.wear.compose.material3.Icon(
@@ -183,7 +184,7 @@ fun CollectionItemRow(
     imageUrl: String,
     onClick: () -> Unit
 ) {
-    androidx.wear.compose.material3.Button(
+    Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),

@@ -1,7 +1,8 @@
 package com.yorkyang2333.claudwecho.ui.playlist
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import com.yorkyang2333.claudwecho.ui.components.hapticClickable
+import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.border
@@ -110,7 +111,7 @@ fun PlaylistDetailScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                androidx.wear.compose.material3.Button(
+                                Button(
                                     onClick = { 
                                         isMultiSelectMode.value = false 
                                         selectedSongs.clear()
@@ -120,7 +121,7 @@ fun PlaylistDetailScreen(
                                 ) {
                                     Text("取消", style = MaterialTheme.typography.bodyMedium)
                                 }
-                                androidx.wear.compose.material3.Button(
+                                Button(
                                     onClick = { 
                                         if (selectedSongs.isNotEmpty()) {
                                             viewModel.removeSongs(selectedSongs.toList(), type == "liked")
@@ -153,7 +154,7 @@ fun PlaylistDetailScreen(
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
                                         .background(Color(0xFF1E1E1E))
-                                        .clickable {
+                                        .hapticClickable {
                                             if (searchQuery.isNotEmpty()) {
                                                 viewModel.setSearchQuery("")
                                             } else {
@@ -205,7 +206,7 @@ fun PlaylistDetailScreen(
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(12.dp))
                                         .background(Color(0xFF1E1E1E))
-                                        .clickable { showMenu.value = true },
+                                        .hapticClickable { showMenu.value = true },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     androidx.wear.compose.material3.Icon(
@@ -254,7 +255,7 @@ fun PlaylistDetailScreen(
                                     .size(32.dp)
                                     .clip(androidx.compose.foundation.shape.CircleShape)
                                     .background(Color(0xFF2D2D2D))
-                                    .clickable { viewModel.loadLiked(forceRefresh = true) },
+                                    .hapticClickable { viewModel.loadLiked(forceRefresh = true) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 androidx.wear.compose.material3.Icon(
@@ -358,14 +359,14 @@ fun PlaylistDetailScreen(
                                 .padding(8.dp)
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            androidx.wear.compose.material3.Button(
+                            Button(
                                 onClick = { showSearchDialog.value = false },
                                 colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
                                 modifier = Modifier.size(48.dp)
                             ) {
                                 androidx.wear.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Close, null)
                             }
-                            androidx.wear.compose.material3.Button(
+                            Button(
                                 onClick = {
                                     viewModel.setSearchQuery(tempSearchQuery)
                                     showSearchDialog.value = false
