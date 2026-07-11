@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
+import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionToken
 import com.yorkyang2333.claudwecho.service.PlaybackService
+import com.yorkyang2333.claudwecho.service.PlaybackCommands
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -374,35 +376,45 @@ class PlayerViewModel(
 
         _isPersonalFmMode.value = false
         val currentIndex = player.currentMediaItemIndex
-        val currentPosition = player.currentPosition
-        val insertIndex = (currentIndex + 1).coerceAtMost(player.mediaItemCount)
-        
-        currentList.add(insertIndex, song)
-        _currentPlaylist.value = currentList
-        
-        // Reconstruct all media items to keep the player in perfect sync
-        val mediaItems = currentList.map { s ->
-            val artUri = s.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-            androidx.media3.common.MediaItem.Builder()
-                .setMediaId(s.id.toString())
-                .setUri("netease://song/${s.id}")
-                .setMediaMetadata(
-                    androidx.media3.common.MediaMetadata.Builder()
-                        .setTitle(s.name)
-                        .setArtist(s.displayArtists.joinToString { it.name })
-                        .setArtworkUri(artUri)
-                        .build()
-                )
-                .build()
+        val insertIndex = (currentIndex + 1).coerceIn(0, currentList.size)
+
+        val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
+        val mediaItem = MediaItem.Builder()
+            .setMediaId(song.id.toString())
+            .setUri("netease://song/${song.id}")
+            .setMediaMetadata(
+                androidx.media3.common.MediaMetadata.Builder()
+                    .setTitle(song.name)
+                    .setArtist(song.displayArtists.joinToString { it.name })
+                    .setArtworkUri(artworkUri)
+                    .build()
+            )
+            .build()
+
+        val command = SessionCommand(PlaybackCommands.ACTION_ADD_NEXT, android.os.Bundle.EMPTY)
+        val args = android.os.Bundle().apply {
+            putBundle(PlaybackCommands.EXTRA_MEDIA_ITEM, mediaItem.toBundleIncludeLocalConfiguration())
+            putInt(PlaybackCommands.EXTRA_INSERT_INDEX, insertIndex)
         }
-        
-        try {
-            player.setMediaItems(mediaItems, currentIndex, currentPosition)
-        } catch (e: Exception) {
-            android.util.Log.e("PlayerViewModel", "playNext: failed to call player.setMediaItems", e)
-        }
-        
-        playbackStateManager.saveState(currentList, currentIndex)
+
+        // Queue mutations run in PlaybackService, which owns the ExoPlayer. This
+        // avoids losing the command while a MediaController is reconnecting.
+        val commandFuture = player.sendCustomCommand(command, args)
+        commandFuture.addListener({
+            try {
+                val result = commandFuture.get()
+                if (result.resultCode == androidx.media3.session.SessionResult.RESULT_SUCCESS) {
+                    currentList.add(insertIndex, song)
+                    _currentPlaylist.value = currentList
+                    updateDisplayPlaylist(player.currentTimeline)
+                    playbackStateManager.saveState(currentList, currentIndex)
+                } else {
+                    android.util.Log.e("PlayerViewModel", "playNext: service rejected queue insertion")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("PlayerViewModel", "playNext: service queue insertion failed", e)
+            }
+        }, MoreExecutors.directExecutor())
     }
 
     fun playPlaylist(songs: List<com.yorkyang2333.claudwecho.data.api.Song>, startIndex: Int) {
