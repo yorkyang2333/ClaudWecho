@@ -27,7 +27,8 @@ import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog
 fun RecentlyPlayedScreen(
     viewModel: RecentlyPlayedViewModel,
     onNavigateToPlayer: (List<com.yorkyang2333.claudwecho.data.api.Song>, Int) -> Unit,
-    onPlayNext: (com.yorkyang2333.claudwecho.data.api.Song) -> Unit
+    onPlayNext: (com.yorkyang2333.claudwecho.data.api.Song) -> Unit,
+    onNavigateToSongInfo: (Long) -> Unit
 ) {
     val songs by viewModel.songs.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -98,7 +99,8 @@ fun RecentlyPlayedScreen(
             onDismissRequest = { selectedSongForMenu.value = null },
             onPlayNext = {
                 selectedSongForMenu.value?.let { onPlayNext(it) }
-            }
+            },
+            onSongInfo = onNavigateToSongInfo
         )
     }
 }

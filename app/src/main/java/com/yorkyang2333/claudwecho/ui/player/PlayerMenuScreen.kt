@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.material.icons.rounded.Shuffle
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,7 +27,8 @@ import androidx.wear.compose.material3.Text
 
 @Composable
 fun PlayerMenuScreen(
-    viewModel: PlayerViewModel
+    viewModel: PlayerViewModel,
+    onNavigateToSongInfo: (Long) -> Unit
 ) {
     val context = LocalContext.current
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
@@ -101,6 +103,23 @@ fun PlayerMenuScreen(
                         icon = { Icon(playbackModeIcon, null, tint = MaterialTheme.colorScheme.primary) }
                     )
                 }
+            }
+            item {
+                Button(
+                    onClick = { viewModel.currentSongId()?.let(onNavigateToSongInfo) },
+                    enabled = viewModel.currentSongId() != null,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Text(
+                            text = "歌曲信息",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    icon = { Icon(Icons.Rounded.Info, null, tint = MaterialTheme.colorScheme.primary) }
+                )
             }
         }
         

@@ -19,7 +19,8 @@ fun SongMenuDialog(
     showDialog: Boolean,
     song: Song?,
     onDismissRequest: () -> Unit,
-    onPlayNext: () -> Unit
+    onPlayNext: () -> Unit,
+    onSongInfo: (Long) -> Unit
 ) {
     Dialog(
         showDialog = showDialog,
@@ -49,6 +50,23 @@ fun SongMenuDialog(
                     ) {
                         Text(
                             text = "下一首播放",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+                item {
+                    Button(
+                        onClick = {
+                            song?.let { onSongInfo(it.id) }
+                            onDismissRequest()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors()
+                    ) {
+                        Text(
+                            text = "歌曲信息",
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

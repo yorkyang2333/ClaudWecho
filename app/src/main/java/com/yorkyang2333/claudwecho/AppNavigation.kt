@@ -92,7 +92,8 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onPlayNext = { song -> playerViewModel.playNext(song) }
+                onPlayNext = { song -> playerViewModel.playNext(song) },
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
             )
         }
         composable("queue") {
@@ -123,7 +124,8 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onPlayNext = { song -> playerViewModel.playNext(song) }
+                onPlayNext = { song -> playerViewModel.playNext(song) },
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
             )
         }
         composable("search") {
@@ -135,7 +137,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
             )
         }
         
@@ -187,7 +190,8 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onPlayNext = { song -> playerViewModel.playNext(song) }
+                onPlayNext = { song -> playerViewModel.playNext(song) },
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
             )
         }
         composable("profile") {
@@ -221,7 +225,20 @@ fun AppNavigation(
             com.yorkyang2333.claudwecho.ui.about.AboutScreen()
         }
         composable("player_menu") {
-            com.yorkyang2333.claudwecho.ui.player.PlayerMenuScreen(viewModel = playerViewModel)
+            com.yorkyang2333.claudwecho.ui.player.PlayerMenuScreen(
+                viewModel = playerViewModel,
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
+            )
+        }
+
+        composable(
+            route = "song_info/{id}",
+            arguments = listOf(
+                androidx.navigation.navArgument("id") { type = androidx.navigation.NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
+            com.yorkyang2333.claudwecho.ui.songinfo.SongInfoScreen(songId = id)
         }
         
         composable(
@@ -240,7 +257,8 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onPlayNext = { song -> playerViewModel.playNext(song) }
+                onPlayNext = { song -> playerViewModel.playNext(song) },
+                onNavigateToSongInfo = { songId -> navController.navigate("song_info/$songId") }
             )
         }
 
@@ -260,7 +278,8 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onPlayNext = { song -> playerViewModel.playNext(song) }
+                onPlayNext = { song -> playerViewModel.playNext(song) },
+                onNavigateToSongInfo = { songId -> navController.navigate("song_info/$songId") }
             )
         }
 
@@ -280,7 +299,8 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onPlayNext = { song -> playerViewModel.playNext(song) }
+                onPlayNext = { song -> playerViewModel.playNext(song) },
+                onNavigateToSongInfo = { songId -> navController.navigate("song_info/$songId") }
             )
         }
     }

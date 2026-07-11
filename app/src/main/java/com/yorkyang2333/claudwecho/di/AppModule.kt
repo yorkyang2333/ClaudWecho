@@ -132,4 +132,5 @@ val networkModule = module {
     viewModel { com.yorkyang2333.claudwecho.ui.recent.RecentlyPlayedViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidContext()) }
     viewModel { com.yorkyang2333.claudwecho.ui.search.SearchViewModel(get(), get()) }
+    viewModel { com.yorkyang2333.claudwecho.ui.songinfo.SongInfoViewModel(get()) }
 }

@@ -3,6 +3,7 @@ package com.yorkyang2333.claudwecho.data
 import com.yorkyang2333.claudwecho.data.api.NeteaseApi
 import com.yorkyang2333.claudwecho.data.api.Playlist
 import com.yorkyang2333.claudwecho.data.api.Song
+import com.yorkyang2333.claudwecho.data.api.SongDetail
 import com.yorkyang2333.claudwecho.data.api.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -96,6 +97,16 @@ class MainRepository(
             Pair(null, null)
         }
     }
+
+    suspend fun getSongDetail(id: Long): SongDetail? = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getSongDetail(id)
+            if (response.code == 200) response.songs.firstOrNull() else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun getSongUrl(id: Long): String? = withContext(Dispatchers.IO) {
         try {
             val response = api.getSongUrl(id)

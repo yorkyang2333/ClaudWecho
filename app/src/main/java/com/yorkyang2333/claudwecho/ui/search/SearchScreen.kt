@@ -61,7 +61,8 @@ import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 fun SearchScreen(
     viewModel: SearchViewModel,
     playerViewModel: PlayerViewModel,
-    onSongClick: () -> Unit
+    onSongClick: () -> Unit,
+    onNavigateToSongInfo: (Long) -> Unit
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
@@ -323,7 +324,8 @@ fun SearchScreen(
             onDismissRequest = { selectedSongForMenu.value = null },
             onPlayNext = {
                 selectedSongForMenu.value?.let { playerViewModel.playNext(it) }
-            }
+            },
+            onSongInfo = onNavigateToSongInfo
         )
     }
 }

@@ -61,6 +61,13 @@ interface NeteaseApi {
 
     @GET("/lyric")
     suspend fun getLyric(@Query("id") id: Long): LyricResponse
+
+    @GET("/song/detail")
+    suspend fun getSongDetail(
+        @Query("ids") ids: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): SongDetailResponse
+
     @GET("/song/url/v1")
     suspend fun getSongUrl(
         @Query("id") id: Long,
@@ -289,6 +296,24 @@ data class LyricResponse(val code: Int, val lrc: LrcData? = null, val tlyric: Lr
 
 @Serializable
 data class LrcData(val lyric: String?)
+
+@Serializable
+data class SongDetailResponse(val code: Int, val songs: List<SongDetail> = emptyList())
+
+@Serializable
+data class SongDetail(
+    val id: Long,
+    val name: String,
+    val alia: List<String> = emptyList(),
+    val ar: List<Artist> = emptyList(),
+    val al: Album? = null,
+    val dt: Long? = null,
+    val cd: String? = null,
+    val no: Int? = null,
+    val publishTime: Long? = null,
+    val mv: Long? = null,
+    val fee: Int? = null
+)
 
 @Serializable
 data class SubscribedAlbumsResponse(val data: List<Album>, val code: Int)

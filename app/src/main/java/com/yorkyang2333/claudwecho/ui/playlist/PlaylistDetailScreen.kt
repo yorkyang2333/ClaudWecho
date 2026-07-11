@@ -39,7 +39,8 @@ fun PlaylistDetailScreen(
     type: String = "playlist",
     viewModel: PlaylistDetailViewModel = koinViewModel(),
     onNavigateToPlayer: (List<com.yorkyang2333.claudwecho.data.api.Song>, Int) -> Unit,
-    onPlayNext: (com.yorkyang2333.claudwecho.data.api.Song) -> Unit
+    onPlayNext: (com.yorkyang2333.claudwecho.data.api.Song) -> Unit,
+    onNavigateToSongInfo: (Long) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
@@ -395,7 +396,8 @@ fun PlaylistDetailScreen(
                 onDismissRequest = { selectedSongForMenu.value = null },
                 onPlayNext = {
                     selectedSongForMenu.value?.let { onPlayNext(it) }
-                }
+                },
+                onSongInfo = onNavigateToSongInfo
             )
         }
     }

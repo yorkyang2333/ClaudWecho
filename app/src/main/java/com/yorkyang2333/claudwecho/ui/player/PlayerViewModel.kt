@@ -346,6 +346,8 @@ class PlayerViewModel(
         }
     }
 
+    fun currentSongId(): Long? = player?.currentMediaItem?.mediaId?.toLongOrNull()
+
     fun toggleLikeCurrentSong() {
         val songId = player?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
         val currentLike = _isCurrentSongLiked.value
