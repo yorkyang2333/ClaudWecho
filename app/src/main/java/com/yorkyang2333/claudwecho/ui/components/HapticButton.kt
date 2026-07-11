@@ -18,6 +18,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.wear.compose.material3.ButtonColors
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Button as WearButton
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.changedToDown
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 fun View.performRotaryHaptic() {
     if (!performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)) {
@@ -56,6 +62,44 @@ fun Modifier.hapticClickable(
     )
 }
 
+fun Modifier.onLongClickBeforeChild(enabled: Boolean = true, onLongClick: () -> Unit): Modifier = composed {
+    if (!enabled) return@composed this
+    val view = LocalView.current
+    this.pointerInput(Unit) {
+        coroutineScope {
+            awaitPointerEventScope {
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    val down = event.changes.firstOrNull { it.changedToDown() }
+                    if (down != null) {
+                        var isLongClick = false
+                        val job = launch {
+                            delay(viewConfiguration.longPressTimeoutMillis)
+                            isLongClick = true
+                            view.performClickHaptic()
+                            onLongClick()
+                        }
+                        
+                        var allPointersUp = false
+                        while (!allPointersUp) {
+                            val nextEvent = awaitPointerEvent(PointerEventPass.Initial)
+                            if (isLongClick) {
+                                nextEvent.changes.forEach { it.consume() }
+                            }
+                            
+                            val activePointers = nextEvent.changes.filter { it.pressed }
+                            if (activePointers.isEmpty()) {
+                                allPointersUp = true
+                                job.cancel()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Button(
@@ -74,29 +118,17 @@ fun Button(
     val actualInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
     
     val buttonModifier = if (onLongClick != null) {
-        modifier.combinedClickable(
-            interactionSource = actualInteractionSource,
-            indication = null,
-            enabled = enabled,
-            onLongClick = {
-                view.performClickHaptic()
-                onLongClick()
-            },
-            onClick = {
-                view.performClickHaptic()
-                onClick()
-            }
-        )
+        modifier.onLongClickBeforeChild(enabled = enabled) {
+            onLongClick()
+        }
     } else {
         modifier
     }
 
     WearButton(
-        onClick = if (onLongClick != null) { {} } else {
-            {
-                view.performClickHaptic()
-                onClick()
-            }
+        onClick = {
+            view.performClickHaptic()
+            onClick()
         },
         modifier = buttonModifier,
         enabled = enabled,
@@ -129,29 +161,17 @@ fun Button(
     val actualInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
 
     val buttonModifier = if (onLongClick != null) {
-        modifier.combinedClickable(
-            interactionSource = actualInteractionSource,
-            indication = null,
-            enabled = enabled,
-            onLongClick = {
-                view.performClickHaptic()
-                onLongClick()
-            },
-            onClick = {
-                view.performClickHaptic()
-                onClick()
-            }
-        )
+        modifier.onLongClickBeforeChild(enabled = enabled) {
+            onLongClick()
+        }
     } else {
         modifier
     }
 
     WearButton(
-        onClick = if (onLongClick != null) { {} } else {
-            {
-                view.performClickHaptic()
-                onClick()
-            }
+        onClick = {
+            view.performClickHaptic()
+            onClick()
         },
         modifier = buttonModifier,
         enabled = enabled,
