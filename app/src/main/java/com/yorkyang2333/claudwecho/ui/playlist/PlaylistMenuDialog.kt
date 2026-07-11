@@ -78,21 +78,6 @@ fun PlaylistMenuDialog(
                 }
                 item {
                     Button(
-                        onClick = onAlphabetIndex,
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = isAlphabetIndexEnabled,
-                        colors = ButtonDefaults.filledTonalButtonColors()
-                    ) {
-                        Text(
-                            text = "字母索引",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-                item {
-                    Button(
                         onClick = onSortBy,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.filledTonalButtonColors()
@@ -108,6 +93,23 @@ fun PlaylistMenuDialog(
                                 text = currentSort,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+                if (isAlphabetIndexEnabled) {
+                    item {
+                        Button(
+                            onClick = onAlphabetIndex,
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = isAlphabetIndexEnabled,
+                            colors = ButtonDefaults.filledTonalButtonColors()
+                        ) {
+                            Text(
+                                text = "字母索引",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
