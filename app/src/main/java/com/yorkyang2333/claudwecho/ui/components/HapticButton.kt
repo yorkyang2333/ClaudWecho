@@ -4,6 +4,8 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -54,6 +56,7 @@ fun Modifier.hapticClickable(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Button(
     onClick: () -> Unit,
@@ -64,18 +67,41 @@ fun Button(
     shape: Shape = ButtonDefaults.shape,
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    onLongClick: (() -> Unit)? = null,
     content: @Composable RowScope.() -> Unit
 ) {
     val view = LocalView.current
+    val actualInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+    
+    val buttonModifier = if (onLongClick != null) {
+        modifier.combinedClickable(
+            interactionSource = actualInteractionSource,
+            indication = null,
+            enabled = enabled,
+            onLongClick = {
+                view.performClickHaptic()
+                onLongClick()
+            },
+            onClick = {
+                view.performClickHaptic()
+                onClick()
+            }
+        )
+    } else {
+        modifier
+    }
+
     WearButton(
-        onClick = {
-            view.performClickHaptic()
-            onClick()
+        onClick = if (onLongClick != null) { {} } else {
+            {
+                view.performClickHaptic()
+                onClick()
+            }
         },
-        modifier = modifier,
+        modifier = buttonModifier,
         enabled = enabled,
         colors = colors,
-        interactionSource = interactionSource,
+        interactionSource = actualInteractionSource,
         shape = shape,
         border = border,
         contentPadding = contentPadding,
@@ -83,6 +109,7 @@ fun Button(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Button(
     onClick: () -> Unit,
@@ -93,20 +120,43 @@ fun Button(
     shape: Shape = ButtonDefaults.shape,
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    onLongClick: (() -> Unit)? = null,
     icon: @Composable (androidx.compose.foundation.layout.BoxScope.() -> Unit)? = null,
     secondaryLabel: @Composable (RowScope.() -> Unit)? = null,
     label: @Composable RowScope.() -> Unit
 ) {
     val view = LocalView.current
+    val actualInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+
+    val buttonModifier = if (onLongClick != null) {
+        modifier.combinedClickable(
+            interactionSource = actualInteractionSource,
+            indication = null,
+            enabled = enabled,
+            onLongClick = {
+                view.performClickHaptic()
+                onLongClick()
+            },
+            onClick = {
+                view.performClickHaptic()
+                onClick()
+            }
+        )
+    } else {
+        modifier
+    }
+
     WearButton(
-        onClick = {
-            view.performClickHaptic()
-            onClick()
+        onClick = if (onLongClick != null) { {} } else {
+            {
+                view.performClickHaptic()
+                onClick()
+            }
         },
-        modifier = modifier,
+        modifier = buttonModifier,
         enabled = enabled,
         colors = colors,
-        interactionSource = interactionSource,
+        interactionSource = actualInteractionSource,
         shape = shape,
         border = border,
         contentPadding = contentPadding,

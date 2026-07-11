@@ -30,7 +30,8 @@ fun SharedSongItem(
     song: Song,
     isMultiSelectMode: Boolean = false,
     isSelected: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null
 ) {
     val playbackStateManager: com.yorkyang2333.claudwecho.data.PlaybackStateManager = org.koin.compose.koinInject()
     val currentTrackId by playbackStateManager.currentTrackId.collectAsState()
@@ -38,6 +39,7 @@ fun SharedSongItem(
 
     Button(
         onClick = onClick,
+        onLongClick = onLongClick,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(),
         label = {

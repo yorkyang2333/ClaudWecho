@@ -363,6 +363,38 @@ class PlayerViewModel(
         }
     }
 
+    fun playNext(song: com.yorkyang2333.claudwecho.data.api.Song) {
+        val player = player
+        val currentList = _currentPlaylist.value.toMutableList()
+        val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
+        val mediaItem = androidx.media3.common.MediaItem.Builder()
+            .setMediaId(song.id.toString())
+            .setUri("netease://song/${song.id}")
+            .setMediaMetadata(
+                androidx.media3.common.MediaMetadata.Builder()
+                    .setTitle(song.name)
+                    .setArtist(song.displayArtists.joinToString { it.name })
+                    .setArtworkUri(artworkUri)
+                    .build()
+            )
+            .build()
+
+        if (player == null || currentList.isEmpty()) {
+            playPlaylist(listOf(song), 0)
+            return
+        }
+
+        _isPersonalFmMode.value = false
+        val currentIndex = player.currentMediaItemIndex
+        val insertIndex = (currentIndex + 1).coerceAtMost(player.mediaItemCount)
+        
+        currentList.add(insertIndex, song)
+        _currentPlaylist.value = currentList
+        
+        player.addMediaItem(insertIndex, mediaItem)
+        playbackStateManager.saveState(currentList, currentIndex)
+    }
+
     fun playPlaylist(songs: List<com.yorkyang2333.claudwecho.data.api.Song>, startIndex: Int) {
         _isPersonalFmMode.value = false
         _currentPlaylist.value = songs

@@ -31,13 +31,15 @@ import androidx.compose.material.icons.rounded.Close
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import kotlinx.coroutines.launch
+import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog
 
 @Composable
 fun PlaylistDetailScreen(
     playlistId: Long,
     type: String = "playlist",
     viewModel: PlaylistDetailViewModel = koinViewModel(),
-    onNavigateToPlayer: (List<com.yorkyang2333.claudwecho.data.api.Song>, Int) -> Unit
+    onNavigateToPlayer: (List<com.yorkyang2333.claudwecho.data.api.Song>, Int) -> Unit,
+    onPlayNext: (com.yorkyang2333.claudwecho.data.api.Song) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val songs by viewModel.songs.collectAsState()
@@ -80,6 +82,7 @@ fun PlaylistDetailScreen(
     
     val isMultiSelectMode = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val selectedSongs = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateListOf<Long>() }
+    val selectedSongForMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<com.yorkyang2333.claudwecho.data.api.Song?>(null) }
     
     val listState = rememberScalingLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -235,6 +238,11 @@ fun PlaylistDetailScreen(
                                 } else {
                                     onNavigateToPlayer(songs, index)
                                 }
+                            },
+                            onLongClick = {
+                                if (!isMultiSelectMode.value) {
+                                    selectedSongForMenu.value = song
+                                }
                             }
                         )
                     }
@@ -380,6 +388,15 @@ fun PlaylistDetailScreen(
                     }
                 }
             }
+
+            SongMenuDialog(
+                showDialog = selectedSongForMenu.value != null,
+                song = selectedSongForMenu.value,
+                onDismissRequest = { selectedSongForMenu.value = null },
+                onPlayNext = {
+                    selectedSongForMenu.value?.let { onPlayNext(it) }
+                }
+            )
         }
     }
 }

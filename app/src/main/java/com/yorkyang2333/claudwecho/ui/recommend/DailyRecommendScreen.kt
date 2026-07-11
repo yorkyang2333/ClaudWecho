@@ -21,14 +21,17 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import coil.compose.AsyncImage
+import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog
 
 @Composable
 fun DailyRecommendScreen(
     viewModel: DailyRecommendViewModel,
-    onNavigateToPlayer: (List<com.yorkyang2333.claudwecho.data.api.Song>, Int) -> Unit
+    onNavigateToPlayer: (List<com.yorkyang2333.claudwecho.data.api.Song>, Int) -> Unit,
+    onPlayNext: (com.yorkyang2333.claudwecho.data.api.Song) -> Unit
 ) {
     val songs by viewModel.songs.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val selectedSongForMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<com.yorkyang2333.claudwecho.data.api.Song?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.loadData()
@@ -60,7 +63,8 @@ fun DailyRecommendScreen(
                         val song = songs[index]
                         com.yorkyang2333.claudwecho.ui.components.SharedSongItem(
                             song = song,
-                            onClick = { onNavigateToPlayer(songs, index) }
+                            onClick = { onNavigateToPlayer(songs, index) },
+                            onLongClick = { selectedSongForMenu.value = song }
                         )
                     }
                 }
@@ -87,5 +91,14 @@ fun DailyRecommendScreen(
                 )
             }
         }
+        
+        SongMenuDialog(
+            showDialog = selectedSongForMenu.value != null,
+            song = selectedSongForMenu.value,
+            onDismissRequest = { selectedSongForMenu.value = null },
+            onPlayNext = {
+                selectedSongForMenu.value?.let { onPlayNext(it) }
+            }
+        )
     }
 }

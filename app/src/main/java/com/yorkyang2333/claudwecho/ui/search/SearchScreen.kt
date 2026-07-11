@@ -54,6 +54,7 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.wear.input.RemoteInputIntentHelper
 import com.yorkyang2333.claudwecho.ui.components.SharedSongItem
+import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog
 import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 
 @Composable
@@ -74,6 +75,7 @@ fun SearchScreen(
     var fallbackInput by remember { mutableStateOf(false) }
     var localQuery by remember { mutableStateOf(searchQuery) }
     val focusRequester = remember { FocusRequester() }
+    val selectedSongForMenu = remember { mutableStateOf<com.yorkyang2333.claudwecho.data.api.Song?>(null) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -173,7 +175,8 @@ fun SearchScreen(
                         onClick = {
                             playerViewModel.playPlaylist(searchResults, searchResults.indexOf(song))
                             onSongClick()
-                        }
+                        },
+                        onLongClick = { selectedSongForMenu.value = song }
                     )
                 }
             }
@@ -313,5 +316,14 @@ fun SearchScreen(
                 }
             }
         }
+        
+        SongMenuDialog(
+            showDialog = selectedSongForMenu.value != null,
+            song = selectedSongForMenu.value,
+            onDismissRequest = { selectedSongForMenu.value = null },
+            onPlayNext = {
+                selectedSongForMenu.value?.let { playerViewModel.playNext(it) }
+            }
+        )
     }
 }

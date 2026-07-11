@@ -91,7 +91,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onPlayNext = { song -> playerViewModel.playNext(song) }
             )
         }
         composable("queue") {
@@ -121,7 +122,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onPlayNext = { song -> playerViewModel.playNext(song) }
             )
         }
         composable("search") {
@@ -184,7 +186,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onPlayNext = { song -> playerViewModel.playNext(song) }
             )
         }
         composable("profile") {
@@ -236,7 +239,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onPlayNext = { song -> playerViewModel.playNext(song) }
             )
         }
 
@@ -255,7 +259,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onPlayNext = { song -> playerViewModel.playNext(song) }
             )
         }
 
@@ -274,7 +279,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onPlayNext = { song -> playerViewModel.playNext(song) }
             )
         }
     }
