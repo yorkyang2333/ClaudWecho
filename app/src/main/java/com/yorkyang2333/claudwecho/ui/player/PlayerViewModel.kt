@@ -366,19 +366,7 @@ class PlayerViewModel(
     fun playNext(song: com.yorkyang2333.claudwecho.data.api.Song) {
         val player = player
         val currentList = _currentPlaylist.value.toMutableList()
-        val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-        val mediaItem = androidx.media3.common.MediaItem.Builder()
-            .setMediaId(song.id.toString())
-            .setUri("netease://song/${song.id}")
-            .setMediaMetadata(
-                androidx.media3.common.MediaMetadata.Builder()
-                    .setTitle(song.name)
-                    .setArtist(song.displayArtists.joinToString { it.name })
-                    .setArtworkUri(artworkUri)
-                    .build()
-            )
-            .build()
-
+        
         if (player == null || currentList.isEmpty()) {
             playPlaylist(listOf(song), 0)
             return
@@ -386,12 +374,34 @@ class PlayerViewModel(
 
         _isPersonalFmMode.value = false
         val currentIndex = player.currentMediaItemIndex
+        val currentPosition = player.currentPosition
         val insertIndex = (currentIndex + 1).coerceAtMost(player.mediaItemCount)
         
         currentList.add(insertIndex, song)
         _currentPlaylist.value = currentList
         
-        player.addMediaItem(insertIndex, mediaItem)
+        // Reconstruct all media items to keep the player in perfect sync
+        val mediaItems = currentList.map { s ->
+            val artUri = s.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
+            androidx.media3.common.MediaItem.Builder()
+                .setMediaId(s.id.toString())
+                .setUri("netease://song/${s.id}")
+                .setMediaMetadata(
+                    androidx.media3.common.MediaMetadata.Builder()
+                        .setTitle(s.name)
+                        .setArtist(s.displayArtists.joinToString { it.name })
+                        .setArtworkUri(artUri)
+                        .build()
+                )
+                .build()
+        }
+        
+        try {
+            player.setMediaItems(mediaItems, currentIndex, currentPosition)
+        } catch (e: Exception) {
+            android.util.Log.e("PlayerViewModel", "playNext: failed to call player.setMediaItems", e)
+        }
+        
         playbackStateManager.saveState(currentList, currentIndex)
     }
 
