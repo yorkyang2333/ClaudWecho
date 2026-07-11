@@ -191,7 +191,7 @@ fun PlayerScreen(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 32.dp)
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = if (isRound) 42.dp else 24.dp)
             ) {
                 Text(
                     text = currentTitle ?: "暂无播放内容",
