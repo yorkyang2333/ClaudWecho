@@ -441,11 +441,17 @@ class PlayerViewModel(
                 .build()
         }
         
-        player?.setMediaItems(mediaItems, startIndex, androidx.media3.common.C.TIME_UNSET)
-        player?.repeatMode = playbackStateManager.getRepeatMode()
-        player?.shuffleModeEnabled = playbackStateManager.getShuffleMode()
-        player?.prepare()
-        player?.play()
+        val command = SessionCommand(PlaybackCommands.ACTION_PLAY_PLAYLIST, android.os.Bundle.EMPTY)
+        val args = android.os.Bundle().apply {
+            putParcelableArrayList(
+                PlaybackCommands.EXTRA_MEDIA_ITEMS,
+                ArrayList(mediaItems.map { it.toBundleIncludeLocalConfiguration() })
+            )
+            putInt(PlaybackCommands.EXTRA_START_INDEX, startIndex)
+            putInt(PlaybackCommands.EXTRA_REPEAT_MODE, playbackStateManager.getRepeatMode())
+            putBoolean(PlaybackCommands.EXTRA_SHUFFLE_ENABLED, playbackStateManager.getShuffleMode())
+        }
+        player?.sendCustomCommand(command, args)
     }
 
     fun playPersonalFm() {

@@ -49,6 +49,10 @@ class PlaybackService : MediaSessionService() {
                     PlaybackCommands.ACTION_ADD_NEXT,
                     android.os.Bundle.EMPTY
                 )
+                private val playPlaylistCommand = SessionCommand(
+                    PlaybackCommands.ACTION_PLAY_PLAYLIST,
+                    android.os.Bundle.EMPTY
+                )
 
                 override fun onConnect(
                     session: MediaSession,
@@ -57,6 +61,7 @@ class PlaybackService : MediaSessionService() {
                     val sessionCommands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS
                         .buildUpon()
                         .add(addNextCommand)
+                        .add(playPlaylistCommand)
                         .build()
                     return MediaSession.ConnectionResult.accept(
                         sessionCommands,
@@ -70,39 +75,73 @@ class PlaybackService : MediaSessionService() {
                     customCommand: SessionCommand,
                     args: android.os.Bundle
                 ): com.google.common.util.concurrent.ListenableFuture<SessionResult> {
-                    if (customCommand.customAction != PlaybackCommands.ACTION_ADD_NEXT) {
-                        return super.onCustomCommand(session, controller, customCommand, args)
-                    }
-
-                    val mediaItemBundle = args.getBundle(PlaybackCommands.EXTRA_MEDIA_ITEM)
-                        ?: return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE))
-                    val mediaItem = try {
-                        MediaItem.fromBundle(mediaItemBundle)
-                    } catch (_: Exception) {
-                        return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE))
-                    }
-                    val insertIndex = args
-                        .getInt(PlaybackCommands.EXTRA_INSERT_INDEX, player.currentMediaItemIndex + 1)
-                        .coerceIn(0, player.mediaItemCount)
-                    player.addMediaItem(insertIndex, mediaItem)
-                    if (player.shuffleModeEnabled) {
-                        val currentIndex = player.currentMediaItemIndex
-                        val shuffleIndices = buildList {
-                            // Keep the requested song immediately after the
-                            // current one, then continue with a random order.
-                            add(currentIndex)
-                            add(insertIndex)
-                            addAll(
-                                (0 until player.mediaItemCount)
-                                    .filter { it != currentIndex && it != insertIndex }
-                                    .shuffled()
-                            )
+                    when (customCommand.customAction) {
+                        PlaybackCommands.ACTION_ADD_NEXT -> {
+                            val mediaItemBundle = args.getBundle(PlaybackCommands.EXTRA_MEDIA_ITEM)
+                                ?: return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE))
+                            val mediaItem = try {
+                                MediaItem.fromBundle(mediaItemBundle)
+                            } catch (_: Exception) {
+                                return Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE))
+                            }
+                            val insertIndex = args
+                                .getInt(PlaybackCommands.EXTRA_INSERT_INDEX, player.currentMediaItemIndex + 1)
+                                .coerceIn(0, player.mediaItemCount)
+                            player.addMediaItem(insertIndex, mediaItem)
+                            prioritizeShuffleOrder(player.currentMediaItemIndex, insertIndex)
+                            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
                         }
-                        player.setShuffleOrder(
-                            DefaultShuffleOrder(shuffleIndices.toIntArray(), System.nanoTime())
-                        )
+                        PlaybackCommands.ACTION_PLAY_PLAYLIST -> {
+                            val itemBundles = args.getParcelableArrayList<android.os.Bundle>(
+                                PlaybackCommands.EXTRA_MEDIA_ITEMS
+                            ) ?: return Futures.immediateFuture(
+                                SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
+                            )
+                            val mediaItems = try {
+                                itemBundles.map(MediaItem::fromBundle)
+                            } catch (_: Exception) {
+                                return Futures.immediateFuture(
+                                    SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
+                                )
+                            }
+                            if (mediaItems.isEmpty()) {
+                                return Futures.immediateFuture(
+                                    SessionResult(SessionResult.RESULT_ERROR_BAD_VALUE)
+                                )
+                            }
+                            val startIndex = args
+                                .getInt(PlaybackCommands.EXTRA_START_INDEX, 0)
+                                .coerceIn(0, mediaItems.lastIndex)
+                            player.setMediaItems(mediaItems, startIndex, C.TIME_UNSET)
+                            player.repeatMode = args.getInt(
+                                PlaybackCommands.EXTRA_REPEAT_MODE,
+                                Player.REPEAT_MODE_ALL
+                            )
+                            player.shuffleModeEnabled = args.getBoolean(
+                                PlaybackCommands.EXTRA_SHUFFLE_ENABLED,
+                                false
+                            )
+                            prioritizeShuffleOrder(startIndex)
+                            player.prepare()
+                            player.play()
+                            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                        }
+                        else -> return super.onCustomCommand(session, controller, customCommand, args)
                     }
-                    return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+                }
+
+                private fun prioritizeShuffleOrder(vararg priorityIndices: Int) {
+                    if (!player.shuffleModeEnabled || player.mediaItemCount == 0) return
+
+                    val priority = priorityIndices
+                        .filter { it in 0 until player.mediaItemCount }
+                        .distinct()
+                    val shuffleIndices = priority + (0 until player.mediaItemCount)
+                        .filter { it !in priority }
+                        .shuffled()
+                    player.setShuffleOrder(
+                        DefaultShuffleOrder(shuffleIndices.toIntArray(), System.nanoTime())
+                    )
                 }
             })
             .build()
