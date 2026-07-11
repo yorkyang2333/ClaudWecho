@@ -16,8 +16,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
+import androidx.compose.ui.layout.onSizeChanged
+import com.yorkyang2333.claudwecho.ui.components.performClickHaptic
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -331,21 +336,54 @@ fun PlayerScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (!isRound) {
+                    var trackWidthPx by remember { mutableStateOf(1f) }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .height(6.dp)
-                            .background(Color.White.copy(alpha = 0.2f), shape = RoundedCornerShape(3.dp))
+                            .padding(horizontal = 20.dp)
+                            .height(28.dp)
+                            .onSizeChanged { trackWidthPx = it.width.toFloat().coerceAtLeast(1f) }
+                            .pointerInput(duration) {
+                                if (duration > 0L) {
+                                    detectHorizontalDragGestures(
+                                        onDragStart = { offset ->
+                                            val ratio = (offset.x / trackWidthPx).coerceIn(0f, 1f)
+                                            targetSeekPos = (ratio * duration).toLong()
+                                        },
+                                        onHorizontalDrag = { change, _ ->
+                                            change.consume()
+                                            val ratio = (change.position.x / trackWidthPx).coerceIn(0f, 1f)
+                                            targetSeekPos = (ratio * duration).toLong()
+                                        }
+                                    )
+                                }
+                            }
+                            .pointerInput(duration) {
+                                if (duration > 0L) {
+                                    detectTapGestures { offset ->
+                                        val ratio = (offset.x / trackWidthPx).coerceIn(0f, 1f)
+                                        targetSeekPos = (ratio * duration).toLong()
+                                        view.performClickHaptic()
+                                    }
+                                }
+                            },
+                        contentAlignment = Alignment.CenterStart
                     ) {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(animatedProgress.coerceIn(0f, 1f))
-                                .fillMaxHeight()
-                                .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(3.dp))
-                        )
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .background(Color.White.copy(alpha = 0.2f), shape = RoundedCornerShape(3.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(animatedProgress.coerceIn(0f, 1f))
+                                    .fillMaxHeight()
+                                    .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(3.dp))
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
 
                 Row(
