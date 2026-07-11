@@ -80,6 +80,7 @@ fun Modifier.onLongClickBeforeChild(enabled: Boolean = true, onLongClick: () -> 
                             onLongClick()
                         }
                         
+                        val initialPosition = down.position
                         var allPointersUp = false
                         while (!allPointersUp) {
                             val nextEvent = awaitPointerEvent(PointerEventPass.Initial)
@@ -91,6 +92,12 @@ fun Modifier.onLongClickBeforeChild(enabled: Boolean = true, onLongClick: () -> 
                             if (activePointers.isEmpty()) {
                                 allPointersUp = true
                                 job.cancel()
+                            } else {
+                                val change = activePointers.first()
+                                val distance = (change.position - initialPosition).getDistance()
+                                if (distance > viewConfiguration.touchSlop) {
+                                    job.cancel()
+                                }
                             }
                         }
                     }
