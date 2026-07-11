@@ -82,7 +82,7 @@ fun PlaylistMenuDialog(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.filledTonalButtonColors()
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(horizontalAlignment = Alignment.Start) {
                             Text(
                                 text = "排序方式",
                                 style = MaterialTheme.typography.titleMedium,
