@@ -32,13 +32,29 @@ class PlaybackService : MediaSessionService() {
         player.shuffleModeEnabled = playbackStateManager.getShuffleMode()
         
         player.addListener(object : Player.Listener {
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO &&
+            override fun onPositionDiscontinuity(
+                oldPosition: Player.PositionInfo,
+                newPosition: Player.PositionInfo,
+                reason: Int
+            ) {
+                if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION &&
                     !playbackStateManager.isPersonalFmMode.value &&
                     player.repeatMode == Player.REPEAT_MODE_OFF &&
                     !player.shuffleModeEnabled
                 ) {
                     player.pause()
+                    player.seekTo(oldPosition.mediaItemIndex, 0L)
+                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED &&
+                    !playbackStateManager.isPersonalFmMode.value &&
+                    player.repeatMode == Player.REPEAT_MODE_OFF &&
+                    !player.shuffleModeEnabled
+                ) {
+                    player.pause()
+                    player.seekTo(0L)
                 }
             }
         })

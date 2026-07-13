@@ -117,14 +117,17 @@ class PlayerViewModel(
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _isPlaying.value = isPlaying
             }
+            override fun onPositionDiscontinuity(
+                oldPosition: Player.PositionInfo,
+                newPosition: Player.PositionInfo,
+                reason: Int
+            ) {
+                _currentPosition.value = player?.currentPosition ?: 0L
+            }
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                _currentPosition.value = player?.currentPosition ?: 0L
+            }
             override fun onMediaItemTransition(mediaItem: androidx.media3.common.MediaItem?, reason: Int) {
-                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO &&
-                    !_isPersonalFmMode.value &&
-                    player?.repeatMode == Player.REPEAT_MODE_OFF &&
-                    player?.shuffleModeEnabled == false
-                ) {
-                    player?.pause()
-                }
                 val currentOriginalIndex = player?.currentMediaItemIndex ?: 0
                 _currentMediaItemIndex.value = currentOriginalIndex
                 _displayCurrentIndex.value = displayToOriginalMap.indexOf(currentOriginalIndex).takeIf { it >= 0 } ?: 0
