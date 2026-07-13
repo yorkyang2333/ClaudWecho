@@ -364,28 +364,16 @@ fun PlaylistDetailScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 16.dp)
-                                .background(androidx.compose.ui.graphics.Color.DarkGray)
-                                .padding(8.dp)
+                                .background(androidx.compose.ui.graphics.Color.DarkGray, RoundedCornerShape(12.dp))
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            Button(
-                                onClick = { showSearchDialog.value = false },
-                                colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
-                                modifier = Modifier.size(48.dp)
-                            ) {
-                                androidx.wear.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Close, null)
+                        com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
+                            onCancel = { showSearchDialog.value = false },
+                            onConfirm = {
+                                viewModel.setSearchQuery(tempSearchQuery)
+                                showSearchDialog.value = false
                             }
-                            Button(
-                                onClick = {
-                                    viewModel.setSearchQuery(tempSearchQuery)
-                                    showSearchDialog.value = false
-                                },
-                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                modifier = Modifier.size(48.dp)
-                            ) {
-                                androidx.wear.compose.material3.Icon(androidx.compose.material.icons.Icons.Rounded.Search, null)
-                            }
-                        }
+                        )
                     }
                 }
             }

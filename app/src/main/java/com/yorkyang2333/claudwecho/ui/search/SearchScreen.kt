@@ -249,16 +249,22 @@ fun SearchScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "输入搜索",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
                 BasicTextField(
                     value = localQuery,
                     onValueChange = { localQuery = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
-                        .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(24.dp))
+                        .padding(bottom = 16.dp)
+                        .background(androidx.compose.ui.graphics.Color.DarkGray, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
                         .focusRequester(focusRequester),
                     textStyle = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = androidx.compose.ui.graphics.Color.White,
                         textAlign = TextAlign.Start
                     ),
                     singleLine = true,
@@ -275,14 +281,14 @@ fun SearchScreen(
                     ),
                     decorationBox = { innerTextField ->
                         Row(
-                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Search,
                                 contentDescription = "搜索",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                             Box(modifier = Modifier.padding(start = 8.dp).weight(1f)) {
                                 if (localQuery.isEmpty()) {
@@ -297,7 +303,6 @@ fun SearchScreen(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
                 com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
                     onCancel = {
                         keyboardController?.hide()
