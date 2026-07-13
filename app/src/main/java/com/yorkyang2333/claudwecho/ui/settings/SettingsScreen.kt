@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.wear.compose.material3.Icon
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.window.Dialog
 
 @Composable
@@ -233,8 +234,8 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
-                        .background(androidx.compose.ui.graphics.Color.DarkGray)
-                        .padding(8.dp)
+                        .background(androidx.compose.ui.graphics.Color.DarkGray, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
                 )
                 com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
                     onCancel = { showUrlDialog = false },
