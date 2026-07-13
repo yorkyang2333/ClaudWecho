@@ -41,6 +41,7 @@ fun PlayerMenuScreen(
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
     val showAddToPlaylistDialog = remember { mutableStateOf(false) }
     val createdPlaylists by viewModel.createdPlaylists.collectAsState()
+    val isLoadingCreatedPlaylists by viewModel.isLoadingCreatedPlaylists.collectAsState()
     
     val playbackModeText = when {
         shuffleMode -> "随机播放"
@@ -155,6 +156,7 @@ fun PlayerMenuScreen(
         AddToPlaylistDialog(
             showDialog = showAddToPlaylistDialog.value,
             playlists = createdPlaylists,
+            isLoading = isLoadingCreatedPlaylists,
             onDismissRequest = { showAddToPlaylistDialog.value = false },
             onPlaylistSelected = { playlist ->
                 viewModel.currentSongId()?.let { songId ->

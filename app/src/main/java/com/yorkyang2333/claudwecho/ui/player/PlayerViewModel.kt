@@ -568,15 +568,23 @@ class PlayerViewModel(
     private val _createdPlaylists = MutableStateFlow<List<Playlist>>(emptyList())
     val createdPlaylists: StateFlow<List<Playlist>> = _createdPlaylists.asStateFlow()
 
+    private val _isLoadingCreatedPlaylists = MutableStateFlow(false)
+    val isLoadingCreatedPlaylists: StateFlow<Boolean> = _isLoadingCreatedPlaylists.asStateFlow()
+
     fun fetchCreatedPlaylists() {
         viewModelScope.launch {
-            val profile = repository.getLoginStatus()
-            if (profile != null) {
-                val pl = repository.getUserPlaylists(profile.userId)
-                val firstId = pl.firstOrNull()?.id
-                _createdPlaylists.value = pl.filter {
-                    it.isCreatedBy(profile.userId) && it.id != firstId
+            _isLoadingCreatedPlaylists.value = true
+            try {
+                val profile = repository.getLoginStatus()
+                if (profile != null) {
+                    val pl = repository.getUserPlaylists(profile.userId)
+                    val firstId = pl.firstOrNull()?.id
+                    _createdPlaylists.value = pl.filter {
+                        it.isCreatedBy(profile.userId) && it.id != firstId && it.name != "我喜欢"
+                    }
                 }
+            } finally {
+                _isLoadingCreatedPlaylists.value = false
             }
         }
     }
