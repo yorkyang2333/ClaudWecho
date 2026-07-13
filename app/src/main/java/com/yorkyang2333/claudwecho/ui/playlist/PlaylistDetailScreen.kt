@@ -43,6 +43,7 @@ fun PlaylistDetailScreen(
     onNavigateToSongInfo: (Long) -> Unit
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
+    val allSortedSongs by viewModel.allSortedSongs.collectAsState()
     val songs by viewModel.songs.collectAsState()
     val title by viewModel.title.collectAsState()
     val isOwned by viewModel.isOwnedPlaylist.collectAsState()
@@ -237,7 +238,12 @@ fun PlaylistDetailScreen(
                                     if (isSelected) selectedSongs.remove(song.id)
                                     else selectedSongs.add(song.id)
                                 } else {
-                                    onNavigateToPlayer(songs, index)
+                                    val targetIndex = allSortedSongs.indexOfFirst { it.id == song.id }
+                                    if (targetIndex >= 0) {
+                                        onNavigateToPlayer(allSortedSongs, targetIndex)
+                                    } else {
+                                        onNavigateToPlayer(songs, index)
+                                    }
                                 }
                             },
                             onLongClick = {
@@ -291,8 +297,9 @@ fun PlaylistDetailScreen(
                 isOwned = isOwned,
                 onDismissRequest = { showMenu.value = false },
                 onPlayAll = {
-                    if (songs.isNotEmpty()) {
-                        onNavigateToPlayer(songs, 0)
+                    val listToPlay = if (allSortedSongs.isNotEmpty()) allSortedSongs else songs
+                    if (listToPlay.isNotEmpty()) {
+                        onNavigateToPlayer(listToPlay, 0)
                         showMenu.value = false
                     }
                 },

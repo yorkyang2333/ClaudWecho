@@ -39,24 +39,14 @@ class PlaylistDetailViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    val songs: StateFlow<List<Song>> = combine(
-        _originalSongs, _sortMode, _sortOrder, _searchQuery
-    ) { original, mode, order, query ->
+    val allSortedSongs: StateFlow<List<Song>> = combine(
+        _originalSongs, _sortMode, _sortOrder
+    ) { original, mode, order ->
         withContext(Dispatchers.Default) {
-            val filtered = if (query.isBlank()) {
-                original
-            } else {
-                original.filter { song ->
-                    song.name.contains(query, ignoreCase = true) ||
-                    song.displayArtists.any { it.name.contains(query, ignoreCase = true) } ||
-                    (song.displayAlbum?.name?.contains(query, ignoreCase = true) == true)
-                }
-            }
-            
             if (mode == SortMode.DEFAULT) {
-                if (order == SortOrder.ASC) filtered else filtered.reversed()
+                if (order == SortOrder.ASC) original else original.reversed()
             } else {
-                val decorated = filtered.map { song ->
+                val decorated = original.map { song ->
                     val text = when (mode) {
                         SortMode.TITLE -> song.name
                         SortMode.ALBUM -> song.displayAlbum?.name ?: ""
@@ -69,6 +59,22 @@ class PlaylistDetailViewModel(
                 val sortedDecorated = decorated.sortedBy { it.second }
                 val sorted = sortedDecorated.map { it.first }
                 if (order == SortOrder.ASC) sorted else sorted.reversed()
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val songs: StateFlow<List<Song>> = combine(
+        allSortedSongs, _searchQuery
+    ) { sorted, query ->
+        withContext(Dispatchers.Default) {
+            if (query.isBlank()) {
+                sorted
+            } else {
+                sorted.filter { song ->
+                    song.name.contains(query, ignoreCase = true) ||
+                    song.displayArtists.any { it.name.contains(query, ignoreCase = true) } ||
+                    (song.displayAlbum?.name?.contains(query, ignoreCase = true) == true)
+                }
             }
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
