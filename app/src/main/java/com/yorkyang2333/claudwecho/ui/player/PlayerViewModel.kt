@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 
 import com.yorkyang2333.claudwecho.data.MainRepository
 import com.yorkyang2333.claudwecho.data.api.Playlist
+import com.yorkyang2333.claudwecho.data.api.Song
 import kotlinx.coroutines.delay
 
 data class LyricLine(val timeMs: Long, val text: String, var tText: String? = null)
@@ -200,18 +201,7 @@ class PlayerViewModel(
             if (lastPlaylist != null && lastPlaylist.isNotEmpty()) {
                 _currentPlaylist.value = lastPlaylist
                 val mediaItems = lastPlaylist.map { song ->
-                    val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-                    MediaItem.Builder()
-                        .setMediaId(song.id.toString())
-                        .setUri("netease://song/${song.id}")
-                        .setMediaMetadata(
-                            androidx.media3.common.MediaMetadata.Builder()
-                                .setTitle(song.name)
-                                .setArtist(song.displayArtists.joinToString { it.name })
-                                .setArtworkUri(artworkUri)
-                                .build()
-                        )
-                        .build()
+                    song.toMediaItem()
                 }
                 val lastIndex = playbackStateManager.getLastIndex()
                 player?.setMediaItems(mediaItems, lastIndex, androidx.media3.common.C.TIME_UNSET)
@@ -395,18 +385,7 @@ class PlayerViewModel(
         val currentIndex = player.currentMediaItemIndex
         val insertIndex = (currentIndex + 1).coerceIn(0, currentList.size)
 
-        val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-        val mediaItem = MediaItem.Builder()
-            .setMediaId(song.id.toString())
-            .setUri("netease://song/${song.id}")
-            .setMediaMetadata(
-                androidx.media3.common.MediaMetadata.Builder()
-                    .setTitle(song.name)
-                    .setArtist(song.displayArtists.joinToString { it.name })
-                    .setArtworkUri(artworkUri)
-                    .build()
-            )
-            .build()
+        val mediaItem = song.toMediaItem()
 
         val command = SessionCommand(PlaybackCommands.ACTION_ADD_NEXT, android.os.Bundle.EMPTY)
         val args = android.os.Bundle().apply {
@@ -444,18 +423,7 @@ class PlayerViewModel(
         }
         
         val mediaItems = songs.map { song ->
-            val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-            MediaItem.Builder()
-                .setMediaId(song.id.toString())
-                .setUri("netease://song/${song.id}")
-                .setMediaMetadata(
-                    androidx.media3.common.MediaMetadata.Builder()
-                        .setTitle(song.name)
-                        .setArtist(song.displayArtists.joinToString { it.name })
-                        .setArtworkUri(artworkUri)
-                        .build()
-                )
-                .build()
+            song.toMediaItem()
         }
         
         val command = SessionCommand(PlaybackCommands.ACTION_PLAY_PLAYLIST, android.os.Bundle.EMPTY)
@@ -481,18 +449,7 @@ class PlayerViewModel(
             if (songs.isNotEmpty()) {
                 _currentPlaylist.value = songs
                 val mediaItems = songs.map { song ->
-                    val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-                    MediaItem.Builder()
-                        .setMediaId(song.id.toString())
-                        .setUri("netease://song/${song.id}")
-                        .setMediaMetadata(
-                            androidx.media3.common.MediaMetadata.Builder()
-                                .setTitle(song.name)
-                                .setArtist(song.displayArtists.joinToString { it.name })
-                                .setArtworkUri(artworkUri)
-                                .build()
-                        )
-                        .build()
+                    song.toMediaItem()
                 }
                 player?.setMediaItems(mediaItems, 0, androidx.media3.common.C.TIME_UNSET)
                 player?.prepare()
@@ -540,18 +497,7 @@ class PlayerViewModel(
                 if (newSongs.isNotEmpty()) {
                     _currentPlaylist.value = _currentPlaylist.value + newSongs
                     val mediaItems = newSongs.map { song ->
-                        val artworkUri = song.displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
-                        MediaItem.Builder()
-                            .setMediaId(song.id.toString())
-                            .setUri("netease://song/${song.id}")
-                            .setMediaMetadata(
-                                androidx.media3.common.MediaMetadata.Builder()
-                                    .setTitle(song.name)
-                                    .setArtist(song.displayArtists.joinToString { it.name })
-                                    .setArtworkUri(artworkUri)
-                                    .build()
-                            )
-                            .build()
+                        song.toMediaItem()
                     }
                     player.addMediaItems(mediaItems)
                     
@@ -606,6 +552,22 @@ class PlayerViewModel(
                 LyricLine(timeMs, text.trim())
             } else null
         }.filter { it.text.isNotEmpty() }
+    }
+
+    private fun Song.toMediaItem(): MediaItem {
+        val artworkUri = displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
+        return MediaItem.Builder()
+            .setMediaId(id.toString())
+            .setUri("netease://song/$id")
+            .setCustomCacheKey(id.toString())
+            .setMediaMetadata(
+                androidx.media3.common.MediaMetadata.Builder()
+                    .setTitle(name)
+                    .setArtist(displayArtists.joinToString { it.name })
+                    .setArtworkUri(artworkUri)
+                    .build()
+            )
+            .build()
     }
 
     override fun onCleared() {

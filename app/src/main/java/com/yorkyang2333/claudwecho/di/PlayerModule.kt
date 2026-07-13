@@ -39,6 +39,9 @@ val playerModule = module {
         val cacheDataSourceFactory: CacheDataSource.Factory = get()
         val repository: com.yorkyang2333.claudwecho.data.MainRepository = get()
         
+        val urlCache = java.util.concurrent.ConcurrentHashMap<Long, Pair<String, Long>>()
+        val urlCacheTtlMs = 30 * 60 * 1000L // 30 minutes
+
         val resolvingDataSourceFactory = androidx.media3.datasource.ResolvingDataSource.Factory(
             cacheDataSourceFactory,
             androidx.media3.datasource.ResolvingDataSource.Resolver { dataSpec ->
@@ -46,13 +49,24 @@ val playerModule = module {
                 if (uri.scheme == "netease") {
                     val id = uri.lastPathSegment?.toLongOrNull()
                     if (id != null) {
-                        var actualUrl: String? = null
-                        kotlinx.coroutines.runBlocking {
-                            actualUrl = repository.getSongUrl(id)
+                        val now = System.currentTimeMillis()
+                        val cached = urlCache[id]
+                        val finalUrl = if (cached != null && (now - cached.second) < urlCacheTtlMs) {
+                            cached.first
+                        } else {
+                            var actualUrl: String? = null
+                            kotlinx.coroutines.runBlocking {
+                                actualUrl = repository.getSongUrl(id)
+                            }
+                            val resolved = actualUrl ?: "https://music.163.com/song/media/outer/url?id=${id}.mp3"
+                            urlCache[id] = Pair(resolved, now)
+                            android.util.Log.d("ResolvingDataSource", "Resolved URL for $id to $resolved")
+                            resolved
                         }
-                        val finalUrl = actualUrl ?: "https://music.163.com/song/media/outer/url?id=${id}.mp3"
-                        android.util.Log.d("ResolvingDataSource", "Resolved URL for $id to $finalUrl")
-                        return@Resolver dataSpec.withUri(android.net.Uri.parse(finalUrl))
+                        return@Resolver dataSpec.buildUpon()
+                            .setUri(android.net.Uri.parse(finalUrl))
+                            .setKey(dataSpec.key ?: id.toString())
+                            .build()
                     }
                 }
                 dataSpec
