@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MyCollectionViewModel(private val repository: MainRepository) : ViewModel() {
+    private val _currentUserId = MutableStateFlow<Long?>(null)
+    val currentUserId: StateFlow<Long?> = _currentUserId.asStateFlow()
 
     private val _playlists = MutableStateFlow<List<Playlist>>(emptyList())
     val playlists: StateFlow<List<Playlist>> = _playlists.asStateFlow()
@@ -30,6 +32,7 @@ class MyCollectionViewModel(private val repository: MainRepository) : ViewModel(
             _isLoading.value = true
             
             val userProfile = repository.getLoginStatus(forceRefresh)
+            _currentUserId.value = userProfile?.userId
             if (userProfile != null) {
                 // Fetch playlists
                 val pl = repository.getUserPlaylists(userProfile.userId, forceRefresh)

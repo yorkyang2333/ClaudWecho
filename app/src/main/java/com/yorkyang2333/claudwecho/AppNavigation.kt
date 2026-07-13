@@ -103,7 +103,8 @@ fun AppNavigation(
                     navController.navigate("player") {
                         popUpTo("player") { inclusive = true }
                     }
-                }
+                },
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
             )
         }
         composable("personal_fm") {

@@ -29,10 +29,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun QueueScreen(
     viewModel: PlayerViewModel,
-    onNavigateToPlayer: () -> Unit
+    onNavigateToPlayer: () -> Unit,
+    onNavigateToSongInfo: (Long) -> Unit = {}
 ) {
     val songs by viewModel.displayPlaylist.collectAsState()
     val currentIndex by viewModel.displayCurrentIndex.collectAsState()
+    val selectedQueueSong = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Pair<Int, com.yorkyang2333.claudwecho.data.api.Song>?>(null) }
     
     val listState = rememberScalingLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -149,6 +151,9 @@ fun QueueScreen(
                         onClick = {
                             viewModel.playQueueItem(index)
                             onNavigateToPlayer()
+                        },
+                        onLongClick = {
+                            selectedQueueSong.value = index to song
                         }
                     )
                 }
@@ -156,5 +161,21 @@ fun QueueScreen(
         }
         
         com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放队列")
+
+        com.yorkyang2333.claudwecho.ui.components.SongMenuDialog(
+            showDialog = selectedQueueSong.value != null,
+            song = selectedQueueSong.value?.second,
+            onDismissRequest = { selectedQueueSong.value = null },
+            onPlayNext = {
+                selectedQueueSong.value?.second?.let { viewModel.playNext(it) }
+            },
+            onSongInfo = onNavigateToSongInfo,
+            canRemove = true,
+            onRemove = {
+                selectedQueueSong.value?.first?.let { idx ->
+                    viewModel.removeQueueItem(idx)
+                }
+            }
+        )
     }
 }

@@ -301,6 +301,20 @@ class PlayerViewModel(
     fun skipToPrevious() {
         player?.seekToPreviousMediaItem()
     }
+    fun removeQueueItem(displayIndex: Int) {
+        val player = player ?: return
+        if (displayIndex in displayToOriginalMap.indices) {
+            val originalIndex = displayToOriginalMap[displayIndex]
+            player.removeMediaItem(originalIndex)
+            val currentList = _currentPlaylist.value.toMutableList()
+            if (originalIndex in currentList.indices) {
+                currentList.removeAt(originalIndex)
+                _currentPlaylist.value = currentList
+                updateDisplayPlaylist(player.currentTimeline)
+                playbackStateManager.saveState(currentList, player.currentMediaItemIndex)
+            }
+        }
+    }
     
     fun playQueueItem(displayIndex: Int) {
         if (displayIndex in displayToOriginalMap.indices) {

@@ -20,7 +20,9 @@ fun SongMenuDialog(
     song: Song?,
     onDismissRequest: () -> Unit,
     onPlayNext: () -> Unit,
-    onSongInfo: (Long) -> Unit
+    onSongInfo: (Long) -> Unit,
+    canRemove: Boolean = false,
+    onRemove: (() -> Unit)? = null
 ) {
     Dialog(
         showDialog = showDialog,
@@ -54,6 +56,25 @@ fun SongMenuDialog(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
+                    }
+                }
+                if (canRemove && onRemove != null) {
+                    item {
+                        Button(
+                            onClick = {
+                                onRemove()
+                                onDismissRequest()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors()
+                        ) {
+                            Text(
+                                text = "移除",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
                 item {

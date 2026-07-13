@@ -108,7 +108,8 @@ class PlaylistDetailViewModel(
         val profile = repository.getLoginStatus()
         if (profile != null) {
             val pl = repository.getUserPlaylists(profile.userId)
-            val isOwned = pl.any { it.id == playlistId }
+            val playlist = pl.find { it.id == playlistId }
+            val isOwned = playlist?.isCreatedBy(profile.userId) ?: false
             _isOwnedPlaylist.value = isOwned
         }
     }

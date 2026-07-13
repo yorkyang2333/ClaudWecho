@@ -397,7 +397,13 @@ fun PlaylistDetailScreen(
                 onPlayNext = {
                     selectedSongForMenu.value?.let { onPlayNext(it) }
                 },
-                onSongInfo = onNavigateToSongInfo
+                onSongInfo = onNavigateToSongInfo,
+                canRemove = isOwned,
+                onRemove = {
+                    selectedSongForMenu.value?.let { song ->
+                        viewModel.removeSongs(listOf(song.id), type == "liked")
+                    }
+                }
             )
         }
     }

@@ -283,7 +283,29 @@ data class Album(val id: Long, val name: String? = null, val picUrl: String? = n
 data class UserPlaylistResponse(val playlist: List<Playlist>, val code: Int)
 
 @Serializable
-data class Playlist(val id: Long, val name: String, val coverImgUrl: String, val trackCount: Int)
+data class PlaylistCreator(val userId: Long? = null, val nickname: String? = null)
+
+@Serializable
+data class Playlist(
+    val id: Long,
+    val name: String,
+    val coverImgUrl: String,
+    val trackCount: Int,
+    val userId: Long? = null,
+    val creator: PlaylistCreator? = null,
+    val subscribed: Boolean? = null
+) {
+    fun isCreatedBy(currentUserId: Long?): Boolean {
+        val ownerId = userId ?: creator?.userId
+        if (ownerId != null && currentUserId != null) {
+            return ownerId == currentUserId
+        }
+        if (subscribed != null) {
+            return !subscribed
+        }
+        return true
+    }
+}
 
 @Serializable
 data class PlaylistDetailResponse(val code: Int, val playlist: PlaylistDetail)

@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,27 +33,128 @@ fun MyCollectionPlaylistsScreen(
 ) {
     val playlists by viewModel.playlists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val currentUserId by viewModel.currentUserId.collectAsState()
+
+    var selectedTabIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0) }
 
     androidx.compose.runtime.LaunchedEffect(Unit) {
         viewModel.loadData()
     }
 
-    CollectionListBase(
-        title = "我的歌单",
-        items = playlists,
-        isLoading = isLoading,
-        emptyMessage = "暂无歌单",
-        keySelector = { it.id },
-        onRefresh = { viewModel.loadData(forceRefresh = true) },
-        itemContent = { playlist ->
-            CollectionItemRow(
-                title = playlist.name,
-                subtitle = "${playlist.trackCount} 首",
-                imageUrl = playlist.coverImgUrl,
-                onClick = { onNavigateToPlaylistDetail(playlist.id) }
-            )
+    val createdPlaylists = androidx.compose.runtime.remember(playlists, currentUserId) {
+        playlists.filter { it.isCreatedBy(currentUserId) }
+    }
+    val collectedPlaylists = androidx.compose.runtime.remember(playlists, currentUserId) {
+        playlists.filter { !it.isCreatedBy(currentUserId) }
+    }
+    val displayList = if (selectedTabIndex == 0) createdPlaylists else collectedPlaylists
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isLoading) {
+            androidx.wear.compose.material3.CircularProgressIndicator()
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {
+                RotaryScalingLazyColumn(
+                    autoCentering = null,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Button(
+                                onClick = { selectedTabIndex = 0 },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(36.dp),
+                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = if (selectedTabIndex == 0) MaterialTheme.colorScheme.primary else Color(0xFF252320),
+                                    contentColor = if (selectedTabIndex == 0) Color.Black else Color.White
+                                )
+                            ) {
+                                Text(
+                                    text = "创建",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            Button(
+                                onClick = { selectedTabIndex = 1 },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(36.dp),
+                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = if (selectedTabIndex == 1) MaterialTheme.colorScheme.primary else Color(0xFF252320),
+                                    contentColor = if (selectedTabIndex == 1) Color.Black else Color.White
+                                )
+                            ) {
+                                Text(
+                                    text = "收藏",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+                    if (displayList.isEmpty()) {
+                        item {
+                            Text(
+                                text = if (selectedTabIndex == 0) "暂无创建的歌单" else "暂无收藏的歌单",
+                                color = Color.Gray,
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                        }
+                    } else {
+                        items(displayList, key = { it.id }) { playlist ->
+                            CollectionItemRow(
+                                title = playlist.name,
+                                subtitle = "${playlist.trackCount} 首",
+                                imageUrl = playlist.coverImgUrl,
+                                onClick = { onNavigateToPlaylistDetail(playlist.id) }
+                            )
+                        }
+                    }
+                }
+
+                com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
+                    title = "我的歌单",
+                    actionIcon = {
+                        androidx.compose.foundation.layout.Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(androidx.compose.foundation.shape.CircleShape)
+                                .background(Color(0xFF2D2D2D))
+                                .hapticClickable { viewModel.loadData(forceRefresh = true) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            androidx.wear.compose.material3.Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh,
+                                contentDescription = "Refresh",
+                                modifier = Modifier.size(18.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                )
+            }
         }
-    )
+    }
 }
 
 @Composable
