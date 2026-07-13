@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 import com.yorkyang2333.claudwecho.data.MainRepository
+import com.yorkyang2333.claudwecho.data.api.Playlist
 import kotlinx.coroutines.delay
 
 data class LyricLine(val timeMs: Long, val text: String, var tText: String? = null)
@@ -561,6 +562,29 @@ class PlayerViewModel(
                 }
                 isFetchingFm = false
             }
+        }
+    }
+
+    private val _createdPlaylists = MutableStateFlow<List<Playlist>>(emptyList())
+    val createdPlaylists: StateFlow<List<Playlist>> = _createdPlaylists.asStateFlow()
+
+    fun fetchCreatedPlaylists() {
+        viewModelScope.launch {
+            val profile = repository.getLoginStatus()
+            if (profile != null) {
+                val pl = repository.getUserPlaylists(profile.userId)
+                val firstId = pl.firstOrNull()?.id
+                _createdPlaylists.value = pl.filter {
+                    it.isCreatedBy(profile.userId) && it.id != firstId
+                }
+            }
+        }
+    }
+
+    fun addSongToPlaylist(playlistId: Long, songId: Long, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = repository.addTracksToPlaylist(playlistId, listOf(songId))
+            onResult(success)
         }
     }
 

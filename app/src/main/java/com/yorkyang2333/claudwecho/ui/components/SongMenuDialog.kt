@@ -22,7 +22,8 @@ fun SongMenuDialog(
     onPlayNext: () -> Unit,
     onSongInfo: (Long) -> Unit,
     canRemove: Boolean = false,
-    onRemove: (() -> Unit)? = null
+    onRemove: (() -> Unit)? = null,
+    onAddToPlaylist: ((Song) -> Unit)? = null
 ) {
     Dialog(
         showDialog = showDialog,
@@ -70,6 +71,25 @@ fun SongMenuDialog(
                         ) {
                             Text(
                                 text = "移除",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+                if (onAddToPlaylist != null) {
+                    item {
+                        Button(
+                            onClick = {
+                                song?.let { onAddToPlaylist(it) }
+                                onDismissRequest()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors()
+                        ) {
+                            Text(
+                                text = "添加到...",
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis

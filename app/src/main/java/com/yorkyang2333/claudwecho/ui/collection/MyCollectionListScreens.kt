@@ -42,7 +42,8 @@ fun MyCollectionPlaylistsScreen(
     }
 
     val createdPlaylists = androidx.compose.runtime.remember(playlists, currentUserId) {
-        playlists.filter { it.isCreatedBy(currentUserId) }
+        val firstId = playlists.firstOrNull()?.id
+        playlists.filter { it.isCreatedBy(currentUserId) && it.id != firstId && it.name != "我喜欢" }
     }
     val collectedPlaylists = androidx.compose.runtime.remember(playlists, currentUserId) {
         playlists.filter { !it.isCreatedBy(currentUserId) }

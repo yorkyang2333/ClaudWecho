@@ -137,6 +137,16 @@ class MainRepository(
         }
     }
 
+    suspend fun addTracksToPlaylist(playlistId: Long, trackIds: List<Long>): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val tracksStr = trackIds.joinToString(",")
+            val response = api.updatePlaylistTracks(op = "add", pid = playlistId, tracks = tracksStr)
+            response.code == 200
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun getSubscribedAlbums(forceRefresh: Boolean = false): List<com.yorkyang2333.claudwecho.data.api.Album> = withContext(Dispatchers.IO) {
         if (!forceRefresh && cachedAlbums != null) return@withContext cachedAlbums!!
         try {

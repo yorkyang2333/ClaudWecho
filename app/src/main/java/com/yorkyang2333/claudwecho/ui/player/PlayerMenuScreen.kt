@@ -10,14 +10,19 @@ import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.yorkyang2333.claudwecho.ui.components.AddToPlaylistDialog
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
@@ -34,6 +39,8 @@ fun PlayerMenuScreen(
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
     val repeatMode by viewModel.repeatMode.collectAsState()
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
+    val showAddToPlaylistDialog = remember { mutableStateOf(false) }
+    val createdPlaylists by viewModel.createdPlaylists.collectAsState()
     
     val playbackModeText = when {
         shuffleMode -> "随机播放"
@@ -106,6 +113,26 @@ fun PlayerMenuScreen(
             }
             item {
                 Button(
+                    onClick = {
+                        viewModel.fetchCreatedPlaylists()
+                        showAddToPlaylistDialog.value = true
+                    },
+                    enabled = viewModel.currentSongId() != null,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Text(
+                            text = "添加到...",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    icon = { Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
+            item {
+                Button(
                     onClick = { viewModel.currentSongId()?.let(onNavigateToSongInfo) },
                     enabled = viewModel.currentSongId() != null,
                     modifier = Modifier.fillMaxWidth(),
@@ -124,5 +151,24 @@ fun PlayerMenuScreen(
         }
         
         com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放菜单")
+
+        AddToPlaylistDialog(
+            showDialog = showAddToPlaylistDialog.value,
+            playlists = createdPlaylists,
+            onDismissRequest = { showAddToPlaylistDialog.value = false },
+            onPlaylistSelected = { playlist ->
+                viewModel.currentSongId()?.let { songId ->
+                    viewModel.addSongToPlaylist(playlist.id, songId) { success ->
+                        Toast.makeText(
+                            context,
+                            if (success) "已添加到：${playlist.name}" else "添加失败",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                showAddToPlaylistDialog.value = false
+            }
+        )
     }
 }
+
