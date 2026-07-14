@@ -104,6 +104,8 @@ fun PlayerScreen(
     val view = LocalView.current
     var accumulatedRotaryPx by remember { mutableStateOf(0f) }
     var lastRotaryHapticTime by remember { mutableStateOf(0L) }
+    var accumulatedOppoScroll by remember { mutableStateOf(0f) }
+    var lastOppoScrollTime by remember { mutableStateOf(0L) }
     var targetSeekPos by remember { mutableStateOf<Long?>(null) }
 
     LaunchedEffect(isActivePage) {
@@ -151,14 +153,26 @@ fun PlayerScreen(
                     val vScroll = event.getAxisValue(android.view.MotionEvent.AXIS_VSCROLL)
                     if (vScroll != 0f) {
                         val currentTime = System.currentTimeMillis()
-                        if (currentTime - lastRotaryHapticTime >= 35L) {
-                            view.performRotaryHaptic()
-                            lastRotaryHapticTime = currentTime
+                        if (currentTime - lastOppoScrollTime > 300L) {
+                            accumulatedOppoScroll = 0f
                         }
-                        val basePos = targetSeekPos ?: currentPosition
-                        val deltaMs = (vScroll * 800f).toLong()
-                        val newPos = (basePos + deltaMs).coerceIn(0L, duration)
-                        targetSeekPos = newPos
+                        accumulatedOppoScroll += vScroll
+                        lastOppoScrollTime = currentTime
+
+                        val threshold = 1.2f
+                        if (Math.abs(accumulatedOppoScroll) >= threshold) {
+                            val steps = (accumulatedOppoScroll / threshold).toInt()
+                            val basePos = targetSeekPos ?: currentPosition
+                            val deltaMs = steps * 1000L
+                            val newPos = (basePos + deltaMs).coerceIn(0L, duration)
+                            targetSeekPos = newPos
+                            accumulatedOppoScroll -= steps * threshold
+
+                            if (currentTime - lastRotaryHapticTime >= 35L) {
+                                view.performRotaryHaptic()
+                                lastRotaryHapticTime = currentTime
+                            }
+                        }
                         true
                     } else false
                 } else false

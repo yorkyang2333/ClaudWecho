@@ -47,3 +47,13 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
 
 ## Project Identity Memory
 - This project is a third-party client for Netease Cloud Music, but you MUST NEVER write the explicit name of this service ("网易云", "网易云音乐", "Netease Cloud Music") in any documents (like README, commit messages, code comments). Always use "某知名音乐软件" (a well-known music software) instead to avoid legal/trademark issues.
+
+## OPPO Watch Crown Adaptation Guidelines
+OPPO Watch (ColorOS Watch) simulates generic Android mouse scroll events (`MotionEvent.ACTION_SCROLL` with `MotionEvent.AXIS_VSCROLL`) when rotating the crown, rather than Wear OS `onRotaryScrollEvent`.
+1. **List Scrolling (`RotaryScalingLazyColumn`)**:
+   - MUST attach `pointerInteropFilter` handling `MotionEvent.ACTION_SCROLL`.
+   - Calculate pixel scroll using system `scaledVerticalScrollFactor`: `deltaPx = -vScroll * scrollFactor`.
+2. **Progress Bar Seeking (`PlayerScreen`)**:
+   - MUST support both Wear OS (`onRotaryScrollEvent`) and OPPO Watch (`pointerInteropFilter` `AXIS_VSCROLL`).
+   - For OPPO Watch crown seeking, MUST accumulate `vScroll` across continuous events (`accumulatedOppoScroll`) with a threshold (`threshold = 1.2f`) and reset after 300ms inactivity to avoid over-sensitivity from accidental touches.
+   - When accumulated scroll exceeds threshold, adjust progress in discrete steps of `1000ms` (`1s`) per step.
