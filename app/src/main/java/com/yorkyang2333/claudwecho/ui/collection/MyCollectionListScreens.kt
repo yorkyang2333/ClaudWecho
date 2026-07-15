@@ -143,7 +143,7 @@ fun MyCollectionPlaylistsScreen(
                 }
 
                 com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
-                    title = "我的歌单",
+                    title = "歌单",
                     actionIcon = {
                         androidx.compose.foundation.layout.Box(
                             modifier = Modifier
@@ -189,7 +189,7 @@ fun MyCollectionAlbumsScreen(
     }
 
     CollectionListBase(
-        title = "收藏的专辑",
+        title = "专辑",
         items = albums,
         isLoading = isLoading,
         emptyMessage = "暂无专辑",
