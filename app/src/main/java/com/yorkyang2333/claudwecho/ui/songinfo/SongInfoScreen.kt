@@ -61,7 +61,11 @@ fun SongInfoScreen(
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("未能获取歌曲信息", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "未能获取歌曲信息",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = { viewModel.load(songId) },
@@ -140,11 +144,20 @@ private fun SongInfoContent(song: SongDetail) {
 
 @Composable
 private fun SongInfoField(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
