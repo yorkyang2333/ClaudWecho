@@ -66,9 +66,13 @@ class MainRepository(
     private val cachedPlaylistTracks = mutableMapOf<Long, List<Song>>()
     private val cachedPlaylistTitles = mutableMapOf<Long, String>()
     private val cachedAlbumTitles = mutableMapOf<Long, String>()
+    private val cachedAlbumTracks = mutableMapOf<Long, List<Song>>()
+    private val cachedDjRadioTracks = mutableMapOf<Long, List<Song>>()
+    private val cachedDjRadioTitles = mutableMapOf<Long, String>()
 
     fun getCachedPlaylistTitle(id: Long): String? = cachedPlaylistTitles[id]
     fun getCachedAlbumTitle(id: Long): String? = cachedAlbumTitles[id]
+    fun getCachedDjRadioTitle(id: Long): String? = cachedDjRadioTitles[id]
 
     suspend fun getPlaylistTracks(id: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
         if (!forceRefresh && cachedPlaylistTracks.containsKey(id)) {
@@ -130,8 +134,12 @@ class MainRepository(
     fun invalidatePlaylistCaches(playlistId: Long? = null) {
         if (playlistId != null) {
             cachedPlaylistTracks.remove(playlistId)
+            cachedAlbumTracks.remove(playlistId)
+            cachedDjRadioTracks.remove(playlistId)
         } else {
             cachedPlaylistTracks.clear()
+            cachedAlbumTracks.clear()
+            cachedDjRadioTracks.clear()
         }
         cachedUserPlaylists = null
     }
@@ -183,6 +191,11 @@ class MainRepository(
         try {
             val response = api.getSubscribedDjRadios()
             val list = if (response.code == 200) response.djRadios else emptyList()
+            if (response.code == 200) {
+                list.forEach { dj ->
+                    cachedDjRadioTitles[dj.id] = dj.name
+                }
+            }
             cachedDjRadios = list
             list
         } catch (e: Exception) {
@@ -190,22 +203,32 @@ class MainRepository(
         }
     }
 
-    suspend fun getAlbumTracks(id: Long): List<Song> = withContext(Dispatchers.IO) {
+    suspend fun getAlbumTracks(id: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
+        if (!forceRefresh && cachedAlbumTracks.containsKey(id)) {
+            return@withContext cachedAlbumTracks[id]!!
+        }
         try {
             val response = api.getAlbumDetail(id)
+            val list = if (response.code == 200) response.songs ?: emptyList() else emptyList()
             if (response.code == 200 && response.album?.name != null) {
                 cachedAlbumTitles[id] = response.album.name
             }
-            if (response.code == 200) response.songs ?: emptyList() else emptyList()
+            if (list.isNotEmpty() || forceRefresh) {
+                cachedAlbumTracks[id] = list
+            }
+            list
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    suspend fun getDjRadioPrograms(rid: Long): List<Song> = withContext(Dispatchers.IO) {
+    suspend fun getDjRadioPrograms(rid: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
+        if (!forceRefresh && cachedDjRadioTracks.containsKey(rid)) {
+            return@withContext cachedDjRadioTracks[rid]!!
+        }
         try {
             val response = api.getDjPrograms(rid = rid)
-            if (response.code == 200 && response.programs != null) {
+            val list = if (response.code == 200 && response.programs != null) {
                 response.programs.map { program ->
                     val djSong = program.mainSong
                     // Map DjSong to Song for unified playback
@@ -221,6 +244,21 @@ class MainRepository(
             } else {
                 emptyList()
             }
+            try {
+                if (!cachedDjRadioTitles.containsKey(rid) || forceRefresh) {
+                    val detailResp = api.getDjRadioDetail(rid)
+                    val radioName = detailResp.radio?.name
+                    if (detailResp.code == 200 && radioName != null) {
+                        cachedDjRadioTitles[rid] = radioName
+                    }
+                }
+            } catch (e: Exception) {
+                // ignore
+            }
+            if (list.isNotEmpty() || forceRefresh) {
+                cachedDjRadioTracks[rid] = list
+            }
+            list
         } catch (e: Exception) {
             emptyList()
         }

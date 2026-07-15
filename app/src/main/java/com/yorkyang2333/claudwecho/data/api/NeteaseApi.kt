@@ -99,6 +99,11 @@ interface NeteaseApi {
         @Query("offset") offset: Int = 0,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): DjProgramResponse
+    @GET("/dj/detail")
+    suspend fun getDjRadioDetail(
+        @Query("rid") rid: Long,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): DjRadioDetailResponse
     @GET("/record/recent/song")
     suspend fun getRecentSongs(
         @Query("limit") limit: Int = 50,
@@ -366,3 +371,9 @@ data class SubscribedDjRadiosResponse(val djRadios: List<DjRadio>, val code: Int
 
 @Serializable
 data class DjRadio(val id: Long, val name: String, val picUrl: String)
+
+@Serializable
+data class DjRadioDetailResponse(val code: Int, val data: DjRadio? = null, val djRadio: DjRadio? = null) {
+    val radio: DjRadio?
+        get() = data ?: djRadio
+}

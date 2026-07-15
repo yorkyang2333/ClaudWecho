@@ -272,25 +272,31 @@ fun PlaylistDetailScreen(
                         "djradio" -> "播客"
                         else -> "音乐列表"
                     },
-                    actionIcon = if (type == "liked") {
-                        {
-                            androidx.compose.foundation.layout.Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(androidx.compose.foundation.shape.CircleShape)
-                                    .background(Color(0xFF2D2D2D))
-                                    .hapticClickable { viewModel.loadLiked(forceRefresh = true) },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                androidx.wear.compose.material3.Icon(
-                                    imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
-                                    contentDescription = "Refresh", 
-                                    modifier = Modifier.size(18.dp),
-                                    tint = Color.White
-                                )
-                            }
+                    actionIcon = {
+                        androidx.compose.foundation.layout.Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(androidx.compose.foundation.shape.CircleShape)
+                                .background(Color(0xFF2D2D2D))
+                                .hapticClickable {
+                                    when (type) {
+                                        "playlist" -> viewModel.loadPlaylist(playlistId, forceRefresh = true)
+                                        "album" -> viewModel.loadAlbum(playlistId, forceRefresh = true)
+                                        "djradio" -> viewModel.loadDjRadio(playlistId, forceRefresh = true)
+                                        "liked" -> viewModel.loadLiked(forceRefresh = true)
+                                        else -> viewModel.loadPlaylist(playlistId, forceRefresh = true)
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            androidx.wear.compose.material3.Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
+                                contentDescription = "Refresh", 
+                                modifier = Modifier.size(18.dp),
+                                tint = Color.White
+                            )
                         }
-                    } else null
+                    }
                 )
             }
             

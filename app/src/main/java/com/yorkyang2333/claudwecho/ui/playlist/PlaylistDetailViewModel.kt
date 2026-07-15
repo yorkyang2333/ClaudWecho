@@ -138,7 +138,7 @@ class PlaylistDetailViewModel(
         _isLoading.value = true
         _isOwnedPlaylist.value = false
         viewModelScope.launch {
-            _originalSongs.value = repository.getAlbumTracks(id)
+            _originalSongs.value = repository.getAlbumTracks(id, forceRefresh)
             _title.value = repository.getCachedAlbumTitle(id)
             _isLoading.value = false
         }
@@ -150,8 +150,8 @@ class PlaylistDetailViewModel(
         _isLoading.value = true
         _isOwnedPlaylist.value = false
         viewModelScope.launch {
-            _originalSongs.value = repository.getDjRadioPrograms(id)
-            _title.value = "播客"
+            _originalSongs.value = repository.getDjRadioPrograms(id, forceRefresh)
+            _title.value = repository.getCachedDjRadioTitle(id) ?: "播客"
             _isLoading.value = false
         }
     }
