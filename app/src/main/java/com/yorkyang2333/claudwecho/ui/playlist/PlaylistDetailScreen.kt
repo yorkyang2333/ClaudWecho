@@ -51,13 +51,22 @@ fun PlaylistDetailScreen(
     val sortOrder by viewModel.sortOrder.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    LaunchedEffect(playlistId, type) {
-        when (type) {
-            "playlist" -> viewModel.loadPlaylist(playlistId)
-            "album" -> viewModel.loadAlbum(playlistId)
-            "djradio" -> viewModel.loadDjRadio(playlistId)
-            "liked" -> viewModel.loadLiked()
-            else -> viewModel.loadPlaylist(playlistId)
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner, playlistId, type) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                when (type) {
+                    "playlist" -> viewModel.loadPlaylist(playlistId)
+                    "album" -> viewModel.loadAlbum(playlistId)
+                    "djradio" -> viewModel.loadDjRadio(playlistId)
+                    "liked" -> viewModel.loadLiked()
+                    else -> viewModel.loadPlaylist(playlistId)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

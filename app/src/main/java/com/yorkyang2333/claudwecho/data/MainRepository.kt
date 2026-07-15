@@ -127,11 +127,24 @@ class MainRepository(
         }
     }
 
+    fun invalidatePlaylistCaches(playlistId: Long? = null) {
+        if (playlistId != null) {
+            cachedPlaylistTracks.remove(playlistId)
+        } else {
+            cachedPlaylistTracks.clear()
+        }
+        cachedUserPlaylists = null
+    }
+
     suspend fun removeTracksFromPlaylist(playlistId: Long, trackIds: List<Long>): Boolean = withContext(Dispatchers.IO) {
         try {
             val tracksStr = trackIds.joinToString(",")
             val response = api.updatePlaylistTracks(op = "del", pid = playlistId, tracks = tracksStr)
-            response.isSuccess
+            val success = response.isSuccess
+            if (success) {
+                invalidatePlaylistCaches(playlistId)
+            }
+            success
         } catch (e: Exception) {
             android.util.Log.e("MainRepository", "removeTracksFromPlaylist error: ${e.message}", e)
             false
@@ -142,7 +155,11 @@ class MainRepository(
         try {
             val tracksStr = trackIds.joinToString(",")
             val response = api.updatePlaylistTracks(op = "add", pid = playlistId, tracks = tracksStr)
-            response.isSuccess
+            val success = response.isSuccess
+            if (success) {
+                invalidatePlaylistCaches(playlistId)
+            }
+            success
         } catch (e: Exception) {
             android.util.Log.e("MainRepository", "addTracksToPlaylist error: ${e.message}", e)
             false
@@ -220,7 +237,12 @@ class MainRepository(
     suspend fun likeSong(id: Long, like: Boolean = true): Boolean = withContext(Dispatchers.IO) {
         try {
             val response = api.likeSong(id, like)
-            response.code == 200
+            val success = response.code == 200 || response.code == 502
+            if (success) {
+                invalidatePlaylistCaches()
+                cachedDailyRecommend = null
+            }
+            success
         } catch (e: Exception) {
             false
         }
