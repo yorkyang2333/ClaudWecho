@@ -152,8 +152,29 @@ interface NeteaseApi {
         @Query("pid") pid: Long,
         @Query("tracks") tracks: String, // comma separated track ids
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
-    ): BaseResponse
+    ): PlaylistTracksResponse
 }
+
+@Serializable
+data class PlaylistTracksResponse(
+    val code: Int? = null,
+    val status: Int? = null,
+    val message: String? = null,
+    val msg: String? = null,
+    val body: PlaylistTracksBody? = null
+) {
+    val isSuccess: Boolean
+        get() = code == 200 || status == 200 || body?.code == 200 || body?.status == 200 || code == 502 || body?.code == 502
+}
+
+@Serializable
+data class PlaylistTracksBody(
+    val code: Int? = null,
+    val status: Int? = null,
+    val message: String? = null,
+    val msg: String? = null,
+    val count: Int? = null
+)
 
 @Serializable
 data class VipInfoResponse(val data: VipInfoData? = null, val code: Int)
@@ -168,7 +189,7 @@ data class VipInfoData(
 @Serializable
 data class VipMusicPackage(
     val expireTime: Long? = null,
-    val vipCode: Int? = null
+    val vipLevel: Int? = null
 )
 
 @Serializable
@@ -178,7 +199,7 @@ data class LikeListResponse(val ids: List<Long> = emptyList(), val code: Int)
 data class PersonalFmResponse(val data: List<Song> = emptyList(), val code: Int)
 
 @Serializable
-data class BaseResponse(val code: Int, val message: String? = null)
+data class BaseResponse(val code: Int? = null, val status: Int? = null, val message: String? = null)
 
 @Serializable
 data class LikeResponse(val code: Int, val message: String? = null)

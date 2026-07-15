@@ -131,8 +131,9 @@ class MainRepository(
         try {
             val tracksStr = trackIds.joinToString(",")
             val response = api.updatePlaylistTracks(op = "del", pid = playlistId, tracks = tracksStr)
-            response.code == 200
+            response.isSuccess
         } catch (e: Exception) {
+            android.util.Log.e("MainRepository", "removeTracksFromPlaylist error: ${e.message}", e)
             false
         }
     }
@@ -141,8 +142,9 @@ class MainRepository(
         try {
             val tracksStr = trackIds.joinToString(",")
             val response = api.updatePlaylistTracks(op = "add", pid = playlistId, tracks = tracksStr)
-            response.code == 200
+            response.isSuccess
         } catch (e: Exception) {
+            android.util.Log.e("MainRepository", "addTracksToPlaylist error: ${e.message}", e)
             false
         }
     }
