@@ -30,6 +30,13 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
     val listState = rememberScalingLazyListState()
 
+    // 每次切歌 (currentTitle 变化) 或 启动/歌词载入 (lyrics 变化) 时，自动回顶
+    LaunchedEffect(currentTitle, lyrics) {
+        if (lyrics.isNotEmpty()) {
+            listState.scrollToItem(0)
+        }
+    }
+
     LaunchedEffect(currentLyricIndex) {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyrics.size) {
             // Scroll to current lyric
