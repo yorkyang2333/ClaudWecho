@@ -26,6 +26,7 @@ import androidx.compose.material.icons.automirrored.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.WbSunny
+import androidx.compose.material.icons.rounded.Storage
 import androidx.wear.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,9 +41,16 @@ fun SettingsScreen(
     val cacheSize by viewModel.cacheSize.collectAsState()
     val apiBaseUrl by viewModel.apiBaseUrl.collectAsState()
     val keepScreenOn by viewModel.keepScreenOn.collectAsState()
+    val audioCacheLimitMb by viewModel.audioCacheLimitMb.collectAsState()
     var showConfirm by remember { mutableStateOf(false) }
     var showUrlDialog by remember { mutableStateOf(false) }
     var tempUrl by remember { mutableStateOf(apiBaseUrl) }
+
+    val cacheLimitText = when (audioCacheLimitMb) {
+        1000 -> "1 GB"
+        2000 -> "2 GB"
+        else -> "${audioCacheLimitMb} MB"
+    }
 
     val shapeText = when (screenShape) {
         "round" -> "圆屏"
@@ -147,6 +155,23 @@ fun SettingsScreen(
                     },
                     secondaryLabel = { Text(if (keepScreenOn) "开启" else "关闭") },
                     icon = { Icon(Icons.Rounded.WbSunny, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
+            item {
+                Button(
+                    onClick = { viewModel.toggleAudioCacheLimit() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { 
+                        Text(
+                            text = "缓存上限",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        ) 
+                    },
+                    secondaryLabel = { Text(cacheLimitText) },
+                    icon = { Icon(Icons.Rounded.Storage, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
             item {

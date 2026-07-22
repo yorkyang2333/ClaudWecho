@@ -30,6 +30,12 @@ import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import coil.compose.AsyncImage
+import com.yorkyang2333.claudwecho.ui.utils.SongInfoTag
+import com.yorkyang2333.claudwecho.ui.utils.toOriginalImageUrl
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -116,8 +122,18 @@ private fun SongInfoContent(song: SongDetail) {
             }
             song.al?.picUrl?.takeIf { it.isNotBlank() }?.let { coverUrl ->
                 item {
+                    val context = LocalContext.current
+                    val originalUrl = remember(coverUrl) { toOriginalImageUrl(coverUrl) }
+                    val imageRequest = remember(originalUrl, context) {
+                        ImageRequest.Builder(context)
+                            .data(originalUrl)
+                            .tag(SongInfoTag::class.java, SongInfoTag)
+                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .build()
+                    }
                     AsyncImage(
-                        model = coverUrl,
+                        model = imageRequest,
                         contentDescription = "专辑封面",
                         modifier = Modifier
                             .size(128.dp)

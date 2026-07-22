@@ -10,8 +10,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.viewModelScope
 
+import com.yorkyang2333.claudwecho.di.DynamicLruCacheEvictor
+
 class SettingsViewModel(
-    private val context: Context
+    private val context: Context,
+    private val cacheEvictor: DynamicLruCacheEvictor? = null
 ) : ViewModel() {
     private val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
 
@@ -20,6 +23,9 @@ class SettingsViewModel(
 
     private val _keepScreenOn = MutableStateFlow(prefs.getBoolean("keep_screen_on", false))
     val keepScreenOn: StateFlow<Boolean> = _keepScreenOn.asStateFlow()
+
+    private val _audioCacheLimitMb = MutableStateFlow(prefs.getInt("audio_cache_limit_mb", 500))
+    val audioCacheLimitMb: StateFlow<Int> = _audioCacheLimitMb.asStateFlow()
 
     private val _cacheSize = MutableStateFlow("0 MB")
     val cacheSize: StateFlow<String> = _cacheSize.asStateFlow()
@@ -104,5 +110,16 @@ class SettingsViewModel(
         val next = !_keepScreenOn.value
         prefs.edit().putBoolean("keep_screen_on", next).apply()
         _keepScreenOn.value = next
+    }
+
+    fun toggleAudioCacheLimit() {
+        val limits = listOf(200, 500, 1000, 2000)
+        val current = _audioCacheLimitMb.value
+        val currentIndex = limits.indexOf(current)
+        val nextIndex = if (currentIndex != -1) (currentIndex + 1) % limits.size else 1
+        val nextLimit = limits[nextIndex]
+        prefs.edit().putInt("audio_cache_limit_mb", nextLimit).apply()
+        _audioCacheLimitMb.value = nextLimit
+        cacheEvictor?.maxBytes = nextLimit * 1024 * 1024L
     }
 }

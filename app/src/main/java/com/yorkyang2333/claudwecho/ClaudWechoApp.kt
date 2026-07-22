@@ -9,6 +9,26 @@ import com.yorkyang2333.claudwecho.di.playerModule
 
 import org.koin.android.ext.android.inject
 
+import com.yorkyang2333.claudwecho.ui.utils.SongInfoTag
+import com.yorkyang2333.claudwecho.ui.utils.toLowResImageUrl
+
+class LowResImageInterceptor : coil.intercept.Interceptor {
+    override suspend fun intercept(chain: coil.intercept.Interceptor.Chain): coil.request.ImageResult {
+        val request = chain.request
+        val data = request.data
+        if (data is String && request.tags.tag(SongInfoTag::class.java) == null) {
+            val lowResUrl = toLowResImageUrl(data)
+            if (lowResUrl != data) {
+                val newRequest = request.newBuilder()
+                    .data(lowResUrl)
+                    .build()
+                return chain.proceed(newRequest)
+            }
+        }
+        return chain.proceed(request)
+    }
+}
+
 class ClaudWechoApp : Application(), coil.ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
@@ -23,6 +43,9 @@ class ClaudWechoApp : Application(), coil.ImageLoaderFactory {
         val okHttpClient: okhttp3.OkHttpClient by inject()
         return coil.ImageLoader.Builder(this)
             .okHttpClient(okHttpClient)
+            .components {
+                add(LowResImageInterceptor())
+            }
             .build()
     }
 }
