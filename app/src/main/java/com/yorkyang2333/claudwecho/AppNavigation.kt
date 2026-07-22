@@ -22,18 +22,24 @@ import com.yorkyang2333.claudwecho.ui.player.PlayerScreen
 import org.koin.androidx.compose.koinViewModel
 import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 import com.yorkyang2333.claudwecho.ui.main.HomePagerScreen
+import androidx.compose.runtime.getValue
+import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.navigation.currentBackStackEntryAsState
 
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberSwipeDismissableNavController()
 ) {
     val playerViewModel: PlayerViewModel = koinViewModel()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route
 
-    SwipeDismissableNavHost(
-        navController = navController,
-        startDestination = "player",
-        userSwipeEnabled = true
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        SwipeDismissableNavHost(
+            navController = navController,
+            startDestination = "player",
+            userSwipeEnabled = true
+        ) {
         composable("player") {
             HomePagerScreen(
                 playerViewModel = playerViewModel,
@@ -303,6 +309,10 @@ fun AppNavigation(
                 onPlayNext = { song -> playerViewModel.playNext(song) },
                 onNavigateToSongInfo = { songId -> navController.navigate("song_info/$songId") }
             )
+        }
+    }
+        if (currentRoute != "player") {
+            TimeText()
         }
     }
 }
