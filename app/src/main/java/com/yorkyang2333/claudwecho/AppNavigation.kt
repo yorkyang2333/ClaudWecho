@@ -225,7 +225,16 @@ fun AppNavigation(
                     navController.navigate("login") {
                         popUpTo("main") { inclusive = false }
                     }
+                },
+                onNavigateToCacheLimit = {
+                    navController.navigate("settings/cache_limit")
                 }
+            )
+        }
+        composable("settings/cache_limit") {
+            val settingsViewModel: com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel = koinViewModel()
+            com.yorkyang2333.claudwecho.ui.settings.CacheLimitSettingsScreen(
+                viewModel = settingsViewModel
             )
         }
         composable("about") {

@@ -112,14 +112,18 @@ class SettingsViewModel(
         _keepScreenOn.value = next
     }
 
+    fun setAudioCacheLimit(limitMb: Int) {
+        prefs.edit().putInt("audio_cache_limit_mb", limitMb).apply()
+        _audioCacheLimitMb.value = limitMb
+        cacheEvictor?.maxBytes = limitMb * 1024 * 1024L
+    }
+
     fun toggleAudioCacheLimit() {
         val limits = listOf(200, 500, 1000, 2000)
         val current = _audioCacheLimitMb.value
         val currentIndex = limits.indexOf(current)
         val nextIndex = if (currentIndex != -1) (currentIndex + 1) % limits.size else 1
         val nextLimit = limits[nextIndex]
-        prefs.edit().putInt("audio_cache_limit_mb", nextLimit).apply()
-        _audioCacheLimitMb.value = nextLimit
-        cacheEvictor?.maxBytes = nextLimit * 1024 * 1024L
+        setAudioCacheLimit(nextLimit)
     }
 }

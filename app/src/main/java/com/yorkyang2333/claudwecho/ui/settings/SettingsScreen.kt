@@ -35,7 +35,8 @@ import androidx.compose.ui.window.Dialog
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    onNavigateToCacheLimit: () -> Unit = {}
 ) {
     val screenShape by viewModel.screenShape.collectAsState()
     val cacheSize by viewModel.cacheSize.collectAsState()
@@ -159,7 +160,7 @@ fun SettingsScreen(
             }
             item {
                 Button(
-                    onClick = { viewModel.toggleAudioCacheLimit() },
+                    onClick = onNavigateToCacheLimit,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
                     label = { 
