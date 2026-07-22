@@ -346,14 +346,14 @@ data class LyricResponse(val code: Int, val lrc: LrcData? = null, val tlyric: Lr
 data class LrcData(val lyric: String?)
 
 @Serializable
-data class SongDetailResponse(val code: Int, val songs: List<SongDetail> = emptyList())
+data class SongDetailResponse(val code: Int, val songs: List<SongDetail>? = emptyList())
 
 @Serializable
 data class SongDetail(
     val id: Long,
     val name: String,
-    val alia: List<String> = emptyList(),
-    val ar: List<Artist> = emptyList(),
+    val alia: List<String>? = emptyList(),
+    val ar: List<Artist>? = emptyList(),
     val al: Album? = null,
     val dt: Long? = null,
     val cd: String? = null,

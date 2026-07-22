@@ -105,10 +105,35 @@ class MainRepository(
     suspend fun getSongDetail(id: Long): SongDetail? = withContext(Dispatchers.IO) {
         try {
             val response = api.getSongDetail(id)
-            if (response.code == 200) response.songs.firstOrNull() else null
+            val detail = if (response.code == 200) response.songs?.firstOrNull() else null
+            detail ?: findFallbackSongDetail(id)
         } catch (e: Exception) {
-            null
+            findFallbackSongDetail(id)
         }
+    }
+
+    private fun findFallbackSongDetail(id: Long): SongDetail? {
+        val song = cachedPlaylistTracks.values.flatten().firstOrNull { it.id == id }
+            ?: cachedAlbumTracks.values.flatten().firstOrNull { it.id == id }
+            ?: cachedDjRadioTracks.values.flatten().firstOrNull { it.id == id }
+            ?: cachedDailyRecommend?.firstOrNull { it.id == id }
+            ?: cachedHotSongs?.firstOrNull { it.id == id }
+            ?: localRecentPlaysManager.getRecentSongs().firstOrNull { it.id == id }
+            ?: return null
+
+        return SongDetail(
+            id = song.id,
+            name = song.name,
+            alia = emptyList(),
+            ar = song.displayArtists,
+            al = song.displayAlbum,
+            dt = null,
+            cd = null,
+            no = null,
+            publishTime = null,
+            mv = null,
+            fee = song.fee
+        )
     }
 
     suspend fun getSongUrl(id: Long): String? = withContext(Dispatchers.IO) {

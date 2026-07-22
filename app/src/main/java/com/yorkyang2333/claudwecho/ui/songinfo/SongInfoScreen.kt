@@ -86,9 +86,11 @@ fun SongInfoScreen(
 @Composable
 private fun SongInfoContent(song: SongDetail) {
     val fields = buildList {
-        add("歌手" to song.ar.joinToString(" / ") { it.name })
+        song.ar?.takeIf { it.isNotEmpty() }?.let { artists ->
+            add("歌手" to artists.joinToString(" / ") { it.name })
+        }
         song.al?.name?.takeIf { it.isNotBlank() }?.let { add("专辑" to it) }
-        song.alia.filter { it.isNotBlank() }.takeIf { it.isNotEmpty() }
+        song.alia.orEmpty().filter { it.isNotBlank() }.takeIf { it.isNotEmpty() }
             ?.let { add("别名" to it.joinToString(" / ")) }
         song.dt?.takeIf { it > 0 }?.let { add("时长" to formatDuration(it)) }
         song.publishTime?.takeIf { it > 0 }?.let { add("发行日期" to formatDate(it)) }
