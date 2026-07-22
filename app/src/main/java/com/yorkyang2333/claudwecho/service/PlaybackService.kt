@@ -32,6 +32,18 @@ class PlaybackService : MediaSessionService() {
         player.shuffleModeEnabled = playbackStateManager.getShuffleMode()
         
         player.addListener(object : Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                if (player.mediaItemCount > 0) {
+                    prioritizeShuffleOrder(player.currentMediaItemIndex)
+                }
+            }
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                if (player.mediaItemCount > 0) {
+                    prioritizeShuffleOrder(player.currentMediaItemIndex)
+                }
+            }
+
             override fun onPositionDiscontinuity(
                 oldPosition: Player.PositionInfo,
                 newPosition: Player.PositionInfo,
@@ -145,22 +157,22 @@ class PlaybackService : MediaSessionService() {
                         else -> return super.onCustomCommand(session, controller, customCommand, args)
                     }
                 }
-
-                private fun prioritizeShuffleOrder(vararg priorityIndices: Int) {
-                    if (!player.shuffleModeEnabled || player.mediaItemCount == 0) return
-
-                    val priority = priorityIndices
-                        .filter { it in 0 until player.mediaItemCount }
-                        .distinct()
-                    val shuffleIndices = priority + (0 until player.mediaItemCount)
-                        .filter { it !in priority }
-                        .shuffled()
-                    player.setShuffleOrder(
-                        DefaultShuffleOrder(shuffleIndices.toIntArray(), System.nanoTime())
-                    )
-                }
             })
             .build()
+    }
+
+    private fun prioritizeShuffleOrder(vararg priorityIndices: Int) {
+        if (player.mediaItemCount == 0) return
+
+        val priority = priorityIndices
+            .filter { it in 0 until player.mediaItemCount }
+            .distinct()
+        val shuffleIndices = priority + (0 until player.mediaItemCount)
+            .filter { it !in priority }
+            .shuffled()
+        player.setShuffleOrder(
+            DefaultShuffleOrder(shuffleIndices.toIntArray(), System.nanoTime())
+        )
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
