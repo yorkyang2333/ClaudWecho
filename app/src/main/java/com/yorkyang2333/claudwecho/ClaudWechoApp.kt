@@ -18,12 +18,12 @@ class LowResImageInterceptor : coil.intercept.Interceptor {
         val data = request.data
         if (data is String && request.tags.tag(SongInfoTag::class.java) == null) {
             val lowResUrl = toLowResImageUrl(data)
-            if (lowResUrl != data) {
-                val newRequest = request.newBuilder()
-                    .data(lowResUrl)
-                    .build()
-                return chain.proceed(newRequest)
-            }
+            val newRequest = request.newBuilder()
+                .data(lowResUrl)
+                .memoryCacheKey(lowResUrl)
+                .diskCacheKey(lowResUrl)
+                .build()
+            return chain.proceed(newRequest)
         }
         return chain.proceed(request)
     }

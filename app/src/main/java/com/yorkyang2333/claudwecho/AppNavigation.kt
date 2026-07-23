@@ -231,10 +231,16 @@ fun AppNavigation(
                 }
             )
         }
-        composable("settings/cache_limit") {
-            val settingsViewModel: com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel = koinViewModel()
+        composable("settings/cache_limit") { backStackEntry ->
+            val parentEntry = androidx.compose.runtime.remember(backStackEntry) {
+                navController.getBackStackEntry("settings")
+            }
+            val settingsViewModel: com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel = koinViewModel(viewModelStoreOwner = parentEntry)
             com.yorkyang2333.claudwecho.ui.settings.CacheLimitSettingsScreen(
-                viewModel = settingsViewModel
+                viewModel = settingsViewModel,
+                onOptionSelected = {
+                    navController.popBackStack()
+                }
             )
         }
         composable("about") {

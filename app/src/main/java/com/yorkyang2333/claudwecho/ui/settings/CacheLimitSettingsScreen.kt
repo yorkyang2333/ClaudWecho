@@ -35,7 +35,7 @@ fun CacheLimitSettingsScreen(
 
     val options = listOf(
         CacheOption(200, "200 MB"),
-        CacheOption(500, "500 MB (默认)"),
+        CacheOption(500, "500 MB"),
         CacheOption(1000, "1 GB"),
         CacheOption(2000, "2 GB")
     )

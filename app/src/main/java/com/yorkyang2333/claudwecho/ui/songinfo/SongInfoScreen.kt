@@ -128,7 +128,7 @@ private fun SongInfoContent(song: SongDetail) {
                         ImageRequest.Builder(context)
                             .data(originalUrl)
                             .tag(SongInfoTag::class.java, SongInfoTag)
-                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .memoryCachePolicy(CachePolicy.ENABLED)
                             .diskCachePolicy(CachePolicy.DISABLED)
                             .build()
                     }
