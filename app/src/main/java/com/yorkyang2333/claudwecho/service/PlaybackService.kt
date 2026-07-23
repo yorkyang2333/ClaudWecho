@@ -33,13 +33,13 @@ class PlaybackService : MediaSessionService() {
         
         player.addListener(object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                if (player.mediaItemCount > 0) {
+                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && player.mediaItemCount > 0) {
                     prioritizeShuffleOrder(player.currentMediaItemIndex)
                 }
             }
 
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                if (player.mediaItemCount > 0) {
+                if (shuffleModeEnabled && player.mediaItemCount > 0) {
                     prioritizeShuffleOrder(player.currentMediaItemIndex)
                 }
             }
