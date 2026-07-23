@@ -156,10 +156,10 @@ fun PlayerScreen(
                         if (currentTime - lastOppoScrollTime > 300L) {
                             accumulatedOppoScroll = 0f
                         }
-                        accumulatedOppoScroll += vScroll
+                        accumulatedOppoScroll += -vScroll
                         lastOppoScrollTime = currentTime
 
-                        val threshold = 1.2f
+                        val threshold = 3.5f
                         if (Math.abs(accumulatedOppoScroll) >= threshold) {
                             val steps = (accumulatedOppoScroll / threshold).toInt()
                             val basePos = targetSeekPos ?: currentPosition
