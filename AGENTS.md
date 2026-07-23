@@ -55,5 +55,5 @@ OPPO Watch (ColorOS Watch) simulates generic Android mouse scroll events (`Motio
    - Calculate pixel scroll using system `scaledVerticalScrollFactor`: `deltaPx = -vScroll * scrollFactor`.
 2. **Progress Bar Seeking (`PlayerScreen`)**:
    - MUST support both Wear OS (`onRotaryScrollEvent`) and OPPO Watch (`pointerInteropFilter` `AXIS_VSCROLL`).
-   - For OPPO Watch crown seeking, MUST accumulate `vScroll` across continuous events (`accumulatedOppoScroll`) with a threshold (`threshold = 3.5f`) and reset after 300ms inactivity to avoid over-sensitivity from accidental touches.
+   - For OPPO Watch crown seeking, MUST accumulate `vScroll` across continuous events (`accumulatedOppoScroll`) with a threshold (`threshold = 8.0f`) and reset after 300ms inactivity to avoid over-sensitivity from accidental touches.
    - When accumulated scroll exceeds threshold, adjust progress in discrete steps of `1000ms` (`1s`) per step.
