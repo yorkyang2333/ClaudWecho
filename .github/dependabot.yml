@@ -1,0 +1,61 @@
+version: 2
+updates:
+  # 1. Gradle dependencies and Version Catalog (gradle/libs.versions.toml)
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "build"
+      prefix-development: "build(deps-dev)"
+      include: "scope"
+
+    # Group related dependencies to bundle updates into single Pull Requests
+    groups:
+      media3:
+        patterns:
+          - "androidx.media3:*"
+      wear-compose:
+        patterns:
+          - "androidx.wear.compose:*"
+      androidx-compose:
+        patterns:
+          - "androidx.compose.*"
+      androidx-lifecycle-nav:
+        patterns:
+          - "androidx.lifecycle:*"
+          - "androidx.navigation3:*"
+      networking:
+        patterns:
+          - "com.squareup.retrofit2:*"
+          - "com.squareup.okhttp3:*"
+          - "org.jetbrains.kotlinx:kotlinx-serialization-*"
+      testing:
+        patterns:
+          - "androidx.test:*"
+          - "androidx.test.ext:*"
+          - "androidx.test.espresso:*"
+          - "junit:junit"
+          - "org.jetbrains.kotlinx:kotlinx-coroutines-test"
+      build-tooling:
+        patterns:
+          - "com.android.application"
+          - "com.android.tools.build:*"
+          - "org.jetbrains.kotlin:*"
+          - "org.jetbrains.kotlin.plugin.*"
+
+  # 2. GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns:
+          - "*"
