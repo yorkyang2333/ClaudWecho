@@ -546,13 +546,22 @@ class PlayerViewModel(
     }
 
     private fun parseLyric(lrc: String): List<LyricLine> {
-        val regex = Regex("\\[(\\d{2,}):(\\d{2})\\.(\\d{2,3})\\](.*)")
+        val regex = Regex("""\[(\d+):(\d{2})(?:[.:](\d{1,3}))?\](.*)""")
         return lrc.lines().mapNotNull { line ->
             val matchResult = regex.find(line)
             if (matchResult != null) {
-                val (min, sec, ms, text) = matchResult.destructured
-                val timeMs = min.toLong() * 60000 + sec.toLong() * 1000 + (if (ms.length == 2) ms.toLong() * 10 else ms.toLong())
-                LyricLine(timeMs, text.trim())
+                val min = matchResult.groupValues[1].toLongOrNull() ?: 0L
+                val sec = matchResult.groupValues[2].toLongOrNull() ?: 0L
+                val msStr = matchResult.groupValues[3]
+                val ms = when (msStr.length) {
+                    1 -> (msStr.toLongOrNull() ?: 0L) * 100
+                    2 -> (msStr.toLongOrNull() ?: 0L) * 10
+                    3 -> msStr.toLongOrNull() ?: 0L
+                    else -> 0L
+                }
+                val text = matchResult.groupValues[4].trim()
+                val timeMs = min * 60000 + sec * 1000 + ms
+                LyricLine(timeMs, text)
             } else null
         }.filter { it.text.isNotEmpty() }
     }
