@@ -31,7 +31,6 @@ jobs:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        API_BASE_URL: ${{ secrets.API_BASE_URL }}
       run: |
         if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ runner.temp }}/keystore.jks

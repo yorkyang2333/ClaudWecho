@@ -22,10 +22,15 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(FileInputStream(localPropertiesFile))
         }
-        val apiBaseUrl = localProperties.getProperty("API_BASE_URL") 
-            ?: System.getenv("API_BASE_URL")
-            ?: "\"http://unconfigured.local/\""
-        buildConfigField("String", "API_BASE_URL", apiBaseUrl)
+        val rawApiBaseUrl = localProperties.getProperty("API_BASE_URL")?.takeIf { it.isNotBlank() } 
+            ?: System.getenv("API_BASE_URL")?.takeIf { it.isNotBlank() }
+            ?: "http://unconfigured.local/"
+        val formattedApiBaseUrl = if (rawApiBaseUrl.startsWith("\"") && rawApiBaseUrl.endsWith("\"")) {
+            rawApiBaseUrl
+        } else {
+            "\"$rawApiBaseUrl\""
+        }
+        buildConfigField("String", "API_BASE_URL", formattedApiBaseUrl)
     }
 
     signingConfigs {
