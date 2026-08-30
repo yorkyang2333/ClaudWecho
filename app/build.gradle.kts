@@ -24,7 +24,7 @@ android {
         }
         val rawApiBaseUrl = localProperties.getProperty("API_BASE_URL")?.takeIf { it.isNotBlank() } 
             ?: System.getenv("API_BASE_URL")?.takeIf { it.isNotBlank() }
-            ?: "http://unconfigured.local/"
+            ?: ""
         val formattedApiBaseUrl = if (rawApiBaseUrl.startsWith("\"") && rawApiBaseUrl.endsWith("\"")) {
             rawApiBaseUrl
         } else {

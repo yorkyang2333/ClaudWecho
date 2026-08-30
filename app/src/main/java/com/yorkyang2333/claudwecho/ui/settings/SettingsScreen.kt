@@ -93,13 +93,14 @@ fun SettingsScreen(
                         val intent = androidx.wear.input.RemoteInputIntentHelper.createActionRemoteInputIntent()
                         val remoteInputs = listOf(
                             android.app.RemoteInput.Builder("api_url")
-                                .setLabel("输入后端地址")
+                                .setLabel("例如: https://your-api.com")
                                 .build()
                         )
                         androidx.wear.input.RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
                         try {
                             urlLauncher.launch(intent)
                         } catch (e: Exception) {
+                            tempUrl = apiBaseUrl
                             showUrlDialog = true
                         }
                     },
@@ -115,7 +116,9 @@ fun SettingsScreen(
                     },
                     secondaryLabel = { 
                         Text(
-                            text = apiBaseUrl,
+                            text = if (apiBaseUrl.isNotBlank()) apiBaseUrl else "未配置 (点击设置)",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (apiBaseUrl.isNotBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         ) 
@@ -257,11 +260,25 @@ fun SettingsScreen(
                     value = tempUrl,
                     onValueChange = { tempUrl = it },
                     textStyle = androidx.compose.ui.text.TextStyle(color = androidx.compose.ui.graphics.Color.White),
+                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
-                        .background(androidx.compose.ui.graphics.Color.DarkGray, RoundedCornerShape(12.dp))
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .background(androidx.compose.ui.graphics.Color(0xFF2C2C2C), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    decorationBox = { innerTextField ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (tempUrl.isEmpty()) {
+                                Text(
+                                    text = "https://your-api.com",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = androidx.compose.ui.graphics.Color.Gray,
+                                    maxLines = 1
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
                 com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
                     onCancel = { showUrlDialog = false },

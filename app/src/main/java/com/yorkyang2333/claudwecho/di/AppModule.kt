@@ -29,25 +29,27 @@ val networkModule = module {
 
     single {
         val context: android.content.Context = get()
+        val defaultBaseUrlStr = if (BuildConfig.API_BASE_URL.isNotBlank()) {
+            val url = BuildConfig.API_BASE_URL
+            if (url.endsWith("/")) url else "$url/"
+        } else {
+            "http://localhost/"
+        }
         val dynamicBaseUrlInterceptor = okhttp3.Interceptor { chain ->
             var request = chain.request()
             val prefs = context.getSharedPreferences("settings_prefs", android.content.Context.MODE_PRIVATE)
             val customUrlStr = prefs.getString("api_base_url", null)
             
             if (!customUrlStr.isNullOrBlank()) {
-                val urlToParse = if (!customUrlStr.startsWith("http")) "http://$customUrlStr" else customUrlStr
+                val urlToParse = if (!customUrlStr.startsWith("http")) "https://$customUrlStr" else customUrlStr
                 val customHttpUrl = urlToParse.toHttpUrlOrNull()
                 if (customHttpUrl != null) {
-                    val defaultBaseUrl = BuildConfig.API_BASE_URL.toHttpUrlOrNull()
-                    if (defaultBaseUrl != null) {
-                        val requestUrlStr = request.url.toString()
-                        val defaultBaseUrlStr = defaultBaseUrl.toString()
-                        if (requestUrlStr.startsWith(defaultBaseUrlStr)) {
-                            val newUrlStr = customHttpUrl.toString().trimEnd('/') + "/" + requestUrlStr.substring(defaultBaseUrlStr.length).trimStart('/')
-                            val newUrl = newUrlStr.toHttpUrlOrNull()
-                            if (newUrl != null) {
-                                request = request.newBuilder().url(newUrl).build()
-                            }
+                    val requestUrlStr = request.url.toString()
+                    if (requestUrlStr.startsWith(defaultBaseUrlStr)) {
+                        val newUrlStr = customHttpUrl.toString().trimEnd('/') + "/" + requestUrlStr.substring(defaultBaseUrlStr.length).trimStart('/')
+                        val newUrl = newUrlStr.toHttpUrlOrNull()
+                        if (newUrl != null) {
+                            request = request.newBuilder().url(newUrl).build()
                         }
                     }
                 }
@@ -107,8 +109,15 @@ val networkModule = module {
         val json = Json { ignoreUnknownKeys = true; isLenient = true }
         val contentType = "application/json".toMediaType()
         
+        val defaultUrl = if (BuildConfig.API_BASE_URL.isNotBlank()) {
+            val url = BuildConfig.API_BASE_URL
+            if (url.endsWith("/")) url else "$url/"
+        } else {
+            "http://localhost/"
+        }
+        
         Retrofit.Builder()
-            .baseUrl(BuildConfig.API_BASE_URL)
+            .baseUrl(defaultUrl)
             .client(get())
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
