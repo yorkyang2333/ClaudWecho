@@ -20,8 +20,6 @@ class LowResImageInterceptor : coil.intercept.Interceptor {
             val lowResUrl = toLowResImageUrl(data)
             val newRequest = request.newBuilder()
                 .data(lowResUrl)
-                .memoryCacheKey(lowResUrl)
-                .diskCacheKey(lowResUrl)
                 .build()
             return chain.proceed(newRequest)
         }
