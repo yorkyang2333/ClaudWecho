@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.yorkyang2333.claudwecho"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.yorkyang2333.claudwecho"
         minSdk = 24
