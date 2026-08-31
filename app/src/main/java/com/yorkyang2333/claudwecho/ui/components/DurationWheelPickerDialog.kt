@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -168,7 +169,7 @@ fun DurationWheelPickerDialog(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(horizontal = 4.dp, vertical = 2.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -177,35 +178,36 @@ fun DurationWheelPickerDialog(
                     text = "设置时长",
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.White,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 2.dp)
                 )
 
-                // Pickers Area
+                // Pickers Area: Full available space
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(105.dp),
+                        .weight(1f)
+                        .padding(vertical = 2.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     // Center Selection Indicator Bar
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(0.92f)
-                            .height(44.dp)
+                            .fillMaxWidth(0.96f)
+                            .height(46.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFF2C2C2E).copy(alpha = 0.55f))
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Hours Picker Column
+                        // Hours Picker Column: Fills left half
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(105.dp)
+                                .fillMaxHeight()
                                 .clip(RoundedCornerShape(12.dp))
                                 .then(
                                     if (focusedColumn == 0) {
@@ -266,14 +268,14 @@ fun DurationWheelPickerDialog(
                             text = ":",
                             style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                             color = Color.White,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                            modifier = Modifier.padding(horizontal = 2.dp)
                         )
 
-                        // Minutes Picker Column
+                        // Minutes Picker Column: Fills right half
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(105.dp)
+                                .fillMaxHeight()
                                 .clip(RoundedCornerShape(12.dp))
                                 .then(
                                     if (focusedColumn == 1) {
@@ -340,7 +342,7 @@ fun DurationWheelPickerDialog(
                         val finalDuration = if (totalMinutes <= 0) 1 else totalMinutes
                         onConfirm(finalDuration)
                     },
-                    modifier = Modifier.padding(bottom = 6.dp)
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
         }
