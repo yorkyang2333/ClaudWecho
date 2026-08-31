@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalView
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.yorkyang2333.claudwecho.ui.components.CustomSwitch
 import com.yorkyang2333.claudwecho.ui.components.DurationWheelPickerDialog
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
@@ -211,44 +212,6 @@ private fun TimerCard(
         contentAlignment = Alignment.CenterStart
     ) {
         content()
-    }
-}
-
-@Composable
-private fun CustomSwitch(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    val view = LocalView.current
-    val trackColor by animateColorAsState(
-        targetValue = if (checked) MaterialTheme.colorScheme.primary else Color(0xFF3A3A3C),
-        animationSpec = tween(durationMillis = 200)
-    )
-
-    val thumbOffset by animateDpAsState(
-        targetValue = if (checked) 20.dp else 2.dp,
-        animationSpec = tween(durationMillis = 200)
-    )
-
-    Box(
-        modifier = Modifier
-            .size(width = 44.dp, height = 26.dp)
-            .clip(RoundedCornerShape(13.dp))
-            .background(trackColor)
-            .clickable {
-                view.performClickHaptic()
-                onCheckedChange(!checked)
-            }
-            .padding(vertical = 3.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(start = thumbOffset)
-                .size(20.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-        )
     }
 }
 
