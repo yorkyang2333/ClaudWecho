@@ -4,8 +4,8 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.platform.LocalView
@@ -57,12 +57,12 @@ fun DurationWheelPickerDialog(
     val hoursState = rememberPickerState(
         initialNumberOfOptions = 24,
         initiallySelectedOption = initHours,
-        repeatItems = true
+        repeatItems = false
     )
     val minutesState = rememberPickerState(
         initialNumberOfOptions = 60,
         initiallySelectedOption = initMins,
-        repeatItems = true
+        repeatItems = false
     )
 
     var focusedColumn by remember { mutableStateOf(1) } // 0: hours, 1: minutes
@@ -73,6 +73,19 @@ fun DurationWheelPickerDialog(
 
     var accumulatedRotaryDelta by remember { mutableStateOf(0f) }
     var lastRotaryTime by remember { mutableStateOf(0L) }
+
+    // Auto switch focus when user touches or scrolls a picker
+    LaunchedEffect(hoursState.isScrollInProgress) {
+        if (hoursState.isScrollInProgress) {
+            focusedColumn = 0
+        }
+    }
+
+    LaunchedEffect(minutesState.isScrollInProgress) {
+        if (minutesState.isScrollInProgress) {
+            focusedColumn = 1
+        }
+    }
 
     // Haptic vibration whenever selected option changes
     var lastHoursOption by remember { mutableStateOf(initHours) }
@@ -109,14 +122,14 @@ fun DurationWheelPickerDialog(
                     accumulatedRotaryDelta += event.verticalScrollPixels
                     lastRotaryTime = now
 
-                    val threshold = 30f
+                    val threshold = 26f
                     if (Math.abs(accumulatedRotaryDelta) >= threshold) {
                         val steps = (accumulatedRotaryDelta / threshold).toInt()
                         accumulatedRotaryDelta -= steps * threshold
                         coroutineScope.launch {
                             val activeState = if (focusedColumn == 0) hoursState else minutesState
-                            val nextOption = (activeState.selectedOption + steps).mod(activeState.numberOfOptions)
-                            activeState.animateScrollToOption(nextOption)
+                            val target = (activeState.selectedOption + steps).coerceIn(0, activeState.numberOfOptions - 1)
+                            activeState.animateScrollToOption(target)
                         }
                     }
                     true
@@ -134,14 +147,14 @@ fun DurationWheelPickerDialog(
                             accumulatedRotaryDelta += deltaPx
                             lastRotaryTime = now
 
-                            val threshold = 30f
+                            val threshold = 26f
                             if (Math.abs(accumulatedRotaryDelta) >= threshold) {
                                 val steps = (accumulatedRotaryDelta / threshold).toInt()
                                 accumulatedRotaryDelta -= steps * threshold
                                 coroutineScope.launch {
                                     val activeState = if (focusedColumn == 0) hoursState else minutesState
-                                    val nextOption = (activeState.selectedOption + steps).mod(activeState.numberOfOptions)
-                                    activeState.animateScrollToOption(nextOption)
+                                    val target = (activeState.selectedOption + steps).coerceIn(0, activeState.numberOfOptions - 1)
+                                    activeState.animateScrollToOption(target)
                                 }
                             }
                             true
@@ -199,7 +212,11 @@ fun DurationWheelPickerDialog(
                                         Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                     } else Modifier
                                 )
-                                .clickable { focusedColumn = 0 },
+                                .pointerInput(Unit) {
+                                    detectTapGestures {
+                                        focusedColumn = 0
+                                    }
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Picker(
@@ -263,7 +280,11 @@ fun DurationWheelPickerDialog(
                                         Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                     } else Modifier
                                 )
-                                .clickable { focusedColumn = 1 },
+                                .pointerInput(Unit) {
+                                    detectTapGestures {
+                                        focusedColumn = 1
+                                    }
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Picker(
