@@ -169,32 +169,31 @@ fun DurationWheelPickerDialog(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // Title
                 Text(
                     text = "设置时长",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Color.White,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color(0xFF9E9E9E),
                     modifier = Modifier.padding(top = 2.dp)
                 )
 
-                // Pickers Area: Full available space
+                // Pickers Area: Designed to fit within round screen safe insets
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(vertical = 2.dp),
+                        .fillMaxWidth(0.90f)
+                        .height(84.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     // Center Selection Indicator Bar
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(0.96f)
-                            .height(46.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
                             .background(Color(0xFF2C2C2E).copy(alpha = 0.55f))
                     )
 
@@ -208,10 +207,10 @@ fun DurationWheelPickerDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .then(
                                     if (focusedColumn == 0) {
-                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
                                     } else Modifier
                                 )
                                 .pointerInput(Unit) {
@@ -225,24 +224,24 @@ fun DurationWheelPickerDialog(
                                 state = hoursState,
                                 contentDescription = "小时",
                                 modifier = Modifier.fillMaxSize(),
-                                separation = 4.dp
+                                separation = 2.dp
                             ) { optionIndex ->
                                 val isSelected = (hoursState.selectedOption == optionIndex)
                                 Row(
                                     verticalAlignment = Alignment.Bottom,
                                     horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier.padding(vertical = 2.dp)
+                                    modifier = Modifier.padding(vertical = 1.dp)
                                 ) {
                                     Text(
                                         text = String.format("%02d", optionIndex),
                                         style = if (isSelected) {
                                             MaterialTheme.typography.titleLarge.copy(
-                                                fontSize = 24.sp,
+                                                fontSize = 22.sp,
                                                 fontWeight = FontWeight.Bold
                                             )
                                         } else {
                                             MaterialTheme.typography.titleMedium.copy(
-                                                fontSize = 16.sp,
+                                                fontSize = 14.sp,
                                                 fontWeight = FontWeight.Normal
                                             )
                                         },
@@ -257,7 +256,7 @@ fun DurationWheelPickerDialog(
                                             text = "时",
                                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                                             color = if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                            modifier = Modifier.padding(start = 2.dp, bottom = 3.dp)
+                                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
                                         )
                                     }
                                 }
@@ -266,7 +265,7 @@ fun DurationWheelPickerDialog(
 
                         Text(
                             text = ":",
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                             color = Color.White,
                             modifier = Modifier.padding(horizontal = 2.dp)
                         )
@@ -276,10 +275,10 @@ fun DurationWheelPickerDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .then(
                                     if (focusedColumn == 1) {
-                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
                                     } else Modifier
                                 )
                                 .pointerInput(Unit) {
@@ -293,24 +292,24 @@ fun DurationWheelPickerDialog(
                                 state = minutesState,
                                 contentDescription = "分钟",
                                 modifier = Modifier.fillMaxSize(),
-                                separation = 4.dp
+                                separation = 2.dp
                             ) { optionIndex ->
                                 val isSelected = (minutesState.selectedOption == optionIndex)
                                 Row(
                                     verticalAlignment = Alignment.Bottom,
                                     horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier.padding(vertical = 2.dp)
+                                    modifier = Modifier.padding(vertical = 1.dp)
                                 ) {
                                     Text(
                                         text = String.format("%02d", optionIndex),
                                         style = if (isSelected) {
                                             MaterialTheme.typography.titleLarge.copy(
-                                                fontSize = 24.sp,
+                                                fontSize = 22.sp,
                                                 fontWeight = FontWeight.Bold
                                             )
                                         } else {
                                             MaterialTheme.typography.titleMedium.copy(
-                                                fontSize = 16.sp,
+                                                fontSize = 14.sp,
                                                 fontWeight = FontWeight.Normal
                                             )
                                         },
@@ -325,7 +324,7 @@ fun DurationWheelPickerDialog(
                                             text = "分",
                                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                                             color = if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                            modifier = Modifier.padding(start = 2.dp, bottom = 3.dp)
+                                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
                                         )
                                     }
                                 }
@@ -334,7 +333,7 @@ fun DurationWheelPickerDialog(
                     }
                 }
 
-                // Action Buttons
+                // Action Buttons: Compact to fit round watch screens
                 DialogActionButtons(
                     onCancel = onDismissRequest,
                     onConfirm = {
@@ -342,7 +341,9 @@ fun DurationWheelPickerDialog(
                         val finalDuration = if (totalMinutes <= 0) 1 else totalMinutes
                         onConfirm(finalDuration)
                     },
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    cancelButtonSize = 42.dp,
+                    confirmButtonSize = 48.dp,
+                    modifier = Modifier.padding(bottom = 2.dp)
                 )
             }
         }

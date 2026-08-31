@@ -1,13 +1,7 @@
 package com.yorkyang2333.claudwecho.ui.player
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,20 +17,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalView
+import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.CustomSwitch
 import com.yorkyang2333.claudwecho.ui.components.DurationWheelPickerDialog
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
-import com.yorkyang2333.claudwecho.ui.components.performClickHaptic
 
 @Composable
 fun SleepTimerScreen(
@@ -84,86 +73,100 @@ fun SleepTimerScreen(
                 Spacer(modifier = Modifier.height(48.dp))
             }
 
-            // Card 1: 启用
+            // Button 1: 启用
             item {
-                TimerCard(
-                    onClick = { sleepTimerManager.setEnabled(!isEnabled) }
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "启用",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
-                        )
-                        CustomSwitch(
-                            checked = isEnabled,
-                            onCheckedChange = { sleepTimerManager.setEnabled(it) }
-                        )
+                Button(
+                    onClick = { sleepTimerManager.setEnabled(!isEnabled) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "启用",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            CustomSwitch(
+                                checked = isEnabled,
+                                onCheckedChange = { sleepTimerManager.setEnabled(it) }
+                            )
+                        }
                     }
-                }
+                )
             }
 
-            // Card 2: 时长
+            // Button 2: 时长
             item {
-                TimerCard(
-                    onClick = { showWheelDialog = true }
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
+                Button(
+                    onClick = { showWheelDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 text = "时长",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Color.White
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                            if (remainingText != null) {
-                                Text(
-                                    text = remainingText,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
+                            Text(
+                                text = formattedDuration,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
-                        Text(
-                            text = formattedDuration,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
-                        )
-                    }
-                }
+                    },
+                    secondaryLabel = if (remainingText != null) {
+                        {
+                            Text(
+                                text = remainingText,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    } else null
+                )
             }
 
-            // Card 3: 播完当前歌曲
+            // Button 3: 播完当前歌曲
             item {
-                TimerCard(
-                    onClick = { sleepTimerManager.setFinishCurrentSong(!finishCurrentSong) }
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "播完当前歌曲",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
-                        )
-                        CustomSwitch(
-                            checked = finishCurrentSong,
-                            onCheckedChange = { sleepTimerManager.setFinishCurrentSong(it) }
-                        )
+                Button(
+                    onClick = { sleepTimerManager.setFinishCurrentSong(!finishCurrentSong) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "播完当前歌曲",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            CustomSwitch(
+                                checked = finishCurrentSong,
+                                onCheckedChange = { sleepTimerManager.setFinishCurrentSong(it) }
+                            )
+                        }
                     }
-                }
+                )
             }
 
-            // Description hint text below Card 3
+            // Description hint text below Button 3
             item {
                 Text(
                     text = "倒计时结束后，等待当前歌曲播放完再暂停；期间手动暂停或切歌会取消定时关闭",
@@ -192,26 +195,3 @@ fun SleepTimerScreen(
         )
     }
 }
-
-@Composable
-private fun TimerCard(
-    onClick: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    val view = LocalView.current
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1C1C1E))
-            .clickable {
-                view.performClickHaptic()
-                onClick()
-            }
-            .padding(horizontal = 14.dp, vertical = 12.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        content()
-    }
-}
-

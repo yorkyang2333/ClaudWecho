@@ -16,32 +16,36 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 
+import androidx.compose.ui.unit.Dp
+
 @Composable
 fun DialogActionButtons(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cancelButtonSize: Dp = 48.dp,
+    confirmButtonSize: Dp = 56.dp
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp, androidx.compose.ui.Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(14.dp, androidx.compose.ui.Alignment.CenterHorizontally),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
         Button(
             onClick = onCancel,
             colors = ButtonDefaults.filledTonalButtonColors(),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.size(52.dp)
+            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.size(cancelButtonSize)
         ) {
-            Icon(Icons.Rounded.Close, contentDescription = "取消", modifier = Modifier.size(32.dp))
+            Icon(Icons.Rounded.Close, contentDescription = "取消", modifier = Modifier.size(cancelButtonSize * 0.55f))
         }
         Button(
             onClick = onConfirm,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = CircleShape,
-            modifier = Modifier.size(64.dp)
+            modifier = Modifier.size(confirmButtonSize)
         ) {
-            Icon(Icons.Rounded.Check, contentDescription = "确定", modifier = Modifier.size(36.dp))
+            Icon(Icons.Rounded.Check, contentDescription = "确定", modifier = Modifier.size(confirmButtonSize * 0.55f))
         }
     }
 }

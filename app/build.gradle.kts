@@ -10,6 +10,13 @@ plugins {
 android {
     namespace = "com.yorkyang2333.claudwecho"
     compileSdk = 37
+
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
+    }
+
     defaultConfig {
         applicationId = "com.yorkyang2333.claudwecho"
         minSdk = 24
@@ -17,11 +24,6 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            localProperties.load(FileInputStream(localPropertiesFile))
-        }
         val rawApiBaseUrl = localProperties.getProperty("API_BASE_URL")?.takeIf { it.isNotBlank() } 
             ?: System.getenv("API_BASE_URL")?.takeIf { it.isNotBlank() }
             ?: ""
@@ -34,15 +36,28 @@ android {
     }
 
     signingConfigs {
+        val defaultKeystore = rootProject.file("claudwecho.jks")
+        val rawKeystorePath = localProperties.getProperty("KEYSTORE_PATH")
+            ?: System.getenv("KEYSTORE_PATH")
+            ?: if (defaultKeystore.exists()) defaultKeystore.absolutePath else null
+        val keystorePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+            ?: System.getenv("KEYSTORE_PASSWORD")
+            ?: "wecho2026"
+        val keyAlias = localProperties.getProperty("KEY_ALIAS")
+            ?: System.getenv("KEY_ALIAS")
+            ?: "claudwecho"
+        val keyPassword = localProperties.getProperty("KEY_PASSWORD")
+            ?: System.getenv("KEY_PASSWORD")
+            ?: keystorePassword
+
         create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH")
-            if (!keystorePath.isNullOrBlank()) {
-                val keystoreFile = file(keystorePath)
+            if (!rawKeystorePath.isNullOrBlank() && !keystorePassword.isNullOrBlank() && !keyAlias.isNullOrBlank()) {
+                val keystoreFile = file(rawKeystorePath)
                 if (keystoreFile.exists()) {
                     storeFile = keystoreFile
-                    storePassword = System.getenv("KEYSTORE_PASSWORD")
-                    keyAlias = System.getenv("KEY_ALIAS")
-                    keyPassword = System.getenv("KEY_PASSWORD")
+                    storePassword = keystorePassword
+                    this.keyAlias = keyAlias
+                    this.keyPassword = keyPassword
                 }
             }
         }
@@ -55,6 +70,8 @@ android {
             val releaseSigning = signingConfigs.getByName("release")
             if (releaseSigning.storeFile?.exists() == true) {
                 signingConfig = releaseSigning
+            } else {
+                signingConfig = signingConfigs.getByName("debug")
             }
         }
     }
