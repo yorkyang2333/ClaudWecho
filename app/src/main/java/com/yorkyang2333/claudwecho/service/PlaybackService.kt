@@ -40,7 +40,7 @@ class PlaybackService : MediaSessionService() {
                 }
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
                     sleepTimerManager.onSongFinishedNaturally()
-                } else if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK) {
+                } else if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK || reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
                     sleepTimerManager.onUserManualPauseOrTrackChange()
                 }
             }
