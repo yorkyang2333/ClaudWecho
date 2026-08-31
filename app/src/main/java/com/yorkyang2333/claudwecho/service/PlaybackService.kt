@@ -46,7 +46,7 @@ class PlaybackService : MediaSessionService() {
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                if (!isPlaying) {
+                if (!isPlaying && !player.playWhenReady && player.playbackState != Player.STATE_ENDED) {
                     sleepTimerManager.onUserManualPauseOrTrackChange()
                 }
             }

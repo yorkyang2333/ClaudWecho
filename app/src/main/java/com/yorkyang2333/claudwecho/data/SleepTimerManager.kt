@@ -39,7 +39,7 @@ class SleepTimerManager(
     val isWaitingForSongEnd: StateFlow<Boolean> = _isWaitingForSongEnd.asStateFlow()
 
     fun setDuration(minutes: Int) {
-        val clamped = minutes.coerceIn(1, 1440)
+        val clamped = minutes.coerceIn(1, 23 * 60 + 59)
         _durationMinutes.value = clamped
         prefs.edit().putInt("duration_minutes", clamped).apply()
         if (_isEnabled.value) {
