@@ -6,23 +6,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,12 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.wear.compose.foundation.lazy.AutoCenteringParams
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.ScalingLazyListState
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.foundation.rotary.RotaryScrollableDefaults
-import androidx.wear.compose.foundation.rotary.rotaryScrollable
+import androidx.wear.compose.material.Picker
+import androidx.wear.compose.material.rememberPickerState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import kotlinx.coroutines.launch
@@ -63,11 +54,16 @@ fun DurationWheelPickerDialog(
     val initHours = (initialMinutes / 60).coerceIn(0, 23)
     val initMins = (initialMinutes % 60).coerceIn(0, 59)
 
-    val hoursList = remember { (0..23).toList() }
-    val minutesList = remember { (0..59).toList() }
-
-    val hoursState = rememberScalingLazyListState(initialCenterItemIndex = initHours)
-    val minutesState = rememberScalingLazyListState(initialCenterItemIndex = initMins)
+    val hoursState = rememberPickerState(
+        initialNumberOfOptions = 24,
+        initiallySelectedOption = initHours,
+        repeatItems = true
+    )
+    val minutesState = rememberPickerState(
+        initialNumberOfOptions = 60,
+        initiallySelectedOption = initMins,
+        repeatItems = true
+    )
 
     var focusedColumn by remember { mutableStateOf(1) } // 0: hours, 1: minutes
 
@@ -75,8 +71,26 @@ fun DurationWheelPickerDialog(
     val view = LocalView.current
     val focusRequester = remember { FocusRequester() }
 
-    var accumulatedRotaryPx by remember { mutableStateOf(0f) }
-    var lastRotaryHapticTime by remember { mutableStateOf(0L) }
+    var accumulatedRotaryDelta by remember { mutableStateOf(0f) }
+    var lastRotaryTime by remember { mutableStateOf(0L) }
+
+    // Haptic vibration whenever selected option changes
+    var lastHoursOption by remember { mutableStateOf(initHours) }
+    var lastMinutesOption by remember { mutableStateOf(initMins) }
+
+    LaunchedEffect(hoursState.selectedOption) {
+        if (hoursState.selectedOption != lastHoursOption) {
+            view.performRotaryHaptic()
+            lastHoursOption = hoursState.selectedOption
+        }
+    }
+
+    LaunchedEffect(minutesState.selectedOption) {
+        if (minutesState.selectedOption != lastMinutesOption) {
+            view.performRotaryHaptic()
+            lastMinutesOption = minutesState.selectedOption
+        }
+    }
 
     LaunchedEffect(showDialog) {
         focusRequester.requestFocus()
@@ -88,19 +102,22 @@ fun DurationWheelPickerDialog(
                 .fillMaxSize()
                 .background(Color.Black)
                 .onRotaryScrollEvent { event ->
-                    val currentState = if (focusedColumn == 0) hoursState else minutesState
-                    val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastRotaryHapticTime > 250L) {
-                        accumulatedRotaryPx = 0f
+                    val now = System.currentTimeMillis()
+                    if (now - lastRotaryTime > 250L) {
+                        accumulatedRotaryDelta = 0f
                     }
-                    accumulatedRotaryPx += event.verticalScrollPixels
-                    if (Math.abs(accumulatedRotaryPx) >= 28f && currentTime - lastRotaryHapticTime >= 35L) {
-                        view.performRotaryHaptic()
-                        accumulatedRotaryPx = 0f
-                        lastRotaryHapticTime = currentTime
-                    }
-                    coroutineScope.launch {
-                        currentState.scrollBy(event.verticalScrollPixels)
+                    accumulatedRotaryDelta += event.verticalScrollPixels
+                    lastRotaryTime = now
+
+                    val threshold = 30f
+                    if (Math.abs(accumulatedRotaryDelta) >= threshold) {
+                        val steps = (accumulatedRotaryDelta / threshold).toInt()
+                        accumulatedRotaryDelta -= steps * threshold
+                        coroutineScope.launch {
+                            val activeState = if (focusedColumn == 0) hoursState else minutesState
+                            val nextOption = (activeState.selectedOption + steps).mod(activeState.numberOfOptions)
+                            activeState.animateScrollToOption(nextOption)
+                        }
                     }
                     true
                 }
@@ -108,30 +125,29 @@ fun DurationWheelPickerDialog(
                     if (event.action == MotionEvent.ACTION_SCROLL) {
                         val vScroll = event.getAxisValue(MotionEvent.AXIS_VSCROLL)
                         if (vScroll != 0f) {
-                            val currentState = if (focusedColumn == 0) hoursState else minutesState
                             val scrollFactor = ViewConfiguration.get(view.context).scaledVerticalScrollFactor
                             val deltaPx = -vScroll * scrollFactor
-                            val currentTime = System.currentTimeMillis()
-                            if (currentTime - lastRotaryHapticTime > 250L) {
-                                accumulatedRotaryPx = 0f
+                            val now = System.currentTimeMillis()
+                            if (now - lastRotaryTime > 250L) {
+                                accumulatedRotaryDelta = 0f
                             }
-                            accumulatedRotaryPx += deltaPx
-                            if (Math.abs(accumulatedRotaryPx) >= 28f && currentTime - lastRotaryHapticTime >= 35L) {
-                                view.performRotaryHaptic()
-                                accumulatedRotaryPx = 0f
-                                lastRotaryHapticTime = currentTime
-                            }
-                            coroutineScope.launch {
-                                currentState.scrollBy(deltaPx)
+                            accumulatedRotaryDelta += deltaPx
+                            lastRotaryTime = now
+
+                            val threshold = 30f
+                            if (Math.abs(accumulatedRotaryDelta) >= threshold) {
+                                val steps = (accumulatedRotaryDelta / threshold).toInt()
+                                accumulatedRotaryDelta -= steps * threshold
+                                coroutineScope.launch {
+                                    val activeState = if (focusedColumn == 0) hoursState else minutesState
+                                    val nextOption = (activeState.selectedOption + steps).mod(activeState.numberOfOptions)
+                                    activeState.animateScrollToOption(nextOption)
+                                }
                             }
                             true
                         } else false
                     } else false
                 }
-                .rotaryScrollable(
-                    RotaryScrollableDefaults.behavior(if (focusedColumn == 0) hoursState else minutesState),
-                    focusRequester
-                )
                 .focusRequester(focusRequester)
                 .focusable(),
             contentAlignment = Alignment.Center
@@ -143,7 +159,7 @@ fun DurationWheelPickerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top Title / Hint
+                // Title
                 Text(
                     text = "设置时长",
                     style = MaterialTheme.typography.titleSmall,
@@ -162,7 +178,7 @@ fun DurationWheelPickerDialog(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.92f)
-                            .height(42.dp)
+                            .height(44.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFF2C2C2E).copy(alpha = 0.55f))
                     )
@@ -172,46 +188,134 @@ fun DurationWheelPickerDialog(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Hours Column
-                        WheelColumn(
-                            items = hoursList,
-                            state = hoursState,
-                            isFocused = (focusedColumn == 0),
-                            unitLabel = "时",
+                        // Hours Picker Column
+                        Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(105.dp)
-                                .clickable { focusedColumn = 0 }
-                        )
+                                .clip(RoundedCornerShape(12.dp))
+                                .then(
+                                    if (focusedColumn == 0) {
+                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                                    } else Modifier
+                                )
+                                .clickable { focusedColumn = 0 },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Picker(
+                                state = hoursState,
+                                contentDescription = "小时",
+                                modifier = Modifier.fillMaxSize(),
+                                separation = 4.dp
+                            ) { optionIndex ->
+                                val isSelected = (hoursState.selectedOption == optionIndex)
+                                Row(
+                                    verticalAlignment = Alignment.Bottom,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.padding(vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = String.format("%02d", optionIndex),
+                                        style = if (isSelected) {
+                                            MaterialTheme.typography.titleLarge.copy(
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        } else {
+                                            MaterialTheme.typography.titleMedium.copy(
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Normal
+                                            )
+                                        },
+                                        color = if (isSelected) {
+                                            if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.White
+                                        } else {
+                                            Color.Gray.copy(alpha = 0.4f)
+                                        }
+                                    )
+                                    if (isSelected) {
+                                        Text(
+                                            text = "时",
+                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                            color = if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                            modifier = Modifier.padding(start = 2.dp, bottom = 3.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
 
                         Text(
                             text = ":",
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                             color = Color.White,
                             modifier = Modifier.padding(horizontal = 4.dp)
                         )
 
-                        // Minutes Column
-                        WheelColumn(
-                            items = minutesList,
-                            state = minutesState,
-                            isFocused = (focusedColumn == 1),
-                            unitLabel = "分",
+                        // Minutes Picker Column
+                        Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(105.dp)
-                                .clickable { focusedColumn = 1 }
-                        )
+                                .clip(RoundedCornerShape(12.dp))
+                                .then(
+                                    if (focusedColumn == 1) {
+                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                                    } else Modifier
+                                )
+                                .clickable { focusedColumn = 1 },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Picker(
+                                state = minutesState,
+                                contentDescription = "分钟",
+                                modifier = Modifier.fillMaxSize(),
+                                separation = 4.dp
+                            ) { optionIndex ->
+                                val isSelected = (minutesState.selectedOption == optionIndex)
+                                Row(
+                                    verticalAlignment = Alignment.Bottom,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.padding(vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = String.format("%02d", optionIndex),
+                                        style = if (isSelected) {
+                                            MaterialTheme.typography.titleLarge.copy(
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        } else {
+                                            MaterialTheme.typography.titleMedium.copy(
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Normal
+                                            )
+                                        },
+                                        color = if (isSelected) {
+                                            if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.White
+                                        } else {
+                                            Color.Gray.copy(alpha = 0.4f)
+                                        }
+                                    )
+                                    if (isSelected) {
+                                        Text(
+                                            text = "分",
+                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                            color = if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                            modifier = Modifier.padding(start = 2.dp, bottom = 3.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                // Action Buttons at bottom
+                // Action Buttons
                 DialogActionButtons(
                     onCancel = onDismissRequest,
                     onConfirm = {
-                        val selectedHours = hoursState.centerItemIndex.coerceIn(0, 23)
-                        val selectedMins = minutesState.centerItemIndex.coerceIn(0, 59)
-                        val totalMinutes = selectedHours * 60 + selectedMins
+                        val totalMinutes = hoursState.selectedOption * 60 + minutesState.selectedOption
                         val finalDuration = if (totalMinutes <= 0) 1 else totalMinutes
                         onConfirm(finalDuration)
                     },
@@ -221,87 +325,3 @@ fun DurationWheelPickerDialog(
         }
     }
 }
-
-@Composable
-private fun WheelColumn(
-    items: List<Int>,
-    state: ScalingLazyListState,
-    isFocused: Boolean,
-    unitLabel: String,
-    modifier: Modifier = Modifier
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .then(
-                if (isFocused) {
-                    Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
-                } else Modifier
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        ScalingLazyColumn(
-            state = state,
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            contentPadding = PaddingValues(vertical = 0.dp),
-            autoCentering = AutoCenteringParams(itemIndex = 0)
-        ) {
-            items(items.size) { index ->
-                val num = items[index]
-                val isSelected by remember {
-                    derivedStateOf { state.centerItemIndex == index }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(38.dp)
-                        .clickable {
-                            coroutineScope.launch {
-                                state.animateScrollToItem(index)
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = String.format("%02d", num),
-                            style = if (isSelected) {
-                                MaterialTheme.typography.titleLarge.copy(
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            } else {
-                                MaterialTheme.typography.titleMedium.copy(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            },
-                            color = if (isSelected) {
-                                if (isFocused) MaterialTheme.colorScheme.primary else Color.White
-                            } else {
-                                Color.Gray.copy(alpha = 0.5f)
-                            }
-                        )
-                        if (isSelected) {
-                            Text(
-                                text = unitLabel,
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                color = if (isFocused) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                modifier = Modifier.padding(start = 2.dp, bottom = 3.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
