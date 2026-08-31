@@ -38,8 +38,6 @@ class SleepTimerManager(
     private val _isWaitingForSongEnd = MutableStateFlow(false)
     val isWaitingForSongEnd: StateFlow<Boolean> = _isWaitingForSongEnd.asStateFlow()
 
-    private var targetEndTimeMs: Long = 0L
-
     fun setDuration(minutes: Int) {
         val clamped = minutes.coerceIn(1, 1440)
         _durationMinutes.value = clamped
@@ -71,22 +69,30 @@ class SleepTimerManager(
 
     private fun startCountdown() {
         timerJob?.cancel()
-        val durationMs = _durationMinutes.value * 60 * 1000L
-        targetEndTimeMs = System.currentTimeMillis() + durationMs
+        var remainingMillis = _durationMinutes.value * 60 * 1000L
         _remainingSeconds.value = _durationMinutes.value * 60L
 
         timerJob = scope.launch {
+            var lastTime = System.currentTimeMillis()
             while (isActive && _isEnabled.value) {
-                val now = System.currentTimeMillis()
-                val diffMs = targetEndTimeMs - now
-                if (diffMs <= 0) {
-                    _remainingSeconds.value = 0L
-                    onTimerExpired()
-                    break
-                } else {
-                    _remainingSeconds.value = (diffMs + 999) / 1000
-                }
                 delay(500)
+                val now = System.currentTimeMillis()
+                val delta = now - lastTime
+                lastTime = now
+
+                val player = playerProvider()
+                val isPlaying = player?.isPlaying == true
+
+                if (isPlaying) {
+                    remainingMillis -= delta
+                    if (remainingMillis <= 0L) {
+                        _remainingSeconds.value = 0L
+                        onTimerExpired()
+                        break
+                    } else {
+                        _remainingSeconds.value = (remainingMillis + 999) / 1000
+                    }
+                }
             }
         }
     }
