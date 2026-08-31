@@ -32,11 +32,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalView
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.ui.components.DurationWheelPickerDialog
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.performClickHaptic
 
 @Composable
 fun SleepTimerScreen(
@@ -195,12 +197,16 @@ private fun TimerCard(
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val view = LocalView.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFF1C1C1E))
-            .clickable(onClick = onClick)
+            .clickable {
+                view.performClickHaptic()
+                onClick()
+            }
             .padding(horizontal = 14.dp, vertical = 12.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -213,6 +219,7 @@ private fun CustomSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val view = LocalView.current
     val trackColor by animateColorAsState(
         targetValue = if (checked) MaterialTheme.colorScheme.primary else Color(0xFF3A3A3C),
         animationSpec = tween(durationMillis = 200)
@@ -228,7 +235,10 @@ private fun CustomSwitch(
             .size(width = 44.dp, height = 26.dp)
             .clip(RoundedCornerShape(13.dp))
             .background(trackColor)
-            .clickable { onCheckedChange(!checked) }
+            .clickable {
+                view.performClickHaptic()
+                onCheckedChange(!checked)
+            }
             .padding(vertical = 3.dp),
         contentAlignment = Alignment.CenterStart
     ) {
