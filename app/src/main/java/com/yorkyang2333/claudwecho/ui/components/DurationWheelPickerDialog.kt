@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,8 +37,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.wear.compose.material.Picker
+import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberPickerState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
@@ -50,8 +51,6 @@ fun DurationWheelPickerDialog(
     onDismissRequest: () -> Unit,
     onConfirm: (Int) -> Unit
 ) {
-    if (!showDialog) return
-
     val initHours = (initialMinutes / 60).coerceIn(0, 23)
     val initMins = (initialMinutes % 60).coerceIn(0, 59)
 
@@ -107,10 +106,15 @@ fun DurationWheelPickerDialog(
     }
 
     LaunchedEffect(showDialog) {
-        focusRequester.requestFocus()
+        if (showDialog) {
+            focusRequester.requestFocus()
+        }
     }
 
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(
+        showDialog = showDialog,
+        onDismissRequest = onDismissRequest
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -169,31 +173,25 @@ fun DurationWheelPickerDialog(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(horizontal = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Title
-                Text(
-                    text = "设置时长",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFF9E9E9E),
-                    modifier = Modifier.padding(top = 2.dp)
-                )
+                Spacer(modifier = Modifier.height(36.dp))
 
-                // Pickers Area: Designed to fit within round screen safe insets
+                // Pickers Area: Designed to fit within standard Wear OS safe insets
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.90f)
-                        .height(84.dp),
+                        .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     // Center Selection Indicator Bar
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(40.dp)
-                            .clip(RoundedCornerShape(10.dp))
+                            .height(42.dp)
+                            .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFF2C2C2E).copy(alpha = 0.55f))
                     )
 
@@ -207,10 +205,10 @@ fun DurationWheelPickerDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .then(
                                     if (focusedColumn == 0) {
-                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                     } else Modifier
                                 )
                                 .pointerInput(Unit) {
@@ -275,10 +273,10 @@ fun DurationWheelPickerDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .then(
                                     if (focusedColumn == 1) {
-                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                     } else Modifier
                                 )
                                 .pointerInput(Unit) {
@@ -333,7 +331,7 @@ fun DurationWheelPickerDialog(
                     }
                 }
 
-                // Action Buttons: Compact to fit round watch screens
+                // Action Buttons: Standard Wear OS Material 3 pattern
                 DialogActionButtons(
                     onCancel = onDismissRequest,
                     onConfirm = {
@@ -341,11 +339,11 @@ fun DurationWheelPickerDialog(
                         val finalDuration = if (totalMinutes <= 0) 1 else totalMinutes
                         onConfirm(finalDuration)
                     },
-                    cancelButtonSize = 42.dp,
-                    confirmButtonSize = 48.dp,
-                    modifier = Modifier.padding(bottom = 2.dp)
+                    modifier = Modifier.padding(bottom = 6.dp)
                 )
             }
+
+            PinnedHeader(title = "设置时长")
         }
     }
 }
