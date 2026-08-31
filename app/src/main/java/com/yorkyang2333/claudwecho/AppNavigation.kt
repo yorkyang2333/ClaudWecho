@@ -249,7 +249,13 @@ fun AppNavigation(
         composable("player_menu") {
             com.yorkyang2333.claudwecho.ui.player.PlayerMenuScreen(
                 viewModel = playerViewModel,
-                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") },
+                onNavigateToSleepTimer = { navController.navigate("player_menu/sleep_timer") }
+            )
+        }
+        composable("player_menu/sleep_timer") {
+            com.yorkyang2333.claudwecho.ui.player.SleepTimerScreen(
+                viewModel = playerViewModel
             )
         }
 

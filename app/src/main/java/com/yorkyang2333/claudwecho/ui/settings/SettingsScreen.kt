@@ -150,14 +150,23 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
                     label = { 
-                        Text(
-                            text = "屏幕常亮",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        ) 
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "屏幕常亮",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            com.yorkyang2333.claudwecho.ui.components.CustomSwitch(
+                                checked = keepScreenOn,
+                                onCheckedChange = { viewModel.toggleKeepScreenOn() }
+                            )
+                        }
                     },
-                    secondaryLabel = { Text(if (keepScreenOn) "开启" else "关闭") },
                     icon = { Icon(Icons.Rounded.WbSunny, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }

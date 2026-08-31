@@ -127,6 +127,7 @@ val networkModule = module {
     single { com.yorkyang2333.claudwecho.data.LocalRecentPlaysManager(androidContext()) }
     single { com.yorkyang2333.claudwecho.data.PlaybackStateManager(androidContext()) }
     single { com.yorkyang2333.claudwecho.data.LocalSearchHistoryManager(androidContext()) }
+    single { com.yorkyang2333.claudwecho.data.SleepTimerManager(androidContext()) { getOrNull<androidx.media3.exoplayer.ExoPlayer>() } }
     single { LoginRepository(get()) }
     single { MainRepository(get(), get()) }
     
@@ -134,7 +135,7 @@ val networkModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.profile.UserProfileViewModel(get(), get(), get()) }
-    viewModel { PlayerViewModel(androidContext(), get(), get()) }
+    viewModel { PlayerViewModel(androidContext(), get(), get(), get()) }
     viewModel { PlaylistDetailViewModel(get(), androidContext()) }
     viewModel { com.yorkyang2333.claudwecho.ui.collection.MyCollectionViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
