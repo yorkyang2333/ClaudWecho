@@ -111,6 +111,8 @@ fun DurationWheelPickerDialog(
         }
     }
 
+    val itemHeight = 40.dp
+
     Dialog(
         showDialog = showDialog,
         onDismissRequest = onDismissRequest
@@ -189,7 +191,7 @@ fun DurationWheelPickerDialog(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(42.dp)
+                            .height(itemHeight)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFF2C2C2E).copy(alpha = 0.55f))
                     )
@@ -221,40 +223,46 @@ fun DurationWheelPickerDialog(
                                 state = hoursState,
                                 contentDescription = "小时",
                                 modifier = Modifier.fillMaxSize(),
-                                separation = 2.dp
+                                separation = 0.dp
                             ) { optionIndex ->
                                 val isSelected = (hoursState.selectedOption == optionIndex)
-                                Row(
-                                    verticalAlignment = Alignment.Bottom,
-                                    horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier.padding(vertical = 1.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(itemHeight),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Text(
-                                        text = String.format("%02d", optionIndex),
-                                        style = if (isSelected) {
-                                            MaterialTheme.typography.titleLarge.copy(
-                                                fontSize = 22.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        } else {
-                                            MaterialTheme.typography.titleMedium.copy(
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Normal
-                                            )
-                                        },
-                                        color = if (isSelected) {
-                                            if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.White
-                                        } else {
-                                            Color.Gray.copy(alpha = 0.4f)
-                                        }
-                                    )
-                                    if (isSelected) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
                                         Text(
-                                            text = "时",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                            color = if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
+                                            text = String.format("%02d", optionIndex),
+                                            style = if (isSelected) {
+                                                MaterialTheme.typography.titleLarge.copy(
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            } else {
+                                                MaterialTheme.typography.titleMedium.copy(
+                                                    fontSize = 15.sp,
+                                                    fontWeight = FontWeight.Normal
+                                                )
+                                            },
+                                            color = if (isSelected) {
+                                                if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.White
+                                            } else {
+                                                Color.Gray.copy(alpha = 0.35f)
+                                            }
                                         )
+                                        if (isSelected) {
+                                            Text(
+                                                text = "时",
+                                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                                color = if (focusedColumn == 0) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                                modifier = Modifier.padding(start = 2.dp, top = 2.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -289,40 +297,46 @@ fun DurationWheelPickerDialog(
                                 state = minutesState,
                                 contentDescription = "分钟",
                                 modifier = Modifier.fillMaxSize(),
-                                separation = 2.dp
+                                separation = 0.dp
                             ) { optionIndex ->
                                 val isSelected = (minutesState.selectedOption == optionIndex)
-                                Row(
-                                    verticalAlignment = Alignment.Bottom,
-                                    horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier.padding(vertical = 1.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(itemHeight),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Text(
-                                        text = String.format("%02d", optionIndex),
-                                        style = if (isSelected) {
-                                            MaterialTheme.typography.titleLarge.copy(
-                                                fontSize = 22.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        } else {
-                                            MaterialTheme.typography.titleMedium.copy(
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Normal
-                                            )
-                                        },
-                                        color = if (isSelected) {
-                                            if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.White
-                                        } else {
-                                            Color.Gray.copy(alpha = 0.4f)
-                                        }
-                                    )
-                                    if (isSelected) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
                                         Text(
-                                            text = "分",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                            color = if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
+                                            text = String.format("%02d", optionIndex),
+                                            style = if (isSelected) {
+                                                MaterialTheme.typography.titleLarge.copy(
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            } else {
+                                                MaterialTheme.typography.titleMedium.copy(
+                                                    fontSize = 15.sp,
+                                                    fontWeight = FontWeight.Normal
+                                                )
+                                            },
+                                            color = if (isSelected) {
+                                                if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.White
+                                            } else {
+                                                Color.Gray.copy(alpha = 0.35f)
+                                            }
                                         )
+                                        if (isSelected) {
+                                            Text(
+                                                text = "分",
+                                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                                color = if (focusedColumn == 1) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                                modifier = Modifier.padding(start = 2.dp, top = 2.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
