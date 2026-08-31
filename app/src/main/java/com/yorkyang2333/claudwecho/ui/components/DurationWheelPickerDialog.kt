@@ -167,8 +167,7 @@ fun DurationWheelPickerDialog(
                     } else false
                 }
                 .focusRequester(focusRequester)
-                .focusable(),
-            contentAlignment = Alignment.Center
+                .focusable()
         ) {
             Column(
                 modifier = Modifier
@@ -177,7 +176,7 @@ fun DurationWheelPickerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(44.dp))
 
                 // Pickers Area: Designed to fit within standard Wear OS safe insets
                 Box(
@@ -343,7 +342,10 @@ fun DurationWheelPickerDialog(
                 )
             }
 
-            PinnedHeader(title = "设置时长")
+            PinnedHeader(
+                title = "设置时长",
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }
