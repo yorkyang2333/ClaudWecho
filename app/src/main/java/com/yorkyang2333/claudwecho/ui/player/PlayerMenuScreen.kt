@@ -30,10 +30,13 @@ import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
+import androidx.compose.material.icons.rounded.Timer
+
 @Composable
 fun PlayerMenuScreen(
     viewModel: PlayerViewModel,
-    onNavigateToSongInfo: (Long) -> Unit
+    onNavigateToSongInfo: (Long) -> Unit,
+    onNavigateToSleepTimer: () -> Unit
 ) {
     val context = LocalContext.current
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
@@ -42,6 +45,22 @@ fun PlayerMenuScreen(
     val showAddToPlaylistDialog = remember { mutableStateOf(false) }
     val createdPlaylists by viewModel.createdPlaylists.collectAsState()
     val isLoadingCreatedPlaylists by viewModel.isLoadingCreatedPlaylists.collectAsState()
+    
+    val sleepTimerManager = viewModel.sleepTimerManager
+    val isTimerEnabled by sleepTimerManager.isEnabled.collectAsState()
+    val remainingSeconds by sleepTimerManager.remainingSeconds.collectAsState()
+    val isWaitingForSongEnd by sleepTimerManager.isWaitingForSongEnd.collectAsState()
+
+    val timerSecondaryText = if (isTimerEnabled) {
+        if (isWaitingForSongEnd) {
+            "等待播完"
+        } else {
+            val mins = (remainingSeconds + 59) / 60
+            "剩余 $mins 分钟"
+        }
+    } else {
+        "未开启"
+    }
     
     val playbackModeText = when {
         shuffleMode -> "随机播放"
@@ -111,6 +130,31 @@ fun PlayerMenuScreen(
                         icon = { Icon(playbackModeIcon, null, tint = MaterialTheme.colorScheme.primary) }
                     )
                 }
+            }
+            item {
+                Button(
+                    onClick = onNavigateToSleepTimer,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Text(
+                            text = "定时停止",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    secondaryLabel = {
+                        Text(
+                            text = timerSecondaryText,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isTimerEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    icon = { Icon(Icons.Rounded.Timer, null, tint = MaterialTheme.colorScheme.primary) }
+                )
             }
             item {
                 Button(

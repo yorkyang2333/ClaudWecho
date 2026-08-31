@@ -28,7 +28,8 @@ data class LyricLine(val timeMs: Long, val text: String, var tText: String? = nu
 class PlayerViewModel(
     private val context: Context,
     private val repository: MainRepository,
-    private val playbackStateManager: com.yorkyang2333.claudwecho.data.PlaybackStateManager
+    private val playbackStateManager: com.yorkyang2333.claudwecho.data.PlaybackStateManager,
+    val sleepTimerManager: com.yorkyang2333.claudwecho.data.SleepTimerManager
 ) : ViewModel() {
 
     private var controllerFuture: ListenableFuture<MediaController>? = null

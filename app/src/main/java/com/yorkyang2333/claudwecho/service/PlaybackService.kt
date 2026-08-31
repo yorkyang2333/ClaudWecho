@@ -12,11 +12,13 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.Futures
 import com.yorkyang2333.claudwecho.data.PlaybackStateManager
+import com.yorkyang2333.claudwecho.data.SleepTimerManager
 import org.koin.android.ext.android.inject
 
 class PlaybackService : MediaSessionService() {
     private val player: ExoPlayer by inject()
     private val playbackStateManager: PlaybackStateManager by inject()
+    private val sleepTimerManager: SleepTimerManager by inject()
     private var mediaSession: MediaSession? = null
 
     override fun onCreate() {
@@ -36,6 +38,17 @@ class PlaybackService : MediaSessionService() {
                 if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && player.mediaItemCount > 0) {
                     prioritizeShuffleOrder(player.currentMediaItemIndex)
                 }
+                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+                    sleepTimerManager.onSongFinishedNaturally()
+                } else if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK) {
+                    sleepTimerManager.onUserManualPauseOrTrackChange()
+                }
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                if (!isPlaying) {
+                    sleepTimerManager.onUserManualPauseOrTrackChange()
+                }
             }
 
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
@@ -49,24 +62,28 @@ class PlaybackService : MediaSessionService() {
                 newPosition: Player.PositionInfo,
                 reason: Int
             ) {
-                if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION &&
-                    !playbackStateManager.isPersonalFmMode.value &&
-                    player.repeatMode == Player.REPEAT_MODE_OFF &&
-                    !player.shuffleModeEnabled
-                ) {
-                    player.pause()
-                    player.seekTo(oldPosition.mediaItemIndex, 0L)
+                if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
+                    sleepTimerManager.onSongFinishedNaturally()
+                    if (!playbackStateManager.isPersonalFmMode.value &&
+                        player.repeatMode == Player.REPEAT_MODE_OFF &&
+                        !player.shuffleModeEnabled
+                    ) {
+                        player.pause()
+                        player.seekTo(oldPosition.mediaItemIndex, 0L)
+                    }
                 }
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_ENDED &&
-                    !playbackStateManager.isPersonalFmMode.value &&
-                    player.repeatMode == Player.REPEAT_MODE_OFF &&
-                    !player.shuffleModeEnabled
-                ) {
-                    player.pause()
-                    player.seekTo(0L)
+                if (playbackState == Player.STATE_ENDED) {
+                    sleepTimerManager.onSongFinishedNaturally()
+                    if (!playbackStateManager.isPersonalFmMode.value &&
+                        player.repeatMode == Player.REPEAT_MODE_OFF &&
+                        !player.shuffleModeEnabled
+                    ) {
+                        player.pause()
+                        player.seekTo(0L)
+                    }
                 }
             }
         })
