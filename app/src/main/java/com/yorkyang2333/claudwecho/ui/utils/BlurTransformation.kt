@@ -6,13 +6,13 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
-import coil.size.Size
-import coil.transform.Transformation
+import coil3.size.Size
+import coil3.transform.Transformation
 
 class BlurTransformation(
     private val context: Context,
     private val radius: Float = 25f
-) : Transformation {
+) : Transformation() {
 
     override val cacheKey: String = "blur-$radius"
 

@@ -11,28 +11,28 @@ import android.os.Process
 import com.yorkyang2333.claudwecho.di.networkModule
 import com.yorkyang2333.claudwecho.di.playerModule
 import com.yorkyang2333.claudwecho.service.PlaybackService
-import com.yorkyang2333.claudwecho.ui.utils.SongInfoTag
+import com.yorkyang2333.claudwecho.ui.utils.SongInfoKey
 import com.yorkyang2333.claudwecho.ui.utils.toLowResImageUrl
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-class LowResImageInterceptor : coil.intercept.Interceptor {
-    override suspend fun intercept(chain: coil.intercept.Interceptor.Chain): coil.request.ImageResult {
+class LowResImageInterceptor : coil3.intercept.Interceptor {
+    override suspend fun intercept(chain: coil3.intercept.Interceptor.Chain): coil3.request.ImageResult {
         val request = chain.request
         val data = request.data
-        if (data is String && request.tags.tag(SongInfoTag::class.java) == null) {
+        if (data is String && request.extras[SongInfoKey] != true) {
             val lowResUrl = toLowResImageUrl(data)
             val newRequest = request.newBuilder()
                 .data(lowResUrl)
                 .build()
-            return chain.proceed(newRequest)
+            return chain.withRequest(newRequest).proceed()
         }
-        return chain.proceed(request)
+        return chain.proceed()
     }
 }
 
-class ClaudWechoApp : Application(), coil.ImageLoaderFactory {
+class ClaudWechoApp : Application(), coil3.SingletonImageLoader.Factory {
     companion object {
         private val activeActivities = mutableSetOf<Activity>()
 
@@ -82,11 +82,11 @@ class ClaudWechoApp : Application(), coil.ImageLoaderFactory {
         }
     }
 
-    override fun newImageLoader(): coil.ImageLoader {
+    override fun newImageLoader(context: coil3.PlatformContext): coil3.ImageLoader {
         val okHttpClient: okhttp3.OkHttpClient by inject()
-        return coil.ImageLoader.Builder(this)
-            .okHttpClient(okHttpClient)
+        return coil3.ImageLoader.Builder(context)
             .components {
+                add(coil3.network.okhttp.OkHttpNetworkFetcherFactory(okHttpClient))
                 add(LowResImageInterceptor())
             }
             .build()

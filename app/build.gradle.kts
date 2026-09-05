@@ -143,6 +143,7 @@ dependencies {
 
   // Coil
   implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
 
   // Pinyin
   implementation("com.belerweb:pinyin4j:2.5.1")

@@ -17,7 +17,7 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.CircularProgressIndicator
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.yorkyang2333.claudwecho.data.api.Playlist
 
 @Composable

@@ -35,7 +35,7 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
 import androidx.compose.material.icons.rounded.QueueMusic
