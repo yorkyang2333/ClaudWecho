@@ -1,6 +1,8 @@
 package com.yorkyang2333.claudwecho.ui.utils
 
-object SongInfoTag
+import coil3.Extras
+
+val SongInfoKey = Extras.Key(default = false)
 
 fun toOriginalImageUrl(url: String?): String {
     if (url.isNullOrBlank()) return ""

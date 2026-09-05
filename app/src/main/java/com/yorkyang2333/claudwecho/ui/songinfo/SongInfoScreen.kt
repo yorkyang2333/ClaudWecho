@@ -29,13 +29,13 @@ import com.yorkyang2333.claudwecho.data.api.SongDetail
 import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
-import coil.compose.AsyncImage
-import com.yorkyang2333.claudwecho.ui.utils.SongInfoTag
+import coil3.compose.AsyncImage
+import com.yorkyang2333.claudwecho.ui.utils.SongInfoKey
 import com.yorkyang2333.claudwecho.ui.utils.toOriginalImageUrl
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import coil.request.CachePolicy
-import coil.request.ImageRequest
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -127,7 +127,7 @@ private fun SongInfoContent(song: SongDetail) {
                     val imageRequest = remember(originalUrl, context) {
                         ImageRequest.Builder(context)
                             .data(originalUrl)
-                            .tag(SongInfoTag::class.java, SongInfoTag)
+                            .apply { extras[SongInfoKey] = true }
                             .memoryCachePolicy(CachePolicy.ENABLED)
                             .diskCachePolicy(CachePolicy.DISABLED)
                             .build()

@@ -24,7 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.transformations
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -61,7 +63,7 @@ fun HomePagerScreen(
         if (currentArtworkUri != null) {
             val context = androidx.compose.ui.platform.LocalContext.current
             val isApi31AndAbove = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
-            val imageRequest = coil.request.ImageRequest.Builder(context)
+            val imageRequest = ImageRequest.Builder(context)
                 .data(currentArtworkUri)
                 .apply {
                     if (!isApi31AndAbove) {

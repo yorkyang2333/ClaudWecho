@@ -28,7 +28,7 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Close
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import kotlinx.coroutines.launch
 import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog

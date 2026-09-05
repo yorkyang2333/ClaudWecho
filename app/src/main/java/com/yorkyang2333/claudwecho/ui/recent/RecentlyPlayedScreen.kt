@@ -20,7 +20,7 @@ import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog
 
 @Composable

@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import androidx.wear.compose.material3.*
 import com.yorkyang2333.claudwecho.ui.components.Button
-import coil.compose.rememberAsyncImagePainter
 import org.koin.androidx.compose.koinViewModel
 
 import androidx.compose.ui.graphics.asImageBitmap
