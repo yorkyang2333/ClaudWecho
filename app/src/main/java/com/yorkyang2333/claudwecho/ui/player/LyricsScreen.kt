@@ -14,23 +14,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.yorkyang2333.claudwecho.data.LyricWord
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 
 @Composable
@@ -51,7 +57,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 
     LaunchedEffect(currentLyricIndex) {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyrics.size) {
-            // Scroll to center the current lyric line
+            // 保持当前唱到的歌词行始终平稳处于屏幕中央
             listState.animateScrollToItem(currentLyricIndex)
         }
     }
@@ -113,6 +119,15 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                         label = "tcolor"
                     )
 
+                    val mainTextStyle = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(
+                            color = Color.Black.copy(alpha = 0.8f),
+                            offset = Offset(2f, 2f),
+                            blurRadius = 8f
+                        )
+                    )
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
@@ -124,40 +139,19 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                             }
                     ) {
                         if (isCurrent && line.isVerbatim && verbatimLyricsEnabled) {
-                            // 逐字歌词：单文本内按字进度点亮，保证字体基线与字距严格对齐，无跳动
-                            val annotatedText = buildAnnotatedString {
-                                line.words.forEach { word ->
-                                    val isPlayed = currentPosition >= word.startTimeMs
-                                    val color = if (isPlayed) activeColor else inactiveColor
-                                    withStyle(SpanStyle(color = color)) {
-                                        append(word.text)
-                                    }
-                                }
-                            }
-
-                            Text(
-                                text = annotatedText,
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    shadow = Shadow(
-                                        color = Color.Black.copy(alpha = 0.8f),
-                                        offset = Offset(2f, 2f),
-                                        blurRadius = 8f
-                                    )
-                                ),
-                                textAlign = TextAlign.Center
+                            // 逐字歌词扫光：双层绝对同构文本叠加裁剪，字符基线 100% 严密对齐，平滑扫光
+                            SweepingVerbatimLyricText(
+                                text = line.text,
+                                words = line.words,
+                                currentPosition = currentPosition,
+                                activeColor = activeColor,
+                                inactiveColor = inactiveColor,
+                                baseTextStyle = mainTextStyle
                             )
                         } else {
                             Text(
                                 text = line.text,
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    shadow = Shadow(
-                                        color = Color.Black.copy(alpha = 0.8f),
-                                        offset = Offset(2f, 2f),
-                                        blurRadius = 8f
-                                    )
-                                ),
+                                style = mainTextStyle,
                                 color = textColor,
                                 textAlign = TextAlign.Center
                             )
@@ -182,5 +176,133 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                 }
             }
         }
+    }
+}
+
+/**
+ * 逐字平滑扫光文本组件。
+ * 底层与顶层完全共用相同文本排版与属性，仅对顶层高亮文本进行动态几何 Path 裁剪，
+ * 既保证了字符基线、间距和排版的绝对平直对齐，又实现了丝滑流畅的卡拉OK扫光进度动效。
+ */
+@Composable
+private fun SweepingVerbatimLyricText(
+    text: String,
+    words: List<LyricWord>,
+    currentPosition: Long,
+    activeColor: Color,
+    inactiveColor: Color,
+    baseTextStyle: androidx.compose.ui.text.TextStyle
+) {
+    var layoutResult by remember(text) { mutableStateOf<TextLayoutResult?>(null) }
+    val clipPath = remember(text) { Path() }
+
+    Box(contentAlignment = Alignment.Center) {
+        // 底层：未扫过状态的完整文本（自带阴影，保证文字可读性）
+        Text(
+            text = text,
+            style = baseTextStyle,
+            color = inactiveColor,
+            textAlign = TextAlign.Center,
+            onTextLayout = { layoutResult = it }
+        )
+
+        // 顶层：高亮文本，根据逐字播放进度动态裁切出已唱区域，呈现平滑扫光效果
+        Text(
+            text = text,
+            style = baseTextStyle.copy(shadow = null),
+            color = activeColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.drawWithContent {
+                val layout = layoutResult ?: return@drawWithContent
+                clipPath.reset()
+
+                var charOffset = 0
+                for (word in words) {
+                    val wordLen = word.text.length
+                    val wordStart = word.startTimeMs
+                    val wordDur = word.durationMs.coerceAtLeast(1L)
+                    val wordEnd = word.endTimeMs
+
+                    if (currentPosition >= wordEnd) {
+                        // 词已完全唱完：高亮整词范围
+                        val cStart = charOffset.coerceIn(0, layout.layoutInput.text.length)
+                        val cEnd = (charOffset + wordLen - 1).coerceIn(0, layout.layoutInput.text.length - 1)
+                        if (cStart <= cEnd) {
+                            val firstBox = layout.getBoundingBox(cStart)
+                            val lastBox = layout.getBoundingBox(cEnd)
+                            if (firstBox.top == lastBox.top) {
+                                clipPath.addRect(
+                                    Rect(
+                                        left = firstBox.left,
+                                        top = firstBox.top,
+                                        right = lastBox.right,
+                                        bottom = firstBox.bottom
+                                    )
+                                )
+                            } else {
+                                for (i in 0 until wordLen) {
+                                    val ci = charOffset + i
+                                    if (ci < layout.layoutInput.text.length) {
+                                        clipPath.addRect(layout.getBoundingBox(ci))
+                                    }
+                                }
+                            }
+                        }
+                    } else if (currentPosition > wordStart) {
+                        // 词正在唱：按时间比例从左到右平滑扫光
+                        val fraction = ((currentPosition - wordStart).toFloat() / wordDur.toFloat()).coerceIn(0f, 1f)
+                        val cStart = charOffset.coerceIn(0, layout.layoutInput.text.length)
+                        val cEnd = (charOffset + wordLen - 1).coerceIn(0, layout.layoutInput.text.length - 1)
+                        if (cStart <= cEnd) {
+                            val firstBox = layout.getBoundingBox(cStart)
+                            val lastBox = layout.getBoundingBox(cEnd)
+                            if (firstBox.top == lastBox.top) {
+                                val wordLeft = firstBox.left
+                                val wordRight = lastBox.right
+                                val sweepRight = wordLeft + (wordRight - wordLeft) * fraction
+                                clipPath.addRect(
+                                    Rect(
+                                        left = wordLeft,
+                                        top = firstBox.top,
+                                        right = sweepRight,
+                                        bottom = firstBox.bottom
+                                    )
+                                )
+                            } else {
+                                val totalCharsFraction = fraction * wordLen
+                                val completedChars = totalCharsFraction.toInt()
+                                val partialCharFraction = totalCharsFraction - completedChars
+
+                                for (i in 0 until completedChars) {
+                                    val ci = charOffset + i
+                                    if (ci < layout.layoutInput.text.length) {
+                                        clipPath.addRect(layout.getBoundingBox(ci))
+                                    }
+                                }
+                                if (completedChars < wordLen) {
+                                    val ci = charOffset + completedChars
+                                    if (ci < layout.layoutInput.text.length) {
+                                        val cBox = layout.getBoundingBox(ci)
+                                        clipPath.addRect(
+                                            Rect(
+                                                left = cBox.left,
+                                                top = cBox.top,
+                                                right = cBox.left + cBox.width * partialCharFraction,
+                                                bottom = cBox.bottom
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    charOffset += wordLen
+                }
+
+                clipPath(clipPath) {
+                    this@drawWithContent.drawContent()
+                }
+            }
+        )
     }
 }
