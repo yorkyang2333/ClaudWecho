@@ -26,9 +26,7 @@ import com.yorkyang2333.claudwecho.data.api.Album
 import com.yorkyang2333.claudwecho.data.api.DjRadio
 import com.yorkyang2333.claudwecho.data.api.Playlist
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Star
 import androidx.wear.compose.material3.Icon
 
 @Composable
@@ -75,66 +73,66 @@ fun MyCollectionPlaylistsScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                .padding(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Button(
-                                onClick = { selectedTabIndex = 0 },
+                            val isCreatedSelected = selectedTabIndex == 0
+                            Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(36.dp),
-                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = if (selectedTabIndex == 0) MaterialTheme.colorScheme.primary else Color(0xFF252320),
-                                    contentColor = if (selectedTabIndex == 0) Color.Black else Color.White
-                                )
+                                    .height(36.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(
+                                        if (isCreatedSelected)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            Color(0xFF252320)
+                                    )
+                                    .hapticClickable {
+                                        selectedTabIndex = 0
+                                    },
+                                contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Add,
-                                        contentDescription = "创建",
-                                        modifier = Modifier.size(16.dp),
-                                        tint = if (selectedTabIndex == 0) Color.Black else MaterialTheme.colorScheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "创建",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
+                                Text(
+                                    text = "创建",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (isCreatedSelected)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
-                            Button(
-                                onClick = { selectedTabIndex = 1 },
+
+                            val isSubscribedSelected = selectedTabIndex == 1
+                            Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(36.dp),
-                                colors = androidx.wear.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = if (selectedTabIndex == 1) MaterialTheme.colorScheme.primary else Color(0xFF252320),
-                                    contentColor = if (selectedTabIndex == 1) Color.Black else Color.White
-                                )
+                                    .height(36.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(
+                                        if (isSubscribedSelected)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            Color(0xFF252320)
+                                    )
+                                    .hapticClickable {
+                                        selectedTabIndex = 1
+                                    },
+                                contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Star,
-                                        contentDescription = "收藏",
-                                        modifier = Modifier.size(16.dp),
-                                        tint = if (selectedTabIndex == 1) Color.Black else MaterialTheme.colorScheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "收藏",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
+                                Text(
+                                    text = "收藏",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (isSubscribedSelected)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
                         }
                     }
