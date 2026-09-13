@@ -353,6 +353,31 @@ class PlayerViewModel(
 
     fun currentSongId(): Long? = player?.currentMediaItem?.mediaId?.toLongOrNull()
 
+    fun currentAlbumId(): Long? {
+        val songId = currentSongId() ?: return null
+        return _currentPlaylist.value.find { it.id == songId }?.displayAlbum?.id?.takeIf { it > 0L }
+    }
+
+    fun fetchAlbumIdForCurrentSong(onResult: (Long?) -> Unit) {
+        val cached = currentAlbumId()
+        if (cached != null) {
+            onResult(cached)
+            return
+        }
+        val songId = currentSongId() ?: run {
+            onResult(null)
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val detail = repository.getSongDetail(songId)
+                onResult(detail?.al?.id?.takeIf { it > 0L })
+            } catch (e: Exception) {
+                onResult(null)
+            }
+        }
+    }
+
     fun toggleLikeCurrentSong() {
         val songId = player?.currentMediaItem?.mediaId?.toLongOrNull() ?: return
         val currentLike = _isCurrentSongLiked.value

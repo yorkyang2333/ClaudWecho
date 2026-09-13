@@ -161,6 +161,25 @@ interface NeteaseApi {
         @Query("tracks") tracks: String, // comma separated track ids
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): PlaylistTracksResponse
+
+    @GET("/comment/music")
+    suspend fun getMusicComments(
+        @Query("id") id: Long,
+        @Query("limit") limit: Int = 20,
+        @Query("offset") offset: Int = 0,
+        @Query("before") before: Long = 0,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): CommentResponse
+
+    @GET("/comment/hot")
+    suspend fun getHotComments(
+        @Query("id") id: Long,
+        @Query("type") type: Int = 0, // 0: 歌曲
+        @Query("limit") limit: Int = 20,
+        @Query("offset") offset: Int = 0,
+        @Query("before") before: Long = 0,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): HotCommentResponse
 }
 
 @Serializable
@@ -388,3 +407,39 @@ data class DjRadioDetailResponse(val code: Int, val data: DjRadio? = null, val d
     val radio: DjRadio?
         get() = data ?: djRadio
 }
+
+@Serializable
+data class CommentUser(
+    val userId: Long = 0,
+    val nickname: String? = null,
+    val avatarUrl: String? = null
+)
+
+@Serializable
+data class Comment(
+    val commentId: Long,
+    val content: String? = null,
+    val time: Long? = null,
+    val timeStr: String? = null,
+    val likedCount: Int = 0,
+    val user: CommentUser? = null,
+    val liked: Boolean = false
+)
+
+@Serializable
+data class CommentResponse(
+    val code: Int = 200,
+    val total: Int = 0,
+    val more: Boolean = false,
+    val moreHot: Boolean = false,
+    val hotComments: List<Comment>? = emptyList(),
+    val comments: List<Comment>? = emptyList()
+)
+
+@Serializable
+data class HotCommentResponse(
+    val code: Int = 200,
+    val total: Int = 0,
+    val hasMore: Boolean = false,
+    val hotComments: List<Comment>? = emptyList()
+)

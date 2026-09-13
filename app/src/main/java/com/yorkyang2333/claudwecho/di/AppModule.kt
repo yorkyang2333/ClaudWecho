@@ -143,4 +143,5 @@ val networkModule = module {
     viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidContext(), get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.search.SearchViewModel(get(), get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.songinfo.SongInfoViewModel(get()) }
+    viewModel { com.yorkyang2333.claudwecho.ui.comment.CommentViewModel(get()) }
 }

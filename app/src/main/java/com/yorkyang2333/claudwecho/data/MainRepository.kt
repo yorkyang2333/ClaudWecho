@@ -373,6 +373,24 @@ class MainRepository(
             null
         }
     }
+
+    suspend fun getMusicComments(id: Long, limit: Int = 20, offset: Int = 0): com.yorkyang2333.claudwecho.data.api.CommentResponse? = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getMusicComments(id = id, limit = limit, offset = offset)
+            if (response.code == 200) response else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun getHotComments(id: Long, limit: Int = 20, offset: Int = 0): com.yorkyang2333.claudwecho.data.api.HotCommentResponse? = withContext(Dispatchers.IO) {
+        try {
+            val response = api.getHotComments(id = id, type = 0, limit = limit, offset = offset)
+            if (response.code == 200) response else null
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
 
 data class LyricDataResult(

@@ -10,6 +10,8 @@ import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOne
 import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Album
+import androidx.compose.material.icons.automirrored.rounded.Comment
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,6 +38,8 @@ import androidx.compose.material.icons.rounded.Timer
 fun PlayerMenuScreen(
     viewModel: PlayerViewModel,
     onNavigateToSongInfo: (Long) -> Unit,
+    onNavigateToAlbum: (Long) -> Unit,
+    onNavigateToComments: (Long) -> Unit,
     onNavigateToSleepTimer: () -> Unit
 ) {
     val context = LocalContext.current
@@ -191,6 +195,53 @@ fun PlayerMenuScreen(
                         )
                     },
                     icon = { Icon(Icons.Rounded.Info, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
+            item {
+                Button(
+                    onClick = {
+                        val albumId = viewModel.currentAlbumId()
+                        if (albumId != null) {
+                            onNavigateToAlbum(albumId)
+                        } else {
+                            viewModel.fetchAlbumIdForCurrentSong { fetchedId ->
+                                if (fetchedId != null) {
+                                    onNavigateToAlbum(fetchedId)
+                                } else {
+                                    Toast.makeText(context, "未找到专辑信息", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    },
+                    enabled = viewModel.currentSongId() != null,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Text(
+                            text = "转到专辑",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    icon = { Icon(Icons.Rounded.Album, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
+            item {
+                Button(
+                    onClick = { viewModel.currentSongId()?.let(onNavigateToComments) },
+                    enabled = viewModel.currentSongId() != null,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = {
+                        Text(
+                            text = "评论",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
+                    icon = { Icon(Icons.AutoMirrored.Rounded.Comment, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
         }

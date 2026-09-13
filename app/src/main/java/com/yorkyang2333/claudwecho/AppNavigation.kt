@@ -250,6 +250,8 @@ fun AppNavigation(
             com.yorkyang2333.claudwecho.ui.player.PlayerMenuScreen(
                 viewModel = playerViewModel,
                 onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") },
+                onNavigateToAlbum = { id -> navController.navigate("album/$id") },
+                onNavigateToComments = { id -> navController.navigate("comment/$id") },
                 onNavigateToSleepTimer = { navController.navigate("player_menu/sleep_timer") }
             )
         }
@@ -267,6 +269,16 @@ fun AppNavigation(
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: return@composable
             com.yorkyang2333.claudwecho.ui.songinfo.SongInfoScreen(songId = id)
+        }
+
+        composable(
+            route = "comment/{id}",
+            arguments = listOf(
+                androidx.navigation.navArgument("id") { type = androidx.navigation.NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
+            com.yorkyang2333.claudwecho.ui.comment.CommentScreen(songId = id)
         }
         
         composable(
