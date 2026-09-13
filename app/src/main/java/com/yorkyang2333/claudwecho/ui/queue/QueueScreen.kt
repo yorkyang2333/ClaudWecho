@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
@@ -50,7 +51,7 @@ fun QueueScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+            contentPadding = rotaryContentPadding()
         ) {
             item {
                 Spacer(modifier = Modifier.height(48.dp))

@@ -29,6 +29,7 @@ import com.yorkyang2333.claudwecho.ui.components.CustomSwitch
 import com.yorkyang2333.claudwecho.ui.components.DurationWheelPickerDialog
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 
 @Composable
 fun SleepTimerScreen(
@@ -67,7 +68,7 @@ fun SleepTimerScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+            contentPadding = rotaryContentPadding(bottomItemHeight = 36.dp)
         ) {
             item {
                 Spacer(modifier = Modifier.height(48.dp))

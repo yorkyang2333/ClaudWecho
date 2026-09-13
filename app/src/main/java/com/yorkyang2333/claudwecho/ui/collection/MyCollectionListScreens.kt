@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
@@ -74,7 +75,7 @@ fun MyCollectionPlaylistsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+                    contentPadding = rotaryContentPadding()
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(48.dp))
@@ -272,7 +273,7 @@ fun <T> CollectionListBase(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+                    contentPadding = rotaryContentPadding()
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(48.dp))

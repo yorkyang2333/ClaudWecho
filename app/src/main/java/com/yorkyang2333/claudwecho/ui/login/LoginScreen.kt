@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import androidx.wear.compose.material3.*
 import com.yorkyang2333.claudwecho.ui.components.Button
 import org.koin.androidx.compose.koinViewModel
@@ -36,7 +37,7 @@ fun ErrorState(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp, top = 32.dp)
+            contentPadding = rotaryContentPadding(top = 32.dp)
         ) {
             item {
                 Icon(

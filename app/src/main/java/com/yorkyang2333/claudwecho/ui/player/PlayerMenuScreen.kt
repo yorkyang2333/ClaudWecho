@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.AddToPlaylistDialog
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
@@ -86,7 +87,7 @@ fun PlayerMenuScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+            contentPadding = rotaryContentPadding()
         ) {
             item {
                 Spacer(modifier = Modifier.height(48.dp))

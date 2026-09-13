@@ -29,6 +29,7 @@ import com.yorkyang2333.claudwecho.data.api.SongDetail
 import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import coil3.compose.AsyncImage
 import com.yorkyang2333.claudwecho.ui.utils.SongInfoKey
 import com.yorkyang2333.claudwecho.ui.utils.toOriginalImageUrl
@@ -115,7 +116,7 @@ private fun SongInfoContent(song: SongDetail) {
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+            contentPadding = rotaryContentPadding(bottomItemHeight = 44.dp)
         ) {
             item {
                 Spacer(modifier = Modifier.height(48.dp))

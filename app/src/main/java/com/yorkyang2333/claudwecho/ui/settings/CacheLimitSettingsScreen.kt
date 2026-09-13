@@ -23,6 +23,7 @@ import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 
 private data class CacheOption(val limitMb: Int, val labelText: String)
 
@@ -44,7 +45,7 @@ fun CacheLimitSettingsScreen(
         RotaryScalingLazyColumn(
             autoCentering = null,
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp),
+            contentPadding = rotaryContentPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {

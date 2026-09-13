@@ -35,7 +35,7 @@ fun SongMenuDialog(
             RotaryScalingLazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp),
+                contentPadding = rotaryContentPadding(),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 autoCentering = null
             ) {

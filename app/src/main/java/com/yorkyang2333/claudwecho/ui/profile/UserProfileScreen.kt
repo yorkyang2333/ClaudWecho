@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
@@ -51,7 +52,7 @@ fun UserProfileScreen(
         RotaryScalingLazyColumn(
             autoCentering = null,
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp),
+            contentPadding = rotaryContentPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {

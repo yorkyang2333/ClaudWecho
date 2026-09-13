@@ -29,6 +29,7 @@ import com.yorkyang2333.claudwecho.data.api.Comment
 import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
+import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import com.yorkyang2333.claudwecho.ui.components.hapticClickable
 import com.yorkyang2333.claudwecho.ui.utils.toOriginalImageUrl
 import org.koin.androidx.compose.koinViewModel
@@ -109,7 +110,7 @@ fun CommentScreen(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)
+                contentPadding = rotaryContentPadding()
             ) {
                 // Top spacing to avoid being covered by PinnedHeader
                 item {
@@ -338,3 +339,4 @@ private fun formatCount(count: Int): String {
 private fun formatDate(timestamp: Long): String {
     return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(timestamp))
 }
+

@@ -27,19 +27,38 @@ import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
+
+@Composable
+fun rotaryContentPadding(
+    bottomItemHeight: Dp = 52.dp,
+    start: Dp = 8.dp,
+    end: Dp = 8.dp,
+    top: Dp = 0.dp
+): PaddingValues {
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val bottomPadding = (screenHeight - bottomItemHeight) / 2
+    return PaddingValues(
+        start = start,
+        end = end,
+        top = top,
+        bottom = maxOf(0.dp, bottomPadding)
+    )
+}
 
 @Composable
 fun RotaryScalingLazyColumn(
     modifier: Modifier = Modifier,
     state: ScalingLazyListState = rememberScalingLazyListState(),
-    contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp),
+    contentPadding: PaddingValues = rotaryContentPadding(),
     reverseLayout: Boolean = false,
-    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(6.dp),
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     userScrollEnabled: Boolean = true,
-    autoCentering: AutoCenteringParams? = AutoCenteringParams(),
+    autoCentering: AutoCenteringParams? = null,
     isActivePage: Boolean = true,
     content: ScalingLazyListScope.() -> Unit
 ) {

@@ -15,7 +15,7 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
 
 2. **ScalingLazyColumn Layout Parameters**:
    - `scalingParams`: Do not use custom `scalingParams` so it defaults to standard Wear OS scaling parameters (wider items, less edge shrinking).
-   - `contentPadding`: MUST use exactly `PaddingValues(bottom = 32.dp, start = 8.dp, end = 8.dp)`.
+   - `contentPadding`: MUST use `com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding()` (or `RotaryScalingLazyColumn` default) to guarantee the last item is centered in the screen when scrolled to the end.
    - `verticalArrangement`: MUST use exactly `Arrangement.spacedBy(6.dp)` for spacing between buttons.
 
 3. **Top Spacer**:
