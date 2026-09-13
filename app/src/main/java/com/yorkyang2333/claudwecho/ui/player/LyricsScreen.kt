@@ -57,7 +57,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 
     LaunchedEffect(currentLyricIndex) {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyrics.size) {
-            // 平滑滚动至当前歌词行，避免跳变
+            // 平滑滚动至当前歌词行
             listState.animateScrollToItem(currentLyricIndex)
         }
     }
@@ -81,9 +81,9 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                 color = Color.Gray
             )
         } else {
-            // 采用固定居中参数，避免切句时频繁重建 Spacer 导致画面闪烁抽动
+            // 保留 itemIndex = 0 确保首句居中效果；切句时由 animateScrollToItem 驱动平滑滚动
             RotaryScalingLazyColumn(
-                autoCentering = AutoCenteringParams(itemIndex = 1),
+                autoCentering = AutoCenteringParams(itemIndex = 0),
                 state = listState,
                 isActivePage = isActivePage,
                 modifier = Modifier.fillMaxWidth(),
@@ -98,28 +98,35 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 
                     val scale by animateFloatAsState(
                         targetValue = if (isCurrent) 1.05f else 0.95f,
-                        animationSpec = tween(durationMillis = 350),
+                        animationSpec = tween(durationMillis = 300),
                         label = "scale"
                     )
 
                     val alpha by animateFloatAsState(
                         targetValue = if (isCurrent) 1.0f else 0.4f,
-                        animationSpec = tween(durationMillis = 350),
+                        animationSpec = tween(durationMillis = 300),
                         label = "alpha"
                     )
 
-                    val activeColor = MaterialTheme.colorScheme.primary
-                    val inactiveColor = Color.White.copy(alpha = 0.6f)
+                    val primaryColor = MaterialTheme.colorScheme.primary
 
-                    val textColor by animateColorAsState(
-                        targetValue = if (isCurrent) activeColor else Color.White,
-                        animationSpec = tween(durationMillis = 350),
-                        label = "color"
+                    // 当前句高亮为主色，非当前句（包括已唱完的上一句与未唱的下一句）平滑同步褪色为白色
+                    val activeColor by animateColorAsState(
+                        targetValue = if (isCurrent) primaryColor else Color.White,
+                        animationSpec = tween(durationMillis = 300),
+                        label = "activeColor"
                     )
 
+                    val inactiveColor by animateColorAsState(
+                        targetValue = if (isCurrent) Color.White.copy(alpha = 0.5f) else Color.White,
+                        animationSpec = tween(durationMillis = 300),
+                        label = "inactiveColor"
+                    )
+
+                    // 翻译颜色与原歌词状态完全同步，切句后上一句翻译同步褪色
                     val tTextColor by animateColorAsState(
-                        targetValue = if (isCurrent) activeColor.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.9f),
-                        animationSpec = tween(durationMillis = 350),
+                        targetValue = if (isCurrent) primaryColor.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.7f),
+                        animationSpec = tween(durationMillis = 300),
                         label = "tcolor"
                     )
 
@@ -143,7 +150,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                             }
                     ) {
                         if (line.isVerbatim && verbatimLyricsEnabled) {
-                            // 保持组件结构恒定，切句时不发生组件销毁/重建与首帧闪烁
+                            // 保持组件结构恒定，通过颜色与 Path 自然过渡，零闪烁
                             SweepingVerbatimLyricText(
                                 text = line.text,
                                 words = line.words,
@@ -156,7 +163,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                             Text(
                                 text = line.text,
                                 style = mainTextStyle,
-                                color = textColor,
+                                color = activeColor,
                                 textAlign = TextAlign.Center
                             )
                         }
