@@ -57,7 +57,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 
     LaunchedEffect(currentLyricIndex) {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyrics.size) {
-            // 保持当前唱到的歌词行始终平稳处于屏幕中央
+            // 平滑滚动至当前歌词行，避免跳变
             listState.animateScrollToItem(currentLyricIndex)
         }
     }
@@ -81,41 +81,45 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                 color = Color.Gray
             )
         } else {
+            // 采用固定居中参数，避免切句时频繁重建 Spacer 导致画面闪烁抽动
             RotaryScalingLazyColumn(
-                autoCentering = AutoCenteringParams(itemIndex = currentLyricIndex.coerceAtLeast(0)),
+                autoCentering = AutoCenteringParams(itemIndex = 1),
                 state = listState,
                 isActivePage = isActivePage,
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                itemsIndexed(lyrics) { index, line ->
+                itemsIndexed(
+                    items = lyrics,
+                    key = { index, line -> "${line.timeMs}_${index}" }
+                ) { index, line ->
                     val isCurrent = index == currentLyricIndex
 
                     val scale by animateFloatAsState(
-                        targetValue = if (isCurrent) 1.06f else 0.94f,
-                        animationSpec = tween(durationMillis = 300),
+                        targetValue = if (isCurrent) 1.05f else 0.95f,
+                        animationSpec = tween(durationMillis = 350),
                         label = "scale"
                     )
 
                     val alpha by animateFloatAsState(
                         targetValue = if (isCurrent) 1.0f else 0.4f,
-                        animationSpec = tween(durationMillis = 300),
+                        animationSpec = tween(durationMillis = 350),
                         label = "alpha"
                     )
 
                     val activeColor = MaterialTheme.colorScheme.primary
-                    val inactiveColor = Color.White.copy(alpha = 0.5f)
+                    val inactiveColor = Color.White.copy(alpha = 0.6f)
 
                     val textColor by animateColorAsState(
                         targetValue = if (isCurrent) activeColor else Color.White,
-                        animationSpec = tween(durationMillis = 300),
+                        animationSpec = tween(durationMillis = 350),
                         label = "color"
                     )
 
                     val tTextColor by animateColorAsState(
                         targetValue = if (isCurrent) activeColor.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.9f),
-                        animationSpec = tween(durationMillis = 300),
+                        animationSpec = tween(durationMillis = 350),
                         label = "tcolor"
                     )
 
@@ -138,8 +142,8 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                                 this.alpha = alpha
                             }
                     ) {
-                        if (isCurrent && line.isVerbatim && verbatimLyricsEnabled) {
-                            // 逐字歌词扫光：双层绝对同构文本叠加裁剪，字符基线 100% 严密对齐，平滑扫光
+                        if (line.isVerbatim && verbatimLyricsEnabled) {
+                            // 保持组件结构恒定，切句时不发生组件销毁/重建与首帧闪烁
                             SweepingVerbatimLyricText(
                                 text = line.text,
                                 words = line.words,
@@ -181,8 +185,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 
 /**
  * 逐字平滑扫光文本组件。
- * 底层与顶层完全共用相同文本排版与属性，仅对顶层高亮文本进行动态几何 Path 裁剪，
- * 既保证了字符基线、间距和排版的绝对平直对齐，又实现了丝滑流畅的卡拉OK扫光进度动效。
+ * 保持底层与顶层组件结构完全稳定，通过动态几何 Path 裁切显示已唱区域。
  */
 @Composable
 private fun SweepingVerbatimLyricText(
@@ -206,7 +209,7 @@ private fun SweepingVerbatimLyricText(
             onTextLayout = { layoutResult = it }
         )
 
-        // 顶层：高亮文本，根据逐字播放进度动态裁切出已唱区域，呈现平滑扫光效果
+        // 顶层：高亮文本，根据逐字播放进度动态裁切出已唱区域
         Text(
             text = text,
             style = baseTextStyle.copy(shadow = null),
@@ -224,7 +227,7 @@ private fun SweepingVerbatimLyricText(
                     val wordEnd = word.endTimeMs
 
                     if (currentPosition >= wordEnd) {
-                        // 词已完全唱完：高亮整词范围
+                        // 词已唱完：完整裁切整词区域
                         val cStart = charOffset.coerceIn(0, layout.layoutInput.text.length)
                         val cEnd = (charOffset + wordLen - 1).coerceIn(0, layout.layoutInput.text.length - 1)
                         if (cStart <= cEnd) {
