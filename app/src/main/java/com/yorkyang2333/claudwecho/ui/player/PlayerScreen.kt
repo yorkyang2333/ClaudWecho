@@ -142,7 +142,7 @@ fun PlayerScreen(
                     lastRotaryHapticTime = currentTime
                 }
                 val basePos = targetSeekPos ?: currentPosition
-                val deltaMs = (-event.verticalScrollPixels * 25).toLong()
+                val deltaMs = (event.verticalScrollPixels * 25).toLong()
                 val newPos = (basePos + deltaMs).coerceIn(0L, duration)
                 targetSeekPos = newPos
                 true
@@ -156,7 +156,7 @@ fun PlayerScreen(
                         if (currentTime - lastOppoScrollTime > 300L) {
                             accumulatedOppoScroll = 0f
                         }
-                        accumulatedOppoScroll += vScroll
+                        accumulatedOppoScroll -= vScroll
                         lastOppoScrollTime = currentTime
 
                         val threshold = 50.0f
