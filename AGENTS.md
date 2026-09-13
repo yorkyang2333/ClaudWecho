@@ -22,9 +22,10 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
    - The first `item` in the `ScalingLazyColumn` MUST be a `Spacer(modifier = Modifier.height(48.dp))`. This prevents the first button from hiding behind the PinnedHeader.
 
 4. **Buttons**:
-   - Buttons MUST use `colors = ButtonDefaults.filledTonalButtonColors()` for consistent background styling.
-   - Icons MUST use the primary theme color: `tint = MaterialTheme.colorScheme.primary`.
-   - The label `Text` inside the Button MUST use `style = MaterialTheme.typography.titleMedium`, `maxLines = 1`, and `overflow = TextOverflow.Ellipsis`.
+   - ALL capsule/pill buttons (`Button`) MUST have an icon provided via the `icon` slot (`icon = { Icon(...) }` or custom icon image) matching their semantic action. Never leave a capsule button without an icon.
+   - Buttons MUST use `colors = ButtonDefaults.filledTonalButtonColors()` for consistent background styling (unless explicitly using semantic error or selected primary styling).
+   - Icons MUST use the primary theme color: `tint = MaterialTheme.colorScheme.primary` (or appropriate container contrast color like `onPrimary`/`onError` when background is styled).
+   - The label `Text` inside the Button MUST use `style = MaterialTheme.typography.titleMedium`, `maxLines = 1`, and `overflow = TextOverflow.Ellipsis`. Always use the slot-based `label = { Text(...) }` API.
 
 5. **PinnedHeader Action Icons**:
    - When providing an `actionIcon` to `PinnedHeader`, do NOT use `CompactButton` or other components with large default padding/height. This will inflate the header height and cover the list items below.
