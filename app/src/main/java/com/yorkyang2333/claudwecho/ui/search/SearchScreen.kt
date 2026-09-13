@@ -137,7 +137,8 @@ fun SearchScreen(
                         Icon(
                             imageVector = Icons.Rounded.Search,
                             contentDescription = "搜索",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = if (searchQuery.isNotEmpty()) searchQuery else "点击搜索",

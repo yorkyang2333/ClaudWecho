@@ -29,6 +29,8 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import kotlinx.coroutines.launch
@@ -132,10 +134,18 @@ fun PlaylistDetailScreen(
                                         selectedSongs.clear()
                                     },
                                     colors = androidx.wear.compose.material3.ButtonDefaults.filledTonalButtonColors(),
-                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
-                                ) {
-                                    Text("取消", style = MaterialTheme.typography.bodyMedium)
-                                }
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp),
+                                    icon = {
+                                        androidx.wear.compose.material3.Icon(
+                                            imageVector = Icons.Rounded.Close,
+                                            contentDescription = "取消",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    label = {
+                                        Text("取消", style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    }
+                                )
                                 Button(
                                     onClick = { 
                                         if (selectedSongs.isNotEmpty()) {
@@ -148,10 +158,18 @@ fun PlaylistDetailScreen(
                                         containerColor = MaterialTheme.colorScheme.error,
                                         contentColor = MaterialTheme.colorScheme.onError
                                     ),
-                                    modifier = Modifier.weight(1f).padding(start = 4.dp)
-                                ) {
-                                    Text("删除(${selectedSongs.size})", style = MaterialTheme.typography.bodyMedium)
-                                }
+                                    modifier = Modifier.weight(1f).padding(start = 4.dp),
+                                    icon = {
+                                        androidx.wear.compose.material3.Icon(
+                                            imageVector = Icons.Rounded.Delete,
+                                            contentDescription = "删除",
+                                            tint = MaterialTheme.colorScheme.onError
+                                        )
+                                    },
+                                    label = {
+                                        Text("删除(${selectedSongs.size})", style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    }
+                                )
                             }
                         }
                     } else {

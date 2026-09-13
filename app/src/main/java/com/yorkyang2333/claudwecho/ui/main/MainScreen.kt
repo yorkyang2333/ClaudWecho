@@ -115,14 +115,15 @@ fun MainScreen(
                                 } ?: Icon(
                                     imageVector = Icons.Rounded.AccountCircle,
                                     contentDescription = "Avatar",
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         )
                     } else {
                         FeatureButton(
                             icon = Icons.Rounded.AccountCircle,
-                            text = "登录网易云",
+                            text = "登录账号",
                             onClick = onNavigateToLogin
                         )
                     }
@@ -226,7 +227,8 @@ fun FeatureButton(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     )

@@ -254,25 +254,13 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Button(
-                        onClick = { showConfirm = false },
-                        colors = ButtonDefaults.filledTonalButtonColors(),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(Icons.Rounded.Close, null)
+                com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
+                    onCancel = { showConfirm = false },
+                    onConfirm = {
+                        viewModel.clearCache()
+                        showConfirm = false
                     }
-                    Button(
-                        onClick = {
-                            viewModel.clearCache()
-                            showConfirm = false
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(Icons.Rounded.Check, null)
-                    }
-                }
+                )
             }
         }
     }

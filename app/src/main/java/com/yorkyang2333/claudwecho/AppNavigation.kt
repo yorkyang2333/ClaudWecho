@@ -15,7 +15,10 @@ import androidx.wear.compose.material3.Text
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-// removed import
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.wear.compose.material3.ButtonDefaults
+import androidx.wear.compose.material3.Icon
 import com.yorkyang2333.claudwecho.ui.main.MainScreen
 import com.yorkyang2333.claudwecho.ui.player.PlayerScreen
 
@@ -360,10 +363,19 @@ fun DummyScreen(title: String, navController: NavHostController) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Button(
                 onClick = { navController.popBackStack() },
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text("Back")
-            }
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.filledTonalButtonColors(),
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                label = {
+                    Text("Back", style = MaterialTheme.typography.titleMedium)
+                }
+            )
         }
     }
 }

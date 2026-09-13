@@ -10,10 +10,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SortByAlpha
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.dialog.Dialog
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
+import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
@@ -51,52 +57,78 @@ fun PlaylistMenuDialog(
                     Button(
                         onClick = onPlayAll,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.filledTonalButtonColors()
-                    ) {
-                        Text(
-                            text = "播放全部",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.PlayArrow,
+                                contentDescription = "播放全部",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = "播放全部",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    )
                 }
                 if (isOwned) {
                     item {
                         Button(
                             onClick = onMultiSelect,
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.filledTonalButtonColors()
-                        ) {
-                            Text(
-                                text = "多选删除",
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                            colors = ButtonDefaults.filledTonalButtonColors(),
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Checklist,
+                                    contentDescription = "多选删除",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = "多选删除",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        )
                     }
                 }
                 item {
                     Button(
                         onClick = onSortBy,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.filledTonalButtonColors()
-                    ) {
-                        Column(horizontalAlignment = Alignment.Start) {
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.Sort,
+                                contentDescription = "排序方式",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        label = {
                             Text(
                                 text = "排序方式",
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
+                        },
+                        secondaryLabel = {
                             Text(
                                 text = currentSort,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                    }
+                    )
                 }
                 if (isAlphabetIndexEnabled) {
                     item {
@@ -104,15 +136,23 @@ fun PlaylistMenuDialog(
                             onClick = onAlphabetIndex,
                             modifier = Modifier.fillMaxWidth(),
                             enabled = isAlphabetIndexEnabled,
-                            colors = ButtonDefaults.filledTonalButtonColors()
-                        ) {
-                            Text(
-                                text = "字母索引",
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                            colors = ButtonDefaults.filledTonalButtonColors(),
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.SortByAlpha,
+                                    contentDescription = "字母索引",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = "字母索引",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        )
                     }
                 }
             }

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,15 +80,23 @@ fun CommentScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
                         onClick = { viewModel.load(songId) },
-                        colors = ButtonDefaults.filledTonalButtonColors()
-                    ) {
-                        Text(
-                            text = "重试",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Refresh,
+                                contentDescription = "重试",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = "重试",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    )
                 }
             }
         } else {
@@ -222,19 +232,28 @@ fun CommentScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 4.dp),
-                                colors = ButtonDefaults.filledTonalButtonColors()
-                            ) {
-                                if (isLoadingMore) {
-                                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
-                                } else {
+                                colors = ButtonDefaults.filledTonalButtonColors(),
+                                icon = {
+                                    if (isLoadingMore) {
+                                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Rounded.ExpandMore,
+                                            contentDescription = "加载更多",
+                                            modifier = Modifier.size(24.dp),
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                },
+                                label = {
                                     Text(
-                                        text = "加载更多",
-                                        style = MaterialTheme.typography.titleSmall,
+                                        text = if (isLoadingMore) "加载中..." else "加载更多",
+                                        style = MaterialTheme.typography.titleMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 }
-                            }
+                            )
                         }
                     }
                 }

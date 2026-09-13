@@ -20,8 +20,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Warning
 
 @Composable
@@ -61,6 +63,13 @@ fun ErrorState(
                     onClick = onRetry,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCC785C), contentColor = Color.White),
                     modifier = Modifier.fillMaxWidth(),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Refresh,
+                            contentDescription = "重试",
+                            tint = Color.White
+                        )
+                    },
                     label = {
                         Text(
                             text = "重试",
@@ -77,6 +86,13 @@ fun ErrorState(
                         onClick = onSecondaryAction,
                         colors = ButtonDefaults.filledTonalButtonColors(),
                         modifier = Modifier.fillMaxWidth(),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                contentDescription = secondaryActionLabel,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
                         label = {
                             Text(
                                 text = secondaryActionLabel,
@@ -128,7 +144,7 @@ fun LoginQrScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("请使用网易云音乐App扫码", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(bottom = 8.dp))
+                    Text("请使用手机App扫码", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(bottom = 8.dp))
                     qrCode?.let { base64Url ->
                         val bitmap = remember(base64Url) {
                             try {

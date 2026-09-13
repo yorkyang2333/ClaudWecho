@@ -33,6 +33,9 @@ import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import coil3.compose.AsyncImage
 import com.yorkyang2333.claudwecho.ui.utils.SongInfoKey
 import com.yorkyang2333.claudwecho.ui.utils.toOriginalImageUrl
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.wear.compose.material3.Icon
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import coil3.request.CachePolicy
@@ -76,15 +79,23 @@ fun SongInfoScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = { viewModel.load(songId) },
-                    colors = ButtonDefaults.filledTonalButtonColors()
-                ) {
-                    Text(
-                        text = "重试",
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Refresh,
+                            contentDescription = "重试",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = "重试",
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
             }
         }
     }

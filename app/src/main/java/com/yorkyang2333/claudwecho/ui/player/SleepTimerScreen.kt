@@ -21,7 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Timer
 import androidx.wear.compose.material3.ButtonDefaults
+import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.ui.components.Button
@@ -80,6 +85,13 @@ fun SleepTimerScreen(
                     onClick = { sleepTimerManager.setEnabled(!isEnabled) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Timer,
+                            contentDescription = "启用",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     label = {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -107,6 +119,13 @@ fun SleepTimerScreen(
                     onClick = { showWheelDialog = true },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Schedule,
+                            contentDescription = "时长",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     label = {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -146,6 +165,13 @@ fun SleepTimerScreen(
                     onClick = { sleepTimerManager.setFinishCurrentSong(!finishCurrentSong) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.filledTonalButtonColors(),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.MusicNote,
+                            contentDescription = "播完当前歌曲",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     label = {
                         Row(
                             modifier = Modifier.fillMaxWidth(),

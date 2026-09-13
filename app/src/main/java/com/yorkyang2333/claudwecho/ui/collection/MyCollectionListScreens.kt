@@ -25,7 +25,10 @@ import com.yorkyang2333.claudwecho.data.api.Album
 import com.yorkyang2333.claudwecho.data.api.DjRadio
 import com.yorkyang2333.claudwecho.data.api.Playlist
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Star
+import androidx.wear.compose.material3.Icon
 
 @Composable
 fun MyCollectionPlaylistsScreen(
@@ -97,12 +100,24 @@ fun MyCollectionPlaylistsScreen(
                                     contentColor = if (selectedTabIndex == 0) Color.Black else Color.White
                                 )
                             ) {
-                                Text(
-                                    text = "创建",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Add,
+                                        contentDescription = "创建",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = if (selectedTabIndex == 0) Color.Black else MaterialTheme.colorScheme.primary
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "创建",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
                             }
                             Button(
                                 onClick = { selectedTabIndex = 1 },
@@ -114,12 +129,24 @@ fun MyCollectionPlaylistsScreen(
                                     contentColor = if (selectedTabIndex == 1) Color.Black else Color.White
                                 )
                             ) {
-                                Text(
-                                    text = "收藏",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Star,
+                                        contentDescription = "收藏",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = if (selectedTabIndex == 1) Color.Black else MaterialTheme.colorScheme.primary
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "收藏",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
                             }
                         }
                     }

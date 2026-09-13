@@ -16,8 +16,14 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.wear.compose.material3.Icon
 
 @Composable
 fun PlaylistSortDialog(
@@ -54,19 +60,22 @@ fun PlaylistSortDialog(
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.filledTonalButtonColors(),
                         icon = {
-                            androidx.wear.compose.material3.Icon(
-                                imageVector = if (currentSortOrder == SortOrder.ASC) androidx.compose.material.icons.Icons.Rounded.KeyboardArrowUp else androidx.compose.material.icons.Icons.Rounded.KeyboardArrowDown,
+                            Icon(
+                                imageVector = if (currentSortOrder == SortOrder.ASC) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                                 contentDescription = "Sort Order",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = if (currentSortOrder == SortOrder.ASC) "升序排序" else "降序排序",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                    ) {
-                        Text(
-                            text = if (currentSortOrder == SortOrder.ASC) "升序排序" else "降序排序",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1
-                        )
-                    }
+                    )
                 }
                 
                 val options = listOf(
@@ -79,6 +88,12 @@ fun PlaylistSortDialog(
                 items(options.size) { index ->
                     val option = options[index]
                     val isSelected = currentSortMode == option.first
+                    val iconVector = when (option.first) {
+                        SortMode.DEFAULT -> Icons.Rounded.Schedule
+                        SortMode.TITLE -> Icons.Rounded.MusicNote
+                        SortMode.ALBUM -> Icons.Rounded.Album
+                        SortMode.ARTIST -> Icons.Rounded.Person
+                    }
                     
                     Button(
                         onClick = {
@@ -89,14 +104,24 @@ fun PlaylistSortDialog(
                         colors = if (isSelected) ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
-                        ) else ButtonDefaults.filledTonalButtonColors()
-                    ) {
-                        Text(
-                            text = option.second,
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1
-                        )
-                    }
+                        ) else ButtonDefaults.filledTonalButtonColors(),
+                        icon = {
+                            Icon(
+                                imageVector = iconVector,
+                                contentDescription = option.second,
+                                modifier = Modifier.size(24.dp),
+                                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = option.second,
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    )
                 }
             }
             
