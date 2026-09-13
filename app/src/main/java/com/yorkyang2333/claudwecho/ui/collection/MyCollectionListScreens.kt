@@ -313,7 +313,7 @@ fun CollectionItemRow(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
-                modifier = Modifier.basicMarquee(iterations = 3)
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
             )
         },
         secondaryLabel = {
@@ -322,7 +322,7 @@ fun CollectionItemRow(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                modifier = Modifier.basicMarquee(iterations = 3)
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
             )
         },
         icon = {

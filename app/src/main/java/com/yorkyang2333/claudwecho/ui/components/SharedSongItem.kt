@@ -62,7 +62,7 @@ fun SharedSongItem(
                     maxLines = 1,
                     modifier = Modifier
                         .weight(1f, fill = false)
-                        .basicMarquee(iterations = 3)
+                        .basicMarquee(iterations = Int.MAX_VALUE)
                 )
                 if (song.fee == 1) {
                     Text(
@@ -83,7 +83,7 @@ fun SharedSongItem(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                modifier = Modifier.basicMarquee(iterations = 3)
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
             )
         },
         icon = {
