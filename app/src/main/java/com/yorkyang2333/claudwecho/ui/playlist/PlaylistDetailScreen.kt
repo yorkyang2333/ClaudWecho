@@ -50,26 +50,19 @@ fun PlaylistDetailScreen(
     val songs by viewModel.songs.collectAsState()
     val title by viewModel.title.collectAsState()
     val isOwned by viewModel.isOwnedPlaylist.collectAsState()
+    val isSubscribed by viewModel.isSubscribed.collectAsState()
+    val resourceDetail by viewModel.resourceDetail.collectAsState()
     val sortMode by viewModel.sortMode.collectAsState()
     val sortOrder by viewModel.sortOrder.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner, playlistId, type) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                when (type) {
-                    "playlist" -> viewModel.loadPlaylist(playlistId)
-                    "album" -> viewModel.loadAlbum(playlistId)
-                    "djradio" -> viewModel.loadDjRadio(playlistId)
-                    "liked" -> viewModel.loadLiked()
-                    else -> viewModel.loadPlaylist(playlistId)
-                }
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+    androidx.compose.runtime.LaunchedEffect(playlistId, type) {
+        when (type) {
+            "playlist" -> viewModel.loadPlaylist(playlistId)
+            "album" -> viewModel.loadAlbum(playlistId)
+            "djradio" -> viewModel.loadDjRadio(playlistId)
+            "liked" -> viewModel.loadLiked()
+            else -> viewModel.loadPlaylist(playlistId)
         }
     }
 
@@ -89,6 +82,7 @@ fun PlaylistDetailScreen(
     }
 
     val showMenu = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    val showDetailDialog = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val showSort = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val showAlphabet = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val showSearchDialog = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
@@ -348,7 +342,23 @@ fun PlaylistDetailScreen(
                     showSort.value = true
                 },
                 currentSort = currentSortText,
-                isAlphabetIndexEnabled = sortMode != SortMode.DEFAULT
+                isAlphabetIndexEnabled = sortMode != SortMode.DEFAULT,
+                showFavorite = type == "album" || (type == "playlist" && !isOwned),
+                isFavorite = isSubscribed,
+                favoriteLabel = if (type == "album") "收藏专辑" else "收藏歌单",
+                onToggleFavorite = {
+                    viewModel.toggleSubscribe(type)
+                },
+                onShowDetail = {
+                    showMenu.value = false
+                    showDetailDialog.value = true
+                }
+            )
+
+            PlaylistDetailInfoDialog(
+                showDialog = showDetailDialog.value,
+                detail = resourceDetail,
+                onDismissRequest = { showDetailDialog.value = false }
             )
             
             PlaylistSortDialog(

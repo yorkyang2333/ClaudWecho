@@ -43,7 +43,10 @@ fun SharedSongItem(
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(),
         label = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 if (isPlaying && !isMultiSelectMode) {
                     Icon(
                         imageVector = Icons.Rounded.PlayArrow,
@@ -57,7 +60,9 @@ fun SharedSongItem(
                     style = MaterialTheme.typography.titleMedium,
                     color = if (isPlaying && !isMultiSelectMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     maxLines = 1,
-                    modifier = Modifier.weight(1f, fill = false).basicMarquee()
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .basicMarquee(iterations = Int.MAX_VALUE)
                 )
                 if (song.fee == 1) {
                     Text(
@@ -78,7 +83,7 @@ fun SharedSongItem(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                modifier = Modifier.basicMarquee()
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
             )
         },
         icon = {

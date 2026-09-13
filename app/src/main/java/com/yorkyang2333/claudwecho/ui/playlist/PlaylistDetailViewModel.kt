@@ -18,6 +18,18 @@ import com.yorkyang2333.claudwecho.utils.PinyinUtil.getPinyinKey
 enum class SortMode { DEFAULT, TITLE, ALBUM, ARTIST }
 enum class SortOrder { ASC, DESC }
 
+data class ResourceDetailInfo(
+    val id: Long,
+    val title: String,
+    val coverUrl: String?,
+    val subtitle: String?,
+    val trackCount: Int,
+    val description: String?,
+    val tags: List<String> = emptyList(),
+    val publishDate: String? = null,
+    val type: String
+)
+
 class PlaylistDetailViewModel(
     private val repository: MainRepository,
     context: android.content.Context
@@ -89,6 +101,12 @@ class PlaylistDetailViewModel(
     private val _isOwnedPlaylist = MutableStateFlow(false)
     val isOwnedPlaylist: StateFlow<Boolean> = _isOwnedPlaylist.asStateFlow()
 
+    private val _isSubscribed = MutableStateFlow(false)
+    val isSubscribed: StateFlow<Boolean> = _isSubscribed.asStateFlow()
+
+    private val _resourceDetail = MutableStateFlow<ResourceDetailInfo?>(null)
+    val resourceDetail: StateFlow<ResourceDetailInfo?> = _resourceDetail.asStateFlow()
+
     private var currentPlaylistId: Long = -1
 
     private fun loadSortPrefs(id: Long) {
@@ -123,11 +141,28 @@ class PlaylistDetailViewModel(
     fun loadPlaylist(id: Long, forceRefresh: Boolean = false) {
         currentPlaylistId = id
         loadSortPrefs(id)
-        _isLoading.value = true
+        if (forceRefresh || _originalSongs.value.isEmpty()) {
+            _isLoading.value = true
+        }
         viewModelScope.launch {
             checkOwnership(id)
-            _originalSongs.value = repository.getPlaylistTracks(id, forceRefresh)
-            _title.value = repository.getCachedPlaylistTitle(id)
+            val detail = repository.getPlaylistDetail(id, forceRefresh)
+            val tracks = detail?.tracks ?: emptyList()
+            _originalSongs.value = tracks
+            val titleStr = detail?.name ?: repository.getCachedPlaylistTitle(id)
+            _title.value = titleStr
+            _isSubscribed.value = detail?.subscribed ?: false
+            _resourceDetail.value = ResourceDetailInfo(
+                id = id,
+                title = titleStr ?: "歌单",
+                coverUrl = detail?.coverImgUrl ?: tracks.firstOrNull()?.displayAlbum?.picUrl,
+                subtitle = detail?.creator?.nickname?.let { "创建者: $it" },
+                trackCount = detail?.trackCount ?: tracks.size,
+                description = detail?.description,
+                tags = detail?.tags ?: emptyList(),
+                publishDate = detail?.createTime?.let { formatDate(it) },
+                type = "playlist"
+            )
             _isLoading.value = false
         }
     }
@@ -135,11 +170,28 @@ class PlaylistDetailViewModel(
     fun loadAlbum(id: Long, forceRefresh: Boolean = false) {
         currentPlaylistId = id
         loadSortPrefs(id)
-        _isLoading.value = true
+        if (forceRefresh || _originalSongs.value.isEmpty()) {
+            _isLoading.value = true
+        }
         _isOwnedPlaylist.value = false
         viewModelScope.launch {
-            _originalSongs.value = repository.getAlbumTracks(id, forceRefresh)
-            _title.value = repository.getCachedAlbumTitle(id)
+            val album = repository.getAlbumDetail(id, forceRefresh)
+            val tracks = repository.getAlbumTracks(id, forceRefresh)
+            _originalSongs.value = tracks
+            val titleStr = album?.name ?: repository.getCachedAlbumTitle(id)
+            _title.value = titleStr
+            _isSubscribed.value = repository.isAlbumSubscribed(id)
+            val artistName = album?.artist?.name ?: album?.artists?.joinToString(" / ") { it.name } ?: tracks.firstOrNull()?.displayArtists?.joinToString(" / ") { it.name }
+            _resourceDetail.value = ResourceDetailInfo(
+                id = id,
+                title = titleStr ?: "专辑",
+                coverUrl = album?.picUrl ?: tracks.firstOrNull()?.displayAlbum?.picUrl,
+                subtitle = artistName?.let { "歌手: $it" },
+                trackCount = album?.size ?: tracks.size,
+                description = album?.description,
+                publishDate = album?.publishTime?.let { formatDate(it) },
+                type = "album"
+            )
             _isLoading.value = false
         }
     }
@@ -147,18 +199,36 @@ class PlaylistDetailViewModel(
     fun loadDjRadio(id: Long, forceRefresh: Boolean = false) {
         currentPlaylistId = id
         loadSortPrefs(id)
-        _isLoading.value = true
+        if (forceRefresh || _originalSongs.value.isEmpty()) {
+            _isLoading.value = true
+        }
         _isOwnedPlaylist.value = false
         viewModelScope.launch {
-            _originalSongs.value = repository.getDjRadioPrograms(id, forceRefresh)
-            _title.value = repository.getCachedDjRadioTitle(id) ?: "播客"
+            val programs = repository.getDjRadioPrograms(id, forceRefresh)
+            val dj = repository.getDjRadioDetail(id, forceRefresh)
+            _originalSongs.value = programs
+            val titleStr = dj?.name ?: repository.getCachedDjRadioTitle(id) ?: "播客"
+            _title.value = titleStr
+            _isSubscribed.value = false
+            _resourceDetail.value = ResourceDetailInfo(
+                id = id,
+                title = titleStr,
+                coverUrl = dj?.picUrl ?: programs.firstOrNull()?.displayAlbum?.picUrl,
+                subtitle = dj?.dj?.nickname?.let { "主播: $it" },
+                trackCount = dj?.programCount ?: programs.size,
+                description = dj?.desc,
+                type = "djradio"
+            )
             _isLoading.value = false
         }
     }
 
     fun loadLiked(forceRefresh: Boolean = false) {
-        _isLoading.value = true
+        if (forceRefresh || _originalSongs.value.isEmpty()) {
+            _isLoading.value = true
+        }
         _isOwnedPlaylist.value = true
+        _isSubscribed.value = true
         viewModelScope.launch {
             val profile = repository.getLoginStatus()
             if (profile != null) {
@@ -167,11 +237,36 @@ class PlaylistDetailViewModel(
                 if (likedId != null) {
                     currentPlaylistId = likedId
                     loadSortPrefs(likedId)
-                    _originalSongs.value = repository.getPlaylistTracks(likedId, forceRefresh)
-                    _title.value = repository.getCachedPlaylistTitle(likedId) ?: "我喜欢"
+                    val tracks = repository.getPlaylistTracks(likedId, forceRefresh)
+                    _originalSongs.value = tracks
+                    val titleStr = repository.getCachedPlaylistTitle(likedId) ?: "我喜欢"
+                    _title.value = titleStr
+                    _resourceDetail.value = ResourceDetailInfo(
+                        id = likedId,
+                        title = titleStr,
+                        coverUrl = tracks.firstOrNull()?.displayAlbum?.picUrl,
+                        subtitle = profile.nickname.let { "创建者: $it" },
+                        trackCount = tracks.size,
+                        description = "我喜欢的音乐",
+                        type = "liked"
+                    )
                 }
             }
             _isLoading.value = false
+        }
+    }
+
+    fun toggleSubscribe(type: String) {
+        viewModelScope.launch {
+            val target = !_isSubscribed.value
+            val success = if (type == "album") {
+                repository.subscribeAlbum(currentPlaylistId, target)
+            } else {
+                repository.subscribePlaylist(currentPlaylistId, target)
+            }
+            if (success) {
+                _isSubscribed.value = target
+            }
         }
     }
 
@@ -212,6 +307,9 @@ class PlaylistDetailViewModel(
         }
         return -1
     }
+
+    private fun formatDate(timestamp: Long): String =
+        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date(timestamp))
 
     companion object {
         private val pinyinCache = java.util.concurrent.ConcurrentHashMap<String, String>()

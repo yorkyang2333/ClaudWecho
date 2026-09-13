@@ -27,9 +27,15 @@ class MyCollectionViewModel(private val repository: MainRepository) : ViewModel(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    init {
+        loadData()
+    }
+
     fun loadData(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            _isLoading.value = true
+            if (forceRefresh || (_playlists.value.isEmpty() && _albums.value.isEmpty() && _djRadios.value.isEmpty())) {
+                _isLoading.value = true
+            }
             
             val userProfile = repository.getLoginStatus(forceRefresh)
             _currentUserId.value = userProfile?.userId

@@ -37,7 +37,7 @@ fun PinnedHeader(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth(0.65f)
+            modifier = Modifier.fillMaxWidth(0.72f)
         ) {
             Text(
                 text = title,
@@ -46,7 +46,7 @@ fun PinnedHeader(
                 maxLines = 1,
                 modifier = Modifier
                     .weight(1f, fill = false)
-                    .basicMarquee()
+                    .basicMarquee(iterations = Int.MAX_VALUE)
             )
             if (actionIcon != null) {
                 Spacer(modifier = Modifier.width(8.dp))

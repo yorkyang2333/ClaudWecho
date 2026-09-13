@@ -13,8 +13,11 @@ import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SortByAlpha
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.dialog.Dialog
 import com.yorkyang2333.claudwecho.ui.components.Button
@@ -34,7 +37,12 @@ fun PlaylistMenuDialog(
     onAlphabetIndex: () -> Unit,
     onSortBy: () -> Unit,
     currentSort: String,
-    isAlphabetIndexEnabled: Boolean = true
+    isAlphabetIndexEnabled: Boolean = true,
+    showFavorite: Boolean = false,
+    isFavorite: Boolean = false,
+    favoriteLabel: String = "收藏",
+    onToggleFavorite: () -> Unit = {},
+    onShowDetail: () -> Unit = {}
 ) {
     Dialog(
         showDialog = showDialog,
@@ -74,6 +82,30 @@ fun PlaylistMenuDialog(
                             )
                         }
                     )
+                }
+                if (showFavorite) {
+                    item {
+                        Button(
+                            onClick = onToggleFavorite,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.filledTonalButtonColors(),
+                            icon = {
+                                Icon(
+                                    imageVector = if (isFavorite) Icons.Rounded.Star else Icons.Rounded.StarBorder,
+                                    contentDescription = if (isFavorite) "取消收藏" else favoriteLabel,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = if (isFavorite) "取消收藏" else favoriteLabel,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        )
+                    }
                 }
                 if (isOwned) {
                     item {
@@ -154,6 +186,28 @@ fun PlaylistMenuDialog(
                             }
                         )
                     }
+                }
+                item {
+                    Button(
+                        onClick = onShowDetail,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Info,
+                                contentDescription = "详情",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = "详情",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    )
                 }
             }
             

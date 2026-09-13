@@ -65,32 +65,46 @@ class MainRepository(
 
     private val cachedPlaylistTracks = mutableMapOf<Long, List<Song>>()
     private val cachedPlaylistTitles = mutableMapOf<Long, String>()
+    private val cachedPlaylistDetails = mutableMapOf<Long, com.yorkyang2333.claudwecho.data.api.PlaylistDetail>()
     private val cachedAlbumTitles = mutableMapOf<Long, String>()
     private val cachedAlbumTracks = mutableMapOf<Long, List<Song>>()
+    private val cachedAlbumDetails = mutableMapOf<Long, com.yorkyang2333.claudwecho.data.api.Album>()
     private val cachedDjRadioTracks = mutableMapOf<Long, List<Song>>()
     private val cachedDjRadioTitles = mutableMapOf<Long, String>()
+    private val cachedDjRadioDetails = mutableMapOf<Long, com.yorkyang2333.claudwecho.data.api.DjRadio>()
 
     fun getCachedPlaylistTitle(id: Long): String? = cachedPlaylistTitles[id]
     fun getCachedAlbumTitle(id: Long): String? = cachedAlbumTitles[id]
     fun getCachedDjRadioTitle(id: Long): String? = cachedDjRadioTitles[id]
 
+    suspend fun getPlaylistDetail(id: Long, forceRefresh: Boolean = false): com.yorkyang2333.claudwecho.data.api.PlaylistDetail? = withContext(Dispatchers.IO) {
+        if (!forceRefresh && cachedPlaylistDetails.containsKey(id)) {
+            return@withContext cachedPlaylistDetails[id]
+        }
+        try {
+            val response = api.getPlaylistDetail(id)
+            if (response.code == 200) {
+                val detail = response.playlist
+                cachedPlaylistDetails[id] = detail
+                if (detail.name != null) {
+                    cachedPlaylistTitles[id] = detail.name
+                }
+                if (detail.tracks.isNotEmpty() || forceRefresh) {
+                    cachedPlaylistTracks[id] = detail.tracks
+                }
+                detail
+            } else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun getPlaylistTracks(id: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
         if (!forceRefresh && cachedPlaylistTracks.containsKey(id)) {
             return@withContext cachedPlaylistTracks[id]!!
         }
-        try {
-            val response = api.getPlaylistDetail(id)
-            val list = if (response.code == 200) response.playlist.tracks else emptyList()
-            if (response.code == 200 && response.playlist.name != null) {
-                cachedPlaylistTitles[id] = response.playlist.name
-            }
-            if (list.isNotEmpty() || forceRefresh) {
-                cachedPlaylistTracks[id] = list
-            }
-            list
-        } catch (e: Exception) {
-            emptyList()
-        }
+        val detail = getPlaylistDetail(id, forceRefresh)
+        detail?.tracks ?: emptyList()
     }
 
     suspend fun getLyrics(id: Long): LyricDataResult = withContext(Dispatchers.IO) {
@@ -188,10 +202,16 @@ class MainRepository(
             cachedPlaylistTracks.remove(playlistId)
             cachedAlbumTracks.remove(playlistId)
             cachedDjRadioTracks.remove(playlistId)
+            cachedPlaylistDetails.remove(playlistId)
+            cachedAlbumDetails.remove(playlistId)
+            cachedDjRadioDetails.remove(playlistId)
         } else {
             cachedPlaylistTracks.clear()
             cachedAlbumTracks.clear()
             cachedDjRadioTracks.clear()
+            cachedPlaylistDetails.clear()
+            cachedAlbumDetails.clear()
+            cachedDjRadioDetails.clear()
         }
         cachedUserPlaylists = null
     }
@@ -255,22 +275,53 @@ class MainRepository(
         }
     }
 
+    suspend fun getAlbumDetail(id: Long, forceRefresh: Boolean = false): com.yorkyang2333.claudwecho.data.api.Album? = withContext(Dispatchers.IO) {
+        if (!forceRefresh && cachedAlbumDetails.containsKey(id)) {
+            return@withContext cachedAlbumDetails[id]
+        }
+        try {
+            val response = api.getAlbumDetail(id)
+            if (response.code == 200) {
+                val album = response.album
+                if (album != null) {
+                    cachedAlbumDetails[id] = album
+                    if (album.name != null) {
+                        cachedAlbumTitles[id] = album.name
+                    }
+                }
+                val list = response.songs ?: emptyList()
+                if (list.isNotEmpty() || forceRefresh) {
+                    cachedAlbumTracks[id] = list
+                }
+                album
+            } else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun getAlbumTracks(id: Long, forceRefresh: Boolean = false): List<Song> = withContext(Dispatchers.IO) {
         if (!forceRefresh && cachedAlbumTracks.containsKey(id)) {
             return@withContext cachedAlbumTracks[id]!!
         }
+        getAlbumDetail(id, forceRefresh)
+        cachedAlbumTracks[id] ?: emptyList()
+    }
+
+    suspend fun getDjRadioDetail(rid: Long, forceRefresh: Boolean = false): com.yorkyang2333.claudwecho.data.api.DjRadio? = withContext(Dispatchers.IO) {
+        if (!forceRefresh && cachedDjRadioDetails.containsKey(rid)) {
+            return@withContext cachedDjRadioDetails[rid]
+        }
         try {
-            val response = api.getAlbumDetail(id)
-            val list = if (response.code == 200) response.songs ?: emptyList() else emptyList()
-            if (response.code == 200 && response.album?.name != null) {
-                cachedAlbumTitles[id] = response.album.name
+            val detailResp = api.getDjRadioDetail(rid)
+            val dj = if (detailResp.code == 200) detailResp.radio else null
+            if (dj != null) {
+                cachedDjRadioDetails[rid] = dj
+                cachedDjRadioTitles[rid] = dj.name
             }
-            if (list.isNotEmpty() || forceRefresh) {
-                cachedAlbumTracks[id] = list
-            }
-            list
+            dj
         } catch (e: Exception) {
-            emptyList()
+            null
         }
     }
 
@@ -296,23 +347,63 @@ class MainRepository(
             } else {
                 emptyList()
             }
-            try {
-                if (!cachedDjRadioTitles.containsKey(rid) || forceRefresh) {
-                    val detailResp = api.getDjRadioDetail(rid)
-                    val radioName = detailResp.radio?.name
-                    if (detailResp.code == 200 && radioName != null) {
-                        cachedDjRadioTitles[rid] = radioName
-                    }
-                }
-            } catch (e: Exception) {
-                // ignore
-            }
+            getDjRadioDetail(rid, forceRefresh)
             if (list.isNotEmpty() || forceRefresh) {
                 cachedDjRadioTracks[rid] = list
             }
             list
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    suspend fun subscribePlaylist(id: Long, subscribe: Boolean): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = api.subscribePlaylist(id = id, t = if (subscribe) 1 else 2)
+            val success = response.isSuccess
+            if (success) {
+                cachedPlaylistDetails[id]?.let {
+                    cachedPlaylistDetails[id] = it.copy(subscribed = subscribe)
+                }
+                cachedUserPlaylists = null
+            }
+            success
+        } catch (e: Exception) {
+            android.util.Log.e("MainRepository", "subscribePlaylist error: ${e.message}", e)
+            false
+        }
+    }
+
+    suspend fun subscribeAlbum(id: Long, subscribe: Boolean): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = api.subscribeAlbum(id = id, t = if (subscribe) 1 else 0)
+            val success = response.isSuccess
+            if (success) {
+                if (subscribe) {
+                    val album = cachedAlbumDetails[id]
+                    if (album != null && cachedAlbums != null && cachedAlbums!!.none { it.id == id }) {
+                        cachedAlbums = cachedAlbums!! + album
+                    } else {
+                        cachedAlbums = null
+                    }
+                } else {
+                    if (cachedAlbums != null) {
+                        cachedAlbums = cachedAlbums!!.filter { it.id != id }
+                    }
+                }
+            }
+            success
+        } catch (e: Exception) {
+            android.util.Log.e("MainRepository", "subscribeAlbum error: ${e.message}", e)
+            false
+        }
+    }
+
+    suspend fun isAlbumSubscribed(id: Long): Boolean = withContext(Dispatchers.IO) {
+        try {
+            getSubscribedAlbums().any { it.id == id }
+        } catch (e: Exception) {
+            false
         }
     }
 

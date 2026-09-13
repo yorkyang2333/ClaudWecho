@@ -1,6 +1,7 @@
 package com.yorkyang2333.claudwecho.ui.collection
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import com.yorkyang2333.claudwecho.ui.components.hapticClickable
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.compose.foundation.layout.*
@@ -40,19 +41,6 @@ fun MyCollectionPlaylistsScreen(
     val currentUserId by viewModel.currentUserId.collectAsState()
 
     var selectedTabIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0) }
-
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                viewModel.loadData()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
 
     val createdPlaylists = androidx.compose.runtime.remember(playlists, currentUserId) {
         val firstId = playlists.firstOrNull()?.id
@@ -203,19 +191,6 @@ fun MyCollectionAlbumsScreen(
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                viewModel.loadData()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     CollectionListBase(
         title = "专辑",
         items = albums,
@@ -241,19 +216,6 @@ fun MyCollectionBlogsScreen(
 ) {
     val djRadios by viewModel.djRadios.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                viewModel.loadData()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
 
     CollectionListBase(
         title = "播客",
@@ -351,7 +313,7 @@ fun CollectionItemRow(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
             )
         },
         secondaryLabel = {
@@ -360,7 +322,7 @@ fun CollectionItemRow(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
             )
         },
         icon = {

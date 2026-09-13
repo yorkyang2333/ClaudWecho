@@ -162,6 +162,20 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): PlaylistTracksResponse
 
+    @GET("/playlist/subscribe")
+    suspend fun subscribePlaylist(
+        @Query("id") id: Long,
+        @Query("t") t: Int, // 1: 收藏, 2: 取消收藏
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
+
+    @GET("/album/sub")
+    suspend fun subscribeAlbum(
+        @Query("id") id: Long,
+        @Query("t") t: Int, // 1: 收藏, 0: 取消收藏
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
+
     @GET("/comment/music")
     suspend fun getMusicComments(
         @Query("id") id: Long,
@@ -226,7 +240,9 @@ data class LikeListResponse(val ids: List<Long> = emptyList(), val code: Int)
 data class PersonalFmResponse(val data: List<Song> = emptyList(), val code: Int)
 
 @Serializable
-data class BaseResponse(val code: Int? = null, val status: Int? = null, val message: String? = null)
+data class BaseResponse(val code: Int? = null, val status: Int? = null, val message: String? = null) {
+    val isSuccess: Boolean get() = code == 200 || status == 200
+}
 
 @Serializable
 data class LikeResponse(val code: Int, val message: String? = null)
@@ -325,7 +341,18 @@ data class Song(
 data class Artist(val id: Long, val name: String)
 
 @Serializable
-data class Album(val id: Long, val name: String? = null, val picUrl: String? = null)
+data class Album(
+    val id: Long,
+    val name: String? = null,
+    val picUrl: String? = null,
+    val description: String? = null,
+    val publishTime: Long? = null,
+    val size: Int? = null,
+    val company: String? = null,
+    val artist: Artist? = null,
+    val artists: List<Artist>? = null,
+    val subType: String? = null
+)
 
 @Serializable
 data class UserPlaylistResponse(val playlist: List<Playlist>, val code: Int)
@@ -359,7 +386,20 @@ data class Playlist(
 data class PlaylistDetailResponse(val code: Int, val playlist: PlaylistDetail)
 
 @Serializable
-data class PlaylistDetail(val name: String? = null, val tracks: List<Song>)
+data class PlaylistDetail(
+    val id: Long? = null,
+    val name: String? = null,
+    val coverImgUrl: String? = null,
+    val description: String? = null,
+    val tags: List<String>? = null,
+    val playCount: Long? = null,
+    val trackCount: Int? = null,
+    val subscribed: Boolean? = null,
+    val creator: PlaylistCreator? = null,
+    val userId: Long? = null,
+    val createTime: Long? = null,
+    val tracks: List<Song> = emptyList()
+)
 
 @Serializable
 data class LyricResponse(
@@ -400,7 +440,16 @@ data class SubscribedAlbumsResponse(val data: List<Album>, val code: Int)
 data class SubscribedDjRadiosResponse(val djRadios: List<DjRadio>, val code: Int)
 
 @Serializable
-data class DjRadio(val id: Long, val name: String, val picUrl: String)
+data class DjRadio(
+    val id: Long,
+    val name: String,
+    val picUrl: String,
+    val programCount: Int? = null,
+    val subCount: Int? = null,
+    val desc: String? = null,
+    val category: String? = null,
+    val dj: PlaylistCreator? = null
+)
 
 @Serializable
 data class DjRadioDetailResponse(val code: Int, val data: DjRadio? = null, val djRadio: DjRadio? = null) {
