@@ -4,11 +4,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,20 +17,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import com.yorkyang2333.claudwecho.data.LyricWord
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 
 @Composable
@@ -54,7 +51,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 
     LaunchedEffect(currentLyricIndex) {
         if (currentLyricIndex >= 0 && currentLyricIndex < lyrics.size) {
-            // Scroll to current lyric
+            // Scroll to center the current lyric line
             listState.animateScrollToItem(currentLyricIndex)
         }
     }
@@ -79,7 +76,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
             )
         } else {
             RotaryScalingLazyColumn(
-                autoCentering = AutoCenteringParams(itemIndex = 0),
+                autoCentering = AutoCenteringParams(itemIndex = currentLyricIndex.coerceAtLeast(0)),
                 state = listState,
                 isActivePage = isActivePage,
                 modifier = Modifier.fillMaxWidth(),
@@ -90,7 +87,7 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                     val isCurrent = index == currentLyricIndex
 
                     val scale by animateFloatAsState(
-                        targetValue = if (isCurrent) 1.08f else 0.9f,
+                        targetValue = if (isCurrent) 1.06f else 0.94f,
                         animationSpec = tween(durationMillis = 300),
                         label = "scale"
                     )
@@ -127,11 +124,28 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                             }
                     ) {
                         if (isCurrent && line.isVerbatim && verbatimLyricsEnabled) {
-                            VerbatimLyricRow(
-                                words = line.words,
-                                currentPosition = currentPosition,
-                                activeColor = activeColor,
-                                inactiveColor = inactiveColor
+                            // 逐字歌词：单文本内按字进度点亮，保证字体基线与字距严格对齐，无跳动
+                            val annotatedText = buildAnnotatedString {
+                                line.words.forEach { word ->
+                                    val isPlayed = currentPosition >= word.startTimeMs
+                                    val color = if (isPlayed) activeColor else inactiveColor
+                                    withStyle(SpanStyle(color = color)) {
+                                        append(word.text)
+                                    }
+                                }
+                            }
+
+                            Text(
+                                text = annotatedText,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    shadow = Shadow(
+                                        color = Color.Black.copy(alpha = 0.8f),
+                                        offset = Offset(2f, 2f),
+                                        blurRadius = 8f
+                                    )
+                                ),
+                                textAlign = TextAlign.Center
                             )
                         } else {
                             Text(
@@ -167,60 +181,6 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                     }
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun VerbatimLyricRow(
-    words: List<LyricWord>,
-    currentPosition: Long,
-    activeColor: Color,
-    inactiveColor: Color
-) {
-    FlowRow(
-        horizontalArrangement = Arrangement.Center,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        words.forEach { word ->
-            val fraction = if (currentPosition <= word.startTimeMs) {
-                0f
-            } else if (currentPosition >= word.endTimeMs) {
-                1f
-            } else {
-                ((currentPosition - word.startTimeMs).toFloat() / word.durationMs.coerceAtLeast(10L).toFloat()).coerceIn(0f, 1f)
-            }
-
-            val brush = if (fraction <= 0f) {
-                SolidColor(inactiveColor)
-            } else if (fraction >= 1f) {
-                SolidColor(activeColor)
-            } else {
-                val transition = 0.05f
-                val p1 = (fraction - transition).coerceAtLeast(0f)
-                val p2 = (fraction + transition).coerceAtMost(1f)
-                Brush.horizontalGradient(
-                    0f to activeColor,
-                    p1 to activeColor,
-                    p2 to inactiveColor,
-                    1f to inactiveColor
-                )
-            }
-
-            Text(
-                text = word.text,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.8f),
-                        offset = Offset(2f, 2f),
-                        blurRadius = 8f
-                    ),
-                    brush = brush
-                )
-            )
         }
     }
 }
