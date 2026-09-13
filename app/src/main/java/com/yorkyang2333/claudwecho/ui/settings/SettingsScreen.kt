@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.wear.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +43,7 @@ fun SettingsScreen(
     val cacheSize by viewModel.cacheSize.collectAsState()
     val apiBaseUrl by viewModel.apiBaseUrl.collectAsState()
     val keepScreenOn by viewModel.keepScreenOn.collectAsState()
+    val verbatimLyrics by viewModel.verbatimLyrics.collectAsState()
     val audioCacheLimitMb by viewModel.audioCacheLimitMb.collectAsState()
     var showConfirm by remember { mutableStateOf(false) }
     var showUrlDialog by remember { mutableStateOf(false) }
@@ -168,6 +170,32 @@ fun SettingsScreen(
                         }
                     },
                     icon = { Icon(Icons.Rounded.WbSunny, null, tint = MaterialTheme.colorScheme.primary) }
+                )
+            }
+            item {
+                Button(
+                    onClick = { viewModel.toggleVerbatimLyrics() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(),
+                    label = { 
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "逐字歌词",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            com.yorkyang2333.claudwecho.ui.components.CustomSwitch(
+                                checked = verbatimLyrics,
+                                onCheckedChange = { viewModel.toggleVerbatimLyrics() }
+                            )
+                        }
+                    },
+                    icon = { Icon(Icons.Rounded.Audiotrack, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
             item {

@@ -93,12 +93,39 @@ class MainRepository(
         }
     }
 
-    suspend fun getLyrics(id: Long): Pair<String?, String?> = withContext(Dispatchers.IO) {
+    suspend fun getLyrics(id: Long): LyricDataResult = withContext(Dispatchers.IO) {
         try {
-            val response = api.getLyric(id)
-            if (response.code == 200) Pair(response.lrc?.lyric, response.tlyric?.lyric) else Pair(null, null)
+            val response = api.getLyricNew(id)
+            if (response.code == 200 && (response.yrc?.lyric != null || response.lrc?.lyric != null)) {
+                LyricDataResult(
+                    lrc = response.lrc?.lyric,
+                    tlyric = response.tlyric?.lyric,
+                    yrc = response.yrc?.lyric,
+                    ytlrc = response.ytlrc?.lyric
+                )
+            } else {
+                fallbackLyrics(id)
+            }
         } catch (e: Exception) {
-            Pair(null, null)
+            fallbackLyrics(id)
+        }
+    }
+
+    private suspend fun fallbackLyrics(id: Long): LyricDataResult {
+        return try {
+            val response = api.getLyric(id)
+            if (response.code == 200) {
+                LyricDataResult(
+                    lrc = response.lrc?.lyric,
+                    tlyric = response.tlyric?.lyric,
+                    yrc = response.yrc?.lyric,
+                    ytlrc = response.ytlrc?.lyric
+                )
+            } else {
+                LyricDataResult()
+            }
+        } catch (e: Exception) {
+            LyricDataResult()
         }
     }
 
@@ -347,3 +374,10 @@ class MainRepository(
         }
     }
 }
+
+data class LyricDataResult(
+    val lrc: String? = null,
+    val tlyric: String? = null,
+    val yrc: String? = null,
+    val ytlrc: String? = null
+)

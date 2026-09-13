@@ -19,11 +19,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 import com.yorkyang2333.claudwecho.data.MainRepository
+import com.yorkyang2333.claudwecho.data.LyricLine
+import com.yorkyang2333.claudwecho.data.LyricWord
+import com.yorkyang2333.claudwecho.data.LyricParser
 import com.yorkyang2333.claudwecho.data.api.Playlist
 import com.yorkyang2333.claudwecho.data.api.Song
 import kotlinx.coroutines.delay
-
-data class LyricLine(val timeMs: Long, val text: String, var tText: String? = null)
 
 class PlayerViewModel(
     private val context: Context,
@@ -74,7 +75,19 @@ class PlayerViewModel(
     private val _isCurrentSongVip = MutableStateFlow(false)
     val isCurrentSongVip: StateFlow<Boolean> = _isCurrentSongVip.asStateFlow()
 
+    private val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
+    private val _verbatimLyricsEnabled = MutableStateFlow(prefs.getBoolean("verbatim_lyrics", true))
+    val verbatimLyricsEnabled: StateFlow<Boolean> = _verbatimLyricsEnabled.asStateFlow()
+
+    private val prefListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == "verbatim_lyrics") {
+            _verbatimLyricsEnabled.value = prefs.getBoolean("verbatim_lyrics", true)
+            cachedLyricResult?.let { applyLyrics(it) }
+        }
+    }
+
     init {
+        prefs.registerOnSharedPreferenceChangeListener(prefListener)
         initializeController()
         fetchLikedSongs()
     }
@@ -156,24 +169,7 @@ class PlayerViewModel(
                     }
                     playbackStateManager.saveState(_currentPlaylist.value, currentIndex)
                     fetchMoreFmIfNeeded()
-                    _lyrics.value = emptyList()
-                    _currentLyricIndex.value = -1
-                    viewModelScope.launch {
-                        val (lrc, tlyric) = repository.getLyrics(songId)
-                        if (lrc != null) {
-                            val lines = parseLyric(lrc)
-                            if (tlyric != null) {
-                                val tLines = parseLyric(tlyric)
-                                tLines.forEach { tLine ->
-                                    val matchingLine = lines.find { it.timeMs == tLine.timeMs }
-                                    if (matchingLine != null) {
-                                        matchingLine.tText = tLine.text
-                                    }
-                                }
-                            }
-                            _lyrics.value = lines
-                        }
-                    }
+                    loadLyrics(songId)
                 } else {
                     _isCurrentSongPodcast.value = false
                     _isCurrentSongVip.value = false
@@ -231,7 +227,7 @@ class PlayerViewModel(
                         _currentLyricIndex.value = index
                     }
                 }
-                delay(200)
+                delay(50)
             }
         }
     }
@@ -546,25 +542,43 @@ class PlayerViewModel(
         }
     }
 
-    private fun parseLyric(lrc: String): List<LyricLine> {
-        val regex = Regex("""\[(\d+):(\d{2})(?:[.:](\d{1,3}))?\](.*)""")
-        return lrc.lines().mapNotNull { line ->
-            val matchResult = regex.find(line)
-            if (matchResult != null) {
-                val min = matchResult.groupValues[1].toLongOrNull() ?: 0L
-                val sec = matchResult.groupValues[2].toLongOrNull() ?: 0L
-                val msStr = matchResult.groupValues[3]
-                val ms = when (msStr.length) {
-                    1 -> (msStr.toLongOrNull() ?: 0L) * 100
-                    2 -> (msStr.toLongOrNull() ?: 0L) * 10
-                    3 -> msStr.toLongOrNull() ?: 0L
-                    else -> 0L
-                }
-                val text = matchResult.groupValues[4].trim()
-                val timeMs = min * 60000 + sec * 1000 + ms
-                LyricLine(timeMs, text)
-            } else null
-        }.filter { it.text.isNotEmpty() }
+    private var currentSongIdForLyrics: Long? = null
+    private var cachedLyricResult: com.yorkyang2333.claudwecho.data.LyricDataResult? = null
+
+    private fun loadLyrics(songId: Long) {
+        currentSongIdForLyrics = songId
+        _lyrics.value = emptyList()
+        _currentLyricIndex.value = -1
+        viewModelScope.launch {
+            val lyricResult = repository.getLyrics(songId)
+            if (currentSongIdForLyrics != songId) return@launch
+            cachedLyricResult = lyricResult
+            applyLyrics(lyricResult)
+        }
+    }
+
+    private fun applyLyrics(lyricResult: com.yorkyang2333.claudwecho.data.LyricDataResult) {
+        val useVerbatim = _verbatimLyricsEnabled.value
+        val rawYrc = lyricResult.yrc
+        val rawLrc = lyricResult.lrc
+
+        val lines = if (useVerbatim && !rawYrc.isNullOrBlank()) {
+            val parsedYrc = LyricParser.parseYrc(rawYrc)
+            if (parsedYrc.isNotEmpty()) parsedYrc else LyricParser.parseLrc(rawLrc ?: "")
+        } else if (!rawLrc.isNullOrBlank()) {
+            LyricParser.parseLrc(rawLrc)
+        } else if (!rawYrc.isNullOrBlank()) {
+            LyricParser.parseYrc(rawYrc)
+        } else {
+            emptyList()
+        }
+
+        val translation = lyricResult.ytlrc?.takeIf { it.isNotBlank() } ?: lyricResult.tlyric
+        if (!translation.isNullOrBlank()) {
+            LyricParser.alignTranslations(lines, translation)
+        }
+
+        _lyrics.value = lines
     }
 
     private fun Song.toMediaItem(): MediaItem {
@@ -585,6 +599,7 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        prefs.unregisterOnSharedPreferenceChangeListener(prefListener)
         controllerFuture?.let { MediaController.releaseFuture(it) }
     }
 }

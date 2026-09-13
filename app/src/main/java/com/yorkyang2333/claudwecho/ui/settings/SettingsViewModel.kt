@@ -24,6 +24,9 @@ class SettingsViewModel(
     private val _keepScreenOn = MutableStateFlow(prefs.getBoolean("keep_screen_on", false))
     val keepScreenOn: StateFlow<Boolean> = _keepScreenOn.asStateFlow()
 
+    private val _verbatimLyrics = MutableStateFlow(prefs.getBoolean("verbatim_lyrics", true))
+    val verbatimLyrics: StateFlow<Boolean> = _verbatimLyrics.asStateFlow()
+
     private val _audioCacheLimitMb = MutableStateFlow(prefs.getInt("audio_cache_limit_mb", 500))
     val audioCacheLimitMb: StateFlow<Int> = _audioCacheLimitMb.asStateFlow()
 
@@ -118,6 +121,12 @@ class SettingsViewModel(
         val next = !_keepScreenOn.value
         prefs.edit().putBoolean("keep_screen_on", next).apply()
         _keepScreenOn.value = next
+    }
+
+    fun toggleVerbatimLyrics() {
+        val next = !_verbatimLyrics.value
+        prefs.edit().putBoolean("verbatim_lyrics", next).apply()
+        _verbatimLyrics.value = next
     }
 
     fun setAudioCacheLimit(limitMb: Int) {
