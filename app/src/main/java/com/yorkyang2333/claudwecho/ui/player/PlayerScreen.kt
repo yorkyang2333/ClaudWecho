@@ -217,7 +217,7 @@ fun PlayerScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White,
                     maxLines = 1,
-                    modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE)
+                    modifier = Modifier.basicMarquee(iterations = 3)
                 )
                 if (currentTitle != null) {
                     Row(
@@ -233,7 +233,7 @@ fun PlayerScreen(
                                 maxLines = 1,
                                 modifier = Modifier
                                     .weight(1f, fill = false)
-                                    .basicMarquee(iterations = Int.MAX_VALUE)
+                                    .basicMarquee(iterations = 3)
                             )
                         } else {
                             Text(
@@ -243,7 +243,7 @@ fun PlayerScreen(
                                 maxLines = 1,
                                 modifier = Modifier
                                     .weight(1f, fill = false)
-                                    .basicMarquee(iterations = Int.MAX_VALUE)
+                                    .basicMarquee(iterations = 3)
                             )
                         }
                         if (isVip) {

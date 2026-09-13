@@ -46,7 +46,7 @@ fun PinnedHeader(
                 maxLines = 1,
                 modifier = Modifier
                     .weight(1f, fill = false)
-                    .basicMarquee(iterations = Int.MAX_VALUE)
+                    .basicMarquee(iterations = 3)
             )
             if (actionIcon != null) {
                 Spacer(modifier = Modifier.width(8.dp))
