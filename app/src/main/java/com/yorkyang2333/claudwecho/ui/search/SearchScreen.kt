@@ -58,18 +58,37 @@ import com.yorkyang2333.claudwecho.ui.components.SharedSongItem
 import com.yorkyang2333.claudwecho.ui.components.SongMenuDialog
 import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 
+import androidx.compose.material.icons.rounded.ExpandMore
+import com.yorkyang2333.claudwecho.ui.collection.CollectionItemRow
+
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
     playerViewModel: PlayerViewModel,
     onSongClick: () -> Unit,
-    onNavigateToSongInfo: (Long) -> Unit
+    onNavigateToSongInfo: (Long) -> Unit,
+    onNavigateToPlaylist: (Long) -> Unit = {},
+    onNavigateToAlbum: (Long) -> Unit = {},
+    onNavigateToDjRadio: (Long) -> Unit = {}
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val searchResults by viewModel.searchResults.collectAsState()
+    val selectedType by viewModel.selectedType.collectAsState()
+    val songResults by viewModel.songResults.collectAsState()
+    val playlistResults by viewModel.playlistResults.collectAsState()
+    val albumResults by viewModel.albumResults.collectAsState()
+    val podcastResults by viewModel.podcastResults.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsState()
+    val hasMore by viewModel.hasMore.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    val currentResultsEmpty = when (selectedType) {
+        SearchType.SONG -> songResults.isEmpty()
+        SearchType.PLAYLIST -> playlistResults.isEmpty()
+        SearchType.ALBUM -> albumResults.isEmpty()
+        SearchType.PODCAST -> podcastResults.isEmpty()
+    }
 
     val listState = rememberScalingLazyListState(initialCenterItemIndex = 1)
     val context = LocalContext.current
@@ -114,7 +133,7 @@ fun SearchScreen(
                         val intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
                         val remoteInputs = listOf(
                             RemoteInput.Builder("search_query")
-                                .setLabel("搜索歌曲、歌手或专辑")
+                                .setLabel("搜索歌曲、歌单、专辑或播客")
                                 .build()
                         )
                         RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
@@ -151,6 +170,47 @@ fun SearchScreen(
                 }
             }
 
+            // Tab Switcher Row: 单曲 / 歌单 / 专辑 / 播客
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SearchType.values().forEach { type ->
+                        val isSelected = selectedType == type
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(32.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(
+                                    if (isSelected)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        androidx.compose.ui.graphics.Color(0xFF252320)
+                                )
+                                .hapticClickable {
+                                    viewModel.selectType(type)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = type.label,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (isSelected)
+                                    MaterialTheme.colorScheme.onPrimary
+                                else
+                                    MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+            }
+
             if (isLoading) {
                 item {
                     Box(
@@ -171,20 +231,102 @@ fun SearchScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-            } else if (searchResults.isNotEmpty()) {
-                items(searchResults) { song ->
-                    SharedSongItem(
-                        song = song,
-                        onClick = {
-                            playerViewModel.playPlaylist(searchResults, searchResults.indexOf(song))
-                            onSongClick()
-                        },
-                        onLongClick = { selectedSongForMenu.value = song }
-                    )
+            } else {
+                when (selectedType) {
+                    SearchType.SONG -> {
+                        if (songResults.isNotEmpty()) {
+                            items(songResults) { song ->
+                                SharedSongItem(
+                                    song = song,
+                                    onClick = {
+                                        playerViewModel.playPlaylist(songResults, songResults.indexOf(song))
+                                        onSongClick()
+                                    },
+                                    onLongClick = { selectedSongForMenu.value = song }
+                                )
+                            }
+                        }
+                    }
+                    SearchType.PLAYLIST -> {
+                        if (playlistResults.isNotEmpty()) {
+                            items(playlistResults, key = { it.id }) { playlist ->
+                                val subtitle = "${playlist.trackCount}首${playlist.creator?.nickname?.let { " · by $it" } ?: ""}"
+                                CollectionItemRow(
+                                    title = playlist.name,
+                                    subtitle = subtitle,
+                                    imageUrl = playlist.coverImgUrl,
+                                    onClick = { onNavigateToPlaylist(playlist.id) }
+                                )
+                            }
+                        }
+                    }
+                    SearchType.ALBUM -> {
+                        if (albumResults.isNotEmpty()) {
+                            items(albumResults, key = { it.id }) { album ->
+                                val artistName = album.artist?.name ?: album.artists?.firstOrNull()?.name ?: ""
+                                val sizeStr = album.size?.let { "${it}首" } ?: ""
+                                val subtitle = listOf(artistName, sizeStr).filter { it.isNotBlank() }.joinToString(" · ")
+                                CollectionItemRow(
+                                    title = album.name ?: "未知专辑",
+                                    subtitle = subtitle,
+                                    imageUrl = album.picUrl ?: "",
+                                    onClick = { onNavigateToAlbum(album.id) }
+                                )
+                            }
+                        }
+                    }
+                    SearchType.PODCAST -> {
+                        if (podcastResults.isNotEmpty()) {
+                            items(podcastResults, key = { it.id }) { radio ->
+                                val djName = radio.dj?.nickname ?: ""
+                                val progStr = radio.programCount?.let { "${it}期" } ?: ""
+                                val subtitle = listOf(djName, progStr).filter { it.isNotBlank() }.joinToString(" · ")
+                                CollectionItemRow(
+                                    title = radio.name,
+                                    subtitle = subtitle,
+                                    imageUrl = radio.picUrl,
+                                    onClick = { onNavigateToDjRadio(radio.id) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (!currentResultsEmpty && hasMore) {
+                    item {
+                        Button(
+                            onClick = { viewModel.loadMore() },
+                            enabled = !isLoadingMore,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            colors = ButtonDefaults.filledTonalButtonColors(),
+                            icon = {
+                                if (isLoadingMore) {
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Rounded.ExpandMore,
+                                        contentDescription = "加载更多",
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            },
+                            label = {
+                                Text(
+                                    text = if (isLoadingMore) "加载中..." else "加载更多",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        )
+                    }
                 }
             }
 
-            if (searchResults.isEmpty() && !isLoading && searchHistory.isNotEmpty()) {
+            if (currentResultsEmpty && !isLoading && searchHistory.isNotEmpty()) {
                 item {
                     Row(
                         modifier = Modifier

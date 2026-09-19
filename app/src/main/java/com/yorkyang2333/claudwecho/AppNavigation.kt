@@ -158,7 +158,10 @@ fun AppNavigation(
                         popUpTo("player") { inclusive = true }
                     }
                 },
-                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") }
+                onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") },
+                onNavigateToPlaylist = { id -> navController.navigate("playlist/$id") },
+                onNavigateToAlbum = { id -> navController.navigate("album/$id") },
+                onNavigateToDjRadio = { id -> navController.navigate("djradio/$id") }
             )
         }
         

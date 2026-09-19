@@ -320,7 +320,13 @@ data class SearchResponse(
 @Serializable
 data class SearchResult(
     val songs: List<Song>? = null,
-    val songCount: Int = 0
+    val songCount: Int = 0,
+    val playlists: List<Playlist>? = null,
+    val playlistCount: Int = 0,
+    val albums: List<Album>? = null,
+    val albumCount: Int = 0,
+    val djRadios: List<DjRadio>? = null,
+    val djRadiosCount: Int = 0
 )
 
 @Serializable

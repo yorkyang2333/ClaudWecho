@@ -203,13 +203,22 @@ class MainRepository(
         }
     }
 
-    suspend fun searchSongs(keywords: String, limit: Int = 30): List<Song> = withContext(Dispatchers.IO) {
+    suspend fun search(
+        keywords: String,
+        type: Int = 1,
+        limit: Int = 30,
+        offset: Int = 0
+    ): com.yorkyang2333.claudwecho.data.api.SearchResult? = withContext(Dispatchers.IO) {
         try {
-            val response = api.search(keywords = keywords, limit = limit)
-            if (response.code == 200) response.result?.songs ?: emptyList() else emptyList()
+            val response = api.search(keywords = keywords, limit = limit, offset = offset, type = type)
+            if (response.code == 200) response.result else null
         } catch (e: Exception) {
-            emptyList()
+            null
         }
+    }
+
+    suspend fun searchSongs(keywords: String, limit: Int = 30, offset: Int = 0): List<Song> = withContext(Dispatchers.IO) {
+        search(keywords = keywords, type = 1, limit = limit, offset = offset)?.songs ?: emptyList()
     }
 
     fun invalidatePlaylistCaches(playlistId: Long? = null) {
