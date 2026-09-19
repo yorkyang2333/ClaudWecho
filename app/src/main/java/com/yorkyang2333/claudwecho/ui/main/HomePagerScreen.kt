@@ -17,6 +17,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -27,6 +28,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.transformations
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -41,25 +45,35 @@ fun HomePagerScreen(
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
 
-    val infiniteTransition = rememberInfiniteTransition(label = "playerBackgroundAnim")
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(25000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "bgRotation"
-    )
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 2.0f,
-        targetValue = 2.4f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(10000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "bgScale"
-    )
+    val currentRotation = remember { Animatable(0f) }
+    val currentScale = remember { Animatable(2.0f) }
+
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) {
+            val rotationJob = launch {
+                while (isActive) {
+                    val target = currentRotation.value + 360f
+                    currentRotation.animateTo(
+                        targetValue = target,
+                        animationSpec = tween(25000, easing = LinearEasing)
+                    )
+                    currentRotation.snapTo(currentRotation.value % 360f)
+                }
+            }
+            val scaleJob = launch {
+                while (isActive) {
+                    val target = if (currentScale.value <= 2.2f) 2.4f else 2.0f
+                    val distance = Math.abs(target - currentScale.value)
+                    val duration = (10000 * (distance / 0.4f)).toInt().coerceAtLeast(100)
+                    currentScale.animateTo(
+                        targetValue = target,
+                        animationSpec = tween(duration, easing = FastOutSlowInEasing)
+                    )
+                }
+            }
+            joinAll(rotationJob, scaleJob)
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Fluid Background using Album Art
@@ -83,11 +97,9 @@ fun HomePagerScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        if (isPlaying) {
-                            rotationZ = rotation
-                            scaleX = scale
-                            scaleY = scale
-                        }
+                        rotationZ = currentRotation.value
+                        scaleX = currentScale.value
+                        scaleY = currentScale.value
                     }
                     .then(if (isApi31AndAbove) Modifier.blur(30.dp) else Modifier)
             )
