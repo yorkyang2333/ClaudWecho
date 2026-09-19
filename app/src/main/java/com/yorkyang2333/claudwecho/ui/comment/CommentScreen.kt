@@ -219,8 +219,12 @@ fun CommentScreen(
                         }
                     }
                 } else {
-                    items(currentList.size) { index ->
-                        CommentItem(comment = currentList[index])
+                    items(currentList.size, key = { currentList[it].commentId }) { index ->
+                        val item = currentList[index]
+                        CommentItem(
+                            comment = item,
+                            onLikeClick = { viewModel.toggleCommentLike(item) }
+                        )
                     }
 
                     if (hasMore) {
@@ -262,7 +266,10 @@ fun CommentScreen(
 }
 
 @Composable
-private fun CommentItem(comment: Comment) {
+private fun CommentItem(
+    comment: Comment,
+    onLikeClick: () -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -302,21 +309,36 @@ private fun CommentItem(comment: Comment) {
                     modifier = Modifier.weight(1f)
                 )
 
-                if (comment.likedCount > 0) {
-                    Spacer(modifier = Modifier.width(4.dp))
+                // Interactive Like Button
+                val isLiked = comment.liked
+                val likeColor = if (isLiked) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                }
+
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .hapticClickable { onLikeClick() }
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.ThumbUp,
-                        contentDescription = "点赞",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.size(11.dp)
+                        contentDescription = if (isLiked) "取消点赞" else "点赞",
+                        tint = likeColor,
+                        modifier = Modifier.size(13.dp)
                     )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(
-                        text = formatCount(comment.likedCount),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        maxLines = 1
-                    )
+                    if (comment.likedCount > 0) {
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = formatCount(comment.likedCount),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = likeColor,
+                            maxLines = 1
+                        )
+                    }
                 }
             }
 

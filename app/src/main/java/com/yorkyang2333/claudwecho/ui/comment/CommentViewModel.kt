@@ -152,4 +152,51 @@ class CommentViewModel(private val repository: MainRepository) : ViewModel() {
             }
         }
     }
+
+    fun toggleCommentLike(comment: Comment) {
+        val songId = currentSongId ?: return
+        val commentId = comment.commentId
+        val currentlyLiked = comment.liked
+        val newLiked = !currentlyLiked
+        val countDelta = if (newLiked) 1 else -1
+
+        // Optimistic update for responsive feel
+        _uiState.update { state ->
+            val updateComment: (Comment) -> Comment = { c ->
+                if (c.commentId == commentId) {
+                    c.copy(
+                        liked = newLiked,
+                        likedCount = (c.likedCount + countDelta).coerceAtLeast(0)
+                    )
+                } else c
+            }
+
+            state.copy(
+                hotComments = state.hotComments.map(updateComment),
+                allComments = state.allComments.map(updateComment)
+            )
+        }
+
+        viewModelScope.launch {
+            val success = repository.likeComment(songId = songId, commentId = commentId, like = newLiked)
+            if (!success) {
+                // Revert on failure
+                _uiState.update { state ->
+                    val revertComment: (Comment) -> Comment = { c ->
+                        if (c.commentId == commentId) {
+                            c.copy(
+                                liked = currentlyLiked,
+                                likedCount = (c.likedCount - countDelta).coerceAtLeast(0)
+                            )
+                        } else c
+                    }
+
+                    state.copy(
+                        hotComments = state.hotComments.map(revertComment),
+                        allComments = state.allComments.map(revertComment)
+                    )
+                }
+            }
+        }
+    }
 }

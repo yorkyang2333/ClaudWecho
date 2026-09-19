@@ -201,6 +201,15 @@ interface NeteaseApi {
         @Query("before") before: Long = 0,
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): HotCommentResponse
+
+    @GET("/comment/like")
+    suspend fun likeComment(
+        @Query("id") id: Long,
+        @Query("cid") cid: Long,
+        @Query("t") t: Int, // 1: 点赞, 0: 取消点赞
+        @Query("type") type: Int = 0, // 0: 歌曲
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
 }
 
 @Serializable

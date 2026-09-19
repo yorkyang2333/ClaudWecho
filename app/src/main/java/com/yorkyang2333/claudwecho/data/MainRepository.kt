@@ -534,6 +534,16 @@ class MainRepository(
             null
         }
     }
+
+    suspend fun likeComment(songId: Long, commentId: Long, like: Boolean): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = api.likeComment(id = songId, cid = commentId, t = if (like) 1 else 0, type = 0)
+            response.isSuccess
+        } catch (e: Exception) {
+            android.util.Log.e("MainRepository", "likeComment error: ${e.message}", e)
+            false
+        }
+    }
 }
 
 data class LyricDataResult(
