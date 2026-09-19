@@ -26,7 +26,8 @@ import org.koin.androidx.compose.koinViewModel
 import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 import com.yorkyang2333.claudwecho.ui.main.HomePagerScreen
 import androidx.compose.runtime.getValue
-import androidx.wear.compose.material.TimeText
+import androidx.wear.compose.material3.AppScaffold
+import androidx.wear.compose.material3.TimeText
 import androidx.wear.compose.navigation.currentBackStackEntryAsState
 
 @Composable
@@ -37,7 +38,16 @@ fun AppNavigation(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    AppScaffold(
+        modifier = Modifier.fillMaxSize(),
+        timeText = {
+            if (currentRoute != "player") {
+                TimeText {
+                    time()
+                }
+            }
+        }
+    ) {
         SwipeDismissableNavHost(
             navController = navController,
             startDestination = "player",
@@ -347,9 +357,6 @@ fun AppNavigation(
             )
         }
     }
-        if (currentRoute != "player") {
-            TimeText()
-        }
     }
 }
 

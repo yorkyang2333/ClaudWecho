@@ -76,7 +76,7 @@ fun SleepTimerScreen(
             contentPadding = rotaryContentPadding(bottomItemHeight = 36.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "定时关闭")
             }
 
             // Button 1: 启用
@@ -208,8 +208,6 @@ fun SleepTimerScreen(
                 )
             }
         }
-
-        PinnedHeader(title = "定时关闭")
 
         DurationWheelPickerDialog(
             showDialog = showWheelDialog,

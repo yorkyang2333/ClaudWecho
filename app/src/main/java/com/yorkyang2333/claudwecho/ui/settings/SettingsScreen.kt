@@ -32,7 +32,9 @@ import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.wear.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.window.Dialog
+import androidx.wear.compose.material3.AlertDialog
+import androidx.wear.compose.material3.AlertDialogDefaults
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 
 @Composable
 fun SettingsScreen(
@@ -87,7 +89,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             item {
-                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "设置")
             }
             
             item {
@@ -234,41 +236,32 @@ fun SettingsScreen(
                 )
             }
         }
-        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "设置")
     }
 
-    if (showConfirm) {
-        Dialog(
-            onDismissRequest = { showConfirm = false }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "确认清除缓存？",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
-                    onCancel = { showConfirm = false },
-                    onConfirm = {
-                        viewModel.clearCache()
-                        showConfirm = false
-                    }
-                )
-            }
-        }
-    }
+    AlertDialog(
+        show = showConfirm,
+        onDismissRequest = { showConfirm = false },
+        confirmButton = {
+            AlertDialogDefaults.ConfirmButton(
+                onClick = {
+                    viewModel.clearCache()
+                    showConfirm = false
+                }
+            )
+        },
+        dismissButton = {
+            AlertDialogDefaults.DismissButton(
+                onClick = { showConfirm = false }
+            )
+        },
+        title = { Text("清除缓存") },
+        text = { Text("确认清除所有本地缓存？") }
+    )
 
-    if (showUrlDialog) {
-        Dialog(
-            onDismissRequest = { showUrlDialog = false }
-        ) {
+    WearDialog(
+        visible = showUrlDialog,
+        onDismissRequest = { showUrlDialog = false }
+    ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -317,4 +310,3 @@ fun SettingsScreen(
             }
         }
     }
-}

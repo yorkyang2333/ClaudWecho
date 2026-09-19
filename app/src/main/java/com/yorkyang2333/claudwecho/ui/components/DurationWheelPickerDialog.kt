@@ -38,8 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Picker
-import androidx.wear.compose.material.dialog.Dialog
 import androidx.wear.compose.material.rememberPickerState
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import kotlinx.coroutines.launch
@@ -113,8 +113,8 @@ fun DurationWheelPickerDialog(
 
     val itemHeight = 40.dp
 
-    Dialog(
-        showDialog = showDialog,
+    WearDialog(
+        visible = showDialog,
         onDismissRequest = onDismissRequest
     ) {
         Box(

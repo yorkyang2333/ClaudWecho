@@ -114,7 +114,40 @@ fun PlaylistDetailScreen(
                     contentPadding = rotaryContentPadding()
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(48.dp))
+                        com.yorkyang2333.claudwecho.ui.components.WearListHeader(
+                            title = title ?: when (type) {
+                                "liked" -> "我喜欢"
+                                "playlist" -> "歌单"
+                                "album" -> "专辑"
+                                "djradio" -> "播客"
+                                else -> "音乐列表"
+                            },
+                            actionIcon = {
+                                androidx.compose.foundation.layout.Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(androidx.compose.foundation.shape.CircleShape)
+                                        .background(Color(0xFF2D2D2D))
+                                        .hapticClickable {
+                                            when (type) {
+                                                "playlist" -> viewModel.loadPlaylist(playlistId, forceRefresh = true)
+                                                "album" -> viewModel.loadAlbum(playlistId, forceRefresh = true)
+                                                "djradio" -> viewModel.loadDjRadio(playlistId, forceRefresh = true)
+                                                "liked" -> viewModel.loadLiked(forceRefresh = true)
+                                                else -> viewModel.loadPlaylist(playlistId, forceRefresh = true)
+                                            }
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.wear.compose.material3.Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
+                                        contentDescription = "Refresh", 
+                                        modifier = Modifier.size(18.dp),
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        )
                     }
                     if (isMultiSelectMode.value) {
                         item {
@@ -276,41 +309,6 @@ fun PlaylistDetailScreen(
                         )
                     }
                 }
-
-                com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
-                    title = title ?: when (type) {
-                        "liked" -> "我喜欢"
-                        "playlist" -> "歌单"
-                        "album" -> "专辑"
-                        "djradio" -> "播客"
-                        else -> "音乐列表"
-                    },
-                    actionIcon = {
-                        androidx.compose.foundation.layout.Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(androidx.compose.foundation.shape.CircleShape)
-                                .background(Color(0xFF2D2D2D))
-                                .hapticClickable {
-                                    when (type) {
-                                        "playlist" -> viewModel.loadPlaylist(playlistId, forceRefresh = true)
-                                        "album" -> viewModel.loadAlbum(playlistId, forceRefresh = true)
-                                        "djradio" -> viewModel.loadDjRadio(playlistId, forceRefresh = true)
-                                        "liked" -> viewModel.loadLiked(forceRefresh = true)
-                                        else -> viewModel.loadPlaylist(playlistId, forceRefresh = true)
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            androidx.wear.compose.material3.Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
-                                contentDescription = "Refresh", 
-                                modifier = Modifier.size(18.dp),
-                                tint = Color.White
-                            )
-                        }
-                    }
-                )
             }
             
             val currentSortText = when (sortMode) {

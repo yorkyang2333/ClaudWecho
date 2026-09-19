@@ -29,7 +29,7 @@ import androidx.wear.compose.material3.Text
 import coil3.compose.AsyncImage
 import com.yorkyang2333.claudwecho.data.api.Comment
 import com.yorkyang2333.claudwecho.ui.components.Button
-import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
+import com.yorkyang2333.claudwecho.ui.components.WearListHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import com.yorkyang2333.claudwecho.ui.components.hapticClickable
@@ -122,9 +122,8 @@ fun CommentScreen(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = rotaryContentPadding()
             ) {
-                // Top spacing to avoid being covered by PinnedHeader
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
+                    WearListHeader(title = "评论")
                 }
 
                 // Tab Switcher Row: 精选评论 / 全部评论
@@ -259,8 +258,6 @@ fun CommentScreen(
                 }
             }
         }
-
-        PinnedHeader(title = "评论")
     }
 }
 

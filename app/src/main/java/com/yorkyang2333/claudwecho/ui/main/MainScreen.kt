@@ -70,7 +70,7 @@ fun MainScreen(
                 contentPadding = rotaryContentPadding()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
+                    com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "ClaudWecho")
                 }
                 // User Profile Section
                 item {
@@ -200,7 +200,6 @@ fun MainScreen(
                     )
                 }
             }
-            com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "ClaudWecho")
         }
     }
 }

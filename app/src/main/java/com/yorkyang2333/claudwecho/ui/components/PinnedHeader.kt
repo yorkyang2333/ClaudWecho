@@ -1,48 +1,42 @@
 package com.yorkyang2333.claudwecho.ui.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
-import androidx.compose.foundation.basicMarquee
-
+/**
+ * Standard Wear OS Material 3 list header component.
+ * Should be placed as the first item in a list:
+ * item {
+ *     WearListHeader(title = "Title")
+ * }
+ */
 @Composable
-fun PinnedHeader(
+fun WearListHeader(
     title: String,
     modifier: Modifier = Modifier,
     actionIcon: @Composable (() -> Unit)? = null
 ) {
-    Box(
+    ListHeader(
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
-                        MaterialTheme.colorScheme.background.copy(alpha = 0f)
-                    )
-                )
-            )
-            .padding(top = 16.dp, bottom = 24.dp), // Increased bottom padding to make gradient longer
-        contentAlignment = Alignment.TopCenter
+            .padding(horizontal = 14.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth(0.72f)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 modifier = Modifier
                     .weight(1f, fill = false)
@@ -54,4 +48,20 @@ fun PinnedHeader(
             }
         }
     }
+}
+
+/**
+ * Compatibility helper for existing callers.
+ */
+@Composable
+fun PinnedHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    actionIcon: @Composable (() -> Unit)? = null
+) {
+    WearListHeader(
+        title = title,
+        modifier = modifier,
+        actionIcon = actionIcon
+    )
 }

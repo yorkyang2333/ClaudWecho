@@ -130,7 +130,7 @@ private fun SongInfoContent(song: SongDetail) {
             contentPadding = rotaryContentPadding(bottomItemHeight = 44.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "歌曲信息")
             }
             song.al?.picUrl?.takeIf { it.isNotBlank() }?.let { coverUrl ->
                 item {
@@ -168,7 +168,6 @@ private fun SongInfoContent(song: SongDetail) {
                 SongInfoField(label = fields[index].first, value = fields[index].second)
             }
         }
-        PinnedHeader(title = "歌曲信息")
     }
 }
 

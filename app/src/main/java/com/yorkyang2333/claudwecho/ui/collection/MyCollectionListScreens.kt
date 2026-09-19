@@ -67,7 +67,26 @@ fun MyCollectionPlaylistsScreen(
                     contentPadding = rotaryContentPadding()
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(48.dp))
+                        com.yorkyang2333.claudwecho.ui.components.WearListHeader(
+                            title = "歌单",
+                            actionIcon = {
+                                androidx.compose.foundation.layout.Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(androidx.compose.foundation.shape.CircleShape)
+                                        .background(Color(0xFF2D2D2D))
+                                        .hapticClickable { viewModel.loadData(forceRefresh = true) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.wear.compose.material3.Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh,
+                                        contentDescription = "Refresh",
+                                        modifier = Modifier.size(18.dp),
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        )
                     }
                     item {
                         Row(
@@ -155,27 +174,6 @@ fun MyCollectionPlaylistsScreen(
                         }
                     }
                 }
-
-                com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
-                    title = "歌单",
-                    actionIcon = {
-                        androidx.compose.foundation.layout.Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(androidx.compose.foundation.shape.CircleShape)
-                                .background(Color(0xFF2D2D2D))
-                                .hapticClickable { viewModel.loadData(forceRefresh = true) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            androidx.wear.compose.material3.Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh,
-                                contentDescription = "Refresh",
-                                modifier = Modifier.size(18.dp),
-                                tint = Color.White
-                            )
-                        }
-                    }
-                )
             }
         }
     }
@@ -263,33 +261,31 @@ fun <T> CollectionListBase(
                     contentPadding = rotaryContentPadding()
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(48.dp))
+                        com.yorkyang2333.claudwecho.ui.components.WearListHeader(
+                            title = title,
+                            actionIcon = {
+                                androidx.compose.foundation.layout.Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(androidx.compose.foundation.shape.CircleShape)
+                                        .background(Color(0xFF2D2D2D))
+                                        .hapticClickable { onRefresh() },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    androidx.wear.compose.material3.Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
+                                        contentDescription = "Refresh", 
+                                        modifier = Modifier.size(18.dp),
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        )
                     }
                     items(items, key = { keySelector(it) }) { item ->
                         itemContent(item)
                     }
                 }
-                
-                com.yorkyang2333.claudwecho.ui.components.PinnedHeader(
-                    title = title,
-                    actionIcon = {
-                        androidx.compose.foundation.layout.Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(androidx.compose.foundation.shape.CircleShape)
-                                .background(Color(0xFF2D2D2D))
-                                .hapticClickable { onRefresh() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            androidx.wear.compose.material3.Icon(
-                                imageVector = androidx.compose.material.icons.Icons.Rounded.Refresh, 
-                                contentDescription = "Refresh", 
-                                modifier = Modifier.size(18.dp),
-                                tint = Color.White
-                            )
-                        }
-                    }
-                )
             }
         }
     }

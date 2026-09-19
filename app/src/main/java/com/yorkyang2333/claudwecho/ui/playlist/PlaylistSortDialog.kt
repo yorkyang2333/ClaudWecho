@@ -9,12 +9,12 @@ import androidx.compose.ui.unit.dp
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.material.dialog.Dialog
-import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
+import com.yorkyang2333.claudwecho.ui.components.Button
+import com.yorkyang2333.claudwecho.ui.components.WearListHeader
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -33,8 +33,8 @@ fun PlaylistSortDialog(
     onDismissRequest: () -> Unit,
     onSortSelected: (SortMode, SortOrder) -> Unit
 ) {
-    Dialog(
-        showDialog = showDialog,
+    WearDialog(
+        visible = showDialog,
         onDismissRequest = onDismissRequest
     ) {
         Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
@@ -48,7 +48,7 @@ fun PlaylistSortDialog(
                 autoCentering = null
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
+                    WearListHeader(title = "排序方式")
                 }
                 
                 item {
@@ -124,8 +124,6 @@ fun PlaylistSortDialog(
                     )
                 }
             }
-            
-            PinnedHeader(title = "排序方式")
         }
     }
 }

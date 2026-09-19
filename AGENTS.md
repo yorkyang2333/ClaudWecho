@@ -6,20 +6,25 @@ When completing a task or milestone, automatically:
 2. If the build and installation are successful, commit the changes to git. All git commit messages MUST be written in English.
 3. Push the changes to the remote repository.
 
-## ClaudWecho Wear OS UI Design Guidelines
-When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere to the following strict design standards to ensure pixel-perfect consistency across the app:
+## ClaudWecho Wear OS UI Design Guidelines (Material 3 Expressive)
+When creating or updating pages with lists (`ScalingLazyColumn` / `RotaryScalingLazyColumn`), ALWAYS adhere to the following strict design standards to ensure pixel-perfect Wear OS Material 3 Expressive consistency across the app:
 
 1. **Header Component**:
-   - MUST use the shared `com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "...")`.
-   - The overall page wrapper MUST be a `Box(modifier = Modifier.fillMaxSize())` with the `PinnedHeader` placed *after* the `ScalingLazyColumn` so it stays pinned at the top.
+   - MUST use the shared `com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "...")` inside the list as the first item:
+     ```kotlin
+     item {
+         WearListHeader(title = "...")
+     }
+     ```
+   - Do NOT use pinned headers overlaying lists (`PinnedHeader` + `Spacer(48.dp)`) unless explicitly designing a fixed-header overlay. In standard Wear OS M3, headers naturally scroll with the list items using `ListHeader`.
 
 2. **ScalingLazyColumn Layout Parameters**:
    - `scalingParams`: Do not use custom `scalingParams` so it defaults to standard Wear OS scaling parameters (wider items, less edge shrinking).
    - `contentPadding`: MUST use `com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding()` (or `RotaryScalingLazyColumn` default) to guarantee the last item is centered in the screen when scrolled to the end.
    - `verticalArrangement`: MUST use exactly `Arrangement.spacedBy(6.dp)` for spacing between buttons.
 
-3. **Top Spacer**:
-   - The first `item` in the `ScalingLazyColumn` MUST be a `Spacer(modifier = Modifier.height(48.dp))`. This prevents the first button from hiding behind the PinnedHeader.
+3. **Scaffolding and Scroll Indicators**:
+   - Rotary list views MUST use `ScreenScaffold` with `ScrollIndicator` (standard in `RotaryScalingLazyColumn`), coordinated under the root `AppScaffold`.
 
 4. **Buttons**:
    - ALL capsule/pill buttons (`Button`) MUST have an icon provided via the `icon` slot (`icon = { Icon(...) }` or custom icon image) matching their semantic action. Never leave a capsule button without an icon.
@@ -27,9 +32,9 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
    - Icons MUST use the primary theme color: `tint = MaterialTheme.colorScheme.primary` (or appropriate container contrast color like `onPrimary`/`onError` when background is styled).
    - The label `Text` inside the Button MUST use `style = MaterialTheme.typography.titleMedium`, `maxLines = 1`, and `overflow = TextOverflow.Ellipsis`. Always use the slot-based `label = { Text(...) }` API.
 
-5. **PinnedHeader Action Icons**:
-   - When providing an `actionIcon` to `PinnedHeader`, do NOT use `CompactButton` or other components with large default padding/height. This will inflate the header height and cover the list items below.
-   - Instead, use a lightweight clickable `Box` to contain the icon. Example:
+5. **WearListHeader Action Icons**:
+   - When providing an `actionIcon` to `WearListHeader`, do NOT use `CompactButton` or other components with large default padding/height.
+   - Use a lightweight clickable `Box` to contain the icon. Example:
      ```kotlin
      Box(
          modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFF2D2D2D)).clickable { /* ... */ },
@@ -42,7 +47,8 @@ When creating or updating pages with lists (`ScalingLazyColumn`), ALWAYS adhere 
 6. **Progress Indicators**:
    - MUST use the native `androidx.wear.compose.material3.CircularProgressIndicator` instead of the non-wear one for indeterminate loading states, as this preserves the fluid shape-shifting spinner animation expected on Wear OS and correctly uses the Wear Material 3 theme colors. Do NOT use `modifier = Modifier.fillMaxSize()` on it unless you want to stretch it into a full-screen arc.
 
-7. **Dialog Action Buttons**:
+7. **Dialogs & Action Buttons**:
+   - Dialogs MUST use `androidx.wear.compose.material3.Dialog(visible = ...)` instead of legacy M2 Dialogs (`showDialog = ...`).
    - For bottom confirm/cancel actions (like in input fallback dialogs or settings), MUST use the shared `com.yorkyang2333.claudwecho.ui.components.DialogActionButtons` component.
    - This ensures the standard Wear OS Material 3 pattern (squircle dark cancel button on the left, circular primary confirm button on the right).
 

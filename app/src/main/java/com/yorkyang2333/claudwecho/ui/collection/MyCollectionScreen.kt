@@ -45,7 +45,7 @@ fun MyCollectionScreen(
                 contentPadding = rotaryContentPadding()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
+                    com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "我的收藏")
                 }
                 item {
                     CollectionFeatureButton(
@@ -69,7 +69,6 @@ fun MyCollectionScreen(
                     )
                 }
             }
-            com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "我的收藏")
         }
     }
 }

@@ -54,7 +54,7 @@ fun QueueScreen(
             contentPadding = rotaryContentPadding()
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "播放队列")
             }
             
             // Header Row (Trash, Count, Locate)
@@ -161,8 +161,6 @@ fun QueueScreen(
             }
         }
         
-        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放队列")
-
         com.yorkyang2333.claudwecho.ui.components.SongMenuDialog(
             showDialog = selectedQueueSong.value != null,
             song = selectedQueueSong.value?.second,

@@ -51,7 +51,7 @@ fun AboutScreen() {
             contentPadding = rotaryContentPadding(bottomItemHeight = 16.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "关于")
             }
             item {
                 AsyncImage(
@@ -129,6 +129,5 @@ fun AboutScreen() {
                 )
             }
         }
-        PinnedHeader(title = "关于")
     }
 }

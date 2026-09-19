@@ -47,10 +47,10 @@ fun CacheLimitSettingsScreen(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = rotaryContentPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "缓存上限")
             }
 
             items(options.size) { index ->
@@ -77,6 +77,5 @@ fun CacheLimitSettingsScreen(
                 )
             }
         }
-        PinnedHeader(title = "缓存上限")
     }
 }

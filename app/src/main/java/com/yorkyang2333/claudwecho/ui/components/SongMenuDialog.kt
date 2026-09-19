@@ -13,7 +13,7 @@ import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Info
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.material.dialog.Dialog
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
@@ -31,8 +31,8 @@ fun SongMenuDialog(
     onRemove: (() -> Unit)? = null,
     onAddToPlaylist: ((Song) -> Unit)? = null
 ) {
-    Dialog(
-        showDialog = showDialog,
+    WearDialog(
+        visible = showDialog,
         onDismissRequest = onDismissRequest
     ) {
         Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
@@ -46,7 +46,7 @@ fun SongMenuDialog(
                 autoCentering = null
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
+                    WearListHeader(title = song?.name ?: "歌曲菜单")
                 }
                 item {
                     Button(
@@ -153,8 +153,6 @@ fun SongMenuDialog(
                     )
                 }
             }
-            
-            PinnedHeader(title = song?.name ?: "歌曲菜单")
         }
     }
 }

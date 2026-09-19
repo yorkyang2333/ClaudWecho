@@ -10,7 +10,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.dialog.Dialog
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.ButtonDefaults
@@ -28,8 +28,8 @@ fun AddToPlaylistDialog(
     onDismissRequest: () -> Unit,
     onPlaylistSelected: (Playlist) -> Unit
 ) {
-    Dialog(
-        showDialog = showDialog,
+    WearDialog(
+        visible = showDialog,
         onDismissRequest = onDismissRequest
     ) {
         Box(
@@ -52,7 +52,7 @@ fun AddToPlaylistDialog(
                         autoCentering = null
                     ) {
                         item {
-                            Spacer(modifier = Modifier.height(48.dp))
+                            WearListHeader(title = "添加到歌单")
                         }
                         if (playlists.isEmpty()) {
                             item {
@@ -99,8 +99,6 @@ fun AddToPlaylistDialog(
                             }
                         }
                     }
-
-                    PinnedHeader(title = "添加到歌单")
                 }
             }
         }

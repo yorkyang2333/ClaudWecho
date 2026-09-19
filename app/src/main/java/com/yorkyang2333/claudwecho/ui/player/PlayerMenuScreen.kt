@@ -90,7 +90,7 @@ fun PlayerMenuScreen(
             contentPadding = rotaryContentPadding()
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "播放菜单")
             }
             item {
                 Button(
@@ -246,8 +246,6 @@ fun PlayerMenuScreen(
                 )
             }
         }
-        
-        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "播放菜单")
 
         AddToPlaylistDialog(
             showDialog = showAddToPlaylistDialog.value,

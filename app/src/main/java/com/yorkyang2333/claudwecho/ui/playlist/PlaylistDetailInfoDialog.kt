@@ -12,11 +12,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.dialog.Dialog
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import coil3.compose.AsyncImage
-import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
+import com.yorkyang2333.claudwecho.ui.components.WearListHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
 import com.yorkyang2333.claudwecho.ui.components.rotaryContentPadding
 
@@ -26,8 +26,8 @@ fun PlaylistDetailInfoDialog(
     detail: ResourceDetailInfo?,
     onDismissRequest: () -> Unit
 ) {
-    Dialog(
-        showDialog = showDialog,
+    WearDialog(
+        visible = showDialog,
         onDismissRequest = onDismissRequest
     ) {
         Box(
@@ -50,7 +50,7 @@ fun PlaylistDetailInfoDialog(
                     contentPadding = rotaryContentPadding(bottomItemHeight = 44.dp)
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(48.dp))
+                        WearListHeader(title = headerTitle)
                     }
 
                     if (!detail.coverUrl.isNullOrBlank()) {
@@ -133,8 +133,6 @@ fun PlaylistDetailInfoDialog(
                         )
                     }
                 }
-
-                PinnedHeader(title = headerTitle)
             }
         }
     }

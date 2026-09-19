@@ -19,13 +19,13 @@ import androidx.compose.material.icons.rounded.SortByAlpha
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.material.dialog.Dialog
-import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.ButtonDefaults
+import com.yorkyang2333.claudwecho.ui.components.WearDialog
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import com.yorkyang2333.claudwecho.ui.components.PinnedHeader
+import com.yorkyang2333.claudwecho.ui.components.Button
+import com.yorkyang2333.claudwecho.ui.components.WearListHeader
 
 @Composable
 fun PlaylistMenuDialog(
@@ -44,8 +44,8 @@ fun PlaylistMenuDialog(
     onToggleFavorite: () -> Unit = {},
     onShowDetail: () -> Unit = {}
 ) {
-    Dialog(
-        showDialog = showDialog,
+    WearDialog(
+        visible = showDialog,
         onDismissRequest = onDismissRequest
     ) {
         Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
@@ -59,7 +59,7 @@ fun PlaylistMenuDialog(
                 autoCentering = null
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(48.dp))
+                    WearListHeader(title = "菜单")
                 }
                 item {
                     Button(
@@ -210,8 +210,6 @@ fun PlaylistMenuDialog(
                     )
                 }
             }
-            
-            PinnedHeader(title = "菜单")
         }
     }
 }

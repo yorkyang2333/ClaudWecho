@@ -29,7 +29,8 @@ import java.util.Locale
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Dialog
+import androidx.wear.compose.material3.AlertDialog
+import androidx.wear.compose.material3.AlertDialogDefaults
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Check
@@ -57,7 +58,7 @@ fun UserProfileScreen(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                com.yorkyang2333.claudwecho.ui.components.WearListHeader(title = "个人中心")
             }
             
             item {
@@ -151,34 +152,25 @@ fun UserProfileScreen(
                 )
             }
         }
-        com.yorkyang2333.claudwecho.ui.components.PinnedHeader(title = "个人中心")
     }
 
-    if (showLogoutConfirm) {
-        Dialog(
-            onDismissRequest = { showLogoutConfirm = false }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "确认退出登录？",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                com.yorkyang2333.claudwecho.ui.components.DialogActionButtons(
-                    onCancel = { showLogoutConfirm = false },
-                    onConfirm = {
-                        viewModel.logout()
-                        showLogoutConfirm = false
-                    }
-                )
-            }
-        }
-    }
+    AlertDialog(
+        show = showLogoutConfirm,
+        onDismissRequest = { showLogoutConfirm = false },
+        confirmButton = {
+            AlertDialogDefaults.ConfirmButton(
+                onClick = {
+                    viewModel.logout()
+                    showLogoutConfirm = false
+                }
+            )
+        },
+        dismissButton = {
+            AlertDialogDefaults.DismissButton(
+                onClick = { showLogoutConfirm = false }
+            )
+        },
+        title = { Text("退出登录") },
+        text = { Text("确认退出当前账号？") }
+    )
 }

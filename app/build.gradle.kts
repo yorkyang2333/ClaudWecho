@@ -121,6 +121,7 @@ dependencies {
   implementation(libs.androidx.compose.material.icons.extended)
   
   // Wear Compose
+  implementation(libs.androidx.wear.compose.material)
   implementation(libs.androidx.wear.compose.material3)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.wear.compose.foundation)
