@@ -29,8 +29,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
-import androidx.wear.compose.material.PositionIndicator
-import androidx.wear.compose.material.Scaffold
+import androidx.wear.compose.material3.ScreenScaffold
+import androidx.wear.compose.material3.ScrollIndicator
 
 @Composable
 fun rotaryContentPadding(
@@ -68,9 +68,13 @@ fun RotaryScalingLazyColumn(
     var accumulatedRotaryPx by remember { mutableStateOf(0f) }
     var lastRotaryHapticTime by remember { mutableStateOf(0L) }
     
-    Scaffold(
-        positionIndicator = {
-            PositionIndicator(scalingLazyListState = state)
+    ScreenScaffold(
+        scrollState = state,
+        scrollIndicator = {
+            ScrollIndicator(
+                state = state,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
         }
     ) {
         ScalingLazyColumn(
