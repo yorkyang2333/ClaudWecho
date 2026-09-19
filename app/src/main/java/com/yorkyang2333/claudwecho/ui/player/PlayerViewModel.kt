@@ -24,6 +24,8 @@ import com.yorkyang2333.claudwecho.data.LyricWord
 import com.yorkyang2333.claudwecho.data.LyricParser
 import com.yorkyang2333.claudwecho.data.api.Playlist
 import com.yorkyang2333.claudwecho.data.api.Song
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 
 class PlayerViewModel(
@@ -94,6 +96,7 @@ class PlayerViewModel(
 
     private fun fetchLikedSongs() {
         viewModelScope.launch {
+            delay(500)
             val status = repository.getLoginStatus()
             if (status != null) {
                 val list = repository.getLikeList(status.userId)
@@ -197,17 +200,25 @@ class PlayerViewModel(
             playPlaylist(pendingSongs!!, pendingIndex)
             pendingSongs = null
         } else {
-            val lastPlaylist = playbackStateManager.getLastPlaylist()
-            if (lastPlaylist != null && lastPlaylist.isNotEmpty()) {
-                _currentPlaylist.value = lastPlaylist
-                val mediaItems = lastPlaylist.map { song ->
-                    song.toMediaItem()
+            viewModelScope.launch(Dispatchers.IO) {
+                val lastPlaylist = playbackStateManager.getLastPlaylist()
+                if (!lastPlaylist.isNullOrEmpty()) {
+                    val mediaItems = lastPlaylist.map { song ->
+                        song.toMediaItem()
+                    }
+                    val lastIndex = playbackStateManager.getLastIndex()
+                    val repeatMode = playbackStateManager.getRepeatMode()
+                    val shuffleMode = playbackStateManager.getShuffleMode()
+
+                    withContext(Dispatchers.Main) {
+                        _currentPlaylist.value = lastPlaylist
+                        player?.setMediaItems(mediaItems, lastIndex, androidx.media3.common.C.TIME_UNSET)
+                        player?.repeatMode = repeatMode
+                        player?.shuffleModeEnabled = shuffleMode
+                        // Do NOT call player?.prepare() here on cold start.
+                        // Audio source and buffer will be initialized on-demand when the user starts playing.
+                    }
                 }
-                val lastIndex = playbackStateManager.getLastIndex()
-                player?.setMediaItems(mediaItems, lastIndex, androidx.media3.common.C.TIME_UNSET)
-                player?.repeatMode = playbackStateManager.getRepeatMode()
-                player?.shuffleModeEnabled = playbackStateManager.getShuffleMode()
-                player?.prepare()
             }
         }
 
@@ -226,8 +237,10 @@ class PlayerViewModel(
                         val index = lrcList.indexOfLast { it.timeMs <= pos }
                         _currentLyricIndex.value = index
                     }
+                    delay(100)
+                } else {
+                    delay(500)
                 }
-                delay(50)
             }
         }
     }
@@ -280,17 +293,36 @@ class PlayerViewModel(
             if (it.isPlaying) {
                 it.pause()
             } else {
+                if (it.playbackState == Player.STATE_IDLE) {
+                    it.prepare()
+                }
                 it.play()
             }
         }
     }
 
     fun skipToNext() {
-        player?.seekToNextMediaItem()
+        player?.let {
+            if (it.playbackState == Player.STATE_IDLE) {
+                it.prepare()
+            }
+            it.seekToNextMediaItem()
+            if (!it.isPlaying) {
+                it.play()
+            }
+        }
     }
 
     fun skipToPrevious() {
-        player?.seekToPreviousMediaItem()
+        player?.let {
+            if (it.playbackState == Player.STATE_IDLE) {
+                it.prepare()
+            }
+            it.seekToPreviousMediaItem()
+            if (!it.isPlaying) {
+                it.play()
+            }
+        }
     }
     fun removeQueueItem(displayIndex: Int) {
         val player = player ?: return
@@ -310,8 +342,13 @@ class PlayerViewModel(
     fun playQueueItem(displayIndex: Int) {
         if (displayIndex in displayToOriginalMap.indices) {
             val originalIndex = displayToOriginalMap[displayIndex]
-            player?.seekToDefaultPosition(originalIndex)
-            player?.play()
+            player?.let {
+                if (it.playbackState == Player.STATE_IDLE) {
+                    it.prepare()
+                }
+                it.seekToDefaultPosition(originalIndex)
+                it.play()
+            }
         }
     }
     
@@ -324,7 +361,12 @@ class PlayerViewModel(
     fun seekTo(positionMs: Long) {
         _currentPosition.value = positionMs
         lastSeekTimestamp = System.currentTimeMillis()
-        player?.seekTo(positionMs)
+        player?.let {
+            if (it.playbackState == Player.STATE_IDLE) {
+                it.prepare()
+            }
+            it.seekTo(positionMs)
+        }
     }
 
     fun cyclePlaybackMode() {

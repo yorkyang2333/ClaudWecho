@@ -37,17 +37,19 @@ fun HomePagerScreen(
     onSettingsClick: () -> Unit = {}
 ) {
     val currentArtworkUri by playerViewModel.currentArtworkUri.collectAsState()
+    val isPlaying by playerViewModel.isPlaying.collectAsState()
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
 
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "playerBackgroundAnim")
     val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
             animation = tween(25000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
-        )
+        ),
+        label = "bgRotation"
     )
     val scale by infiniteTransition.animateFloat(
         initialValue = 2.0f,
@@ -55,7 +57,8 @@ fun HomePagerScreen(
         animationSpec = infiniteRepeatable(
             animation = tween(10000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
-        )
+        ),
+        label = "bgScale"
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -80,32 +83,27 @@ fun HomePagerScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        rotationZ = rotation
-                        scaleX = scale
-                        scaleY = scale
+                        if (isPlaying) {
+                            rotationZ = rotation
+                            scaleX = scale
+                            scaleY = scale
+                        }
                     }
-                    .then(if (isApi31AndAbove) Modifier.blur(60.dp) else Modifier)
+                    .then(if (isApi31AndAbove) Modifier.blur(30.dp) else Modifier)
             )
             // Add a dark overlay so text is readable
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.35f)))
         } else {
-            // Default fluid gradient if no artwork
+            // Default clean static gradient if no artwork (Zero GPU blur overhead during startup)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer {
-                        rotationZ = rotation
-                        scaleX = scale
-                        scaleY = scale
-                    }
-                    .blur(60.dp)
                     .background(
-                        androidx.compose.ui.graphics.Brush.sweepGradient(
+                        androidx.compose.ui.graphics.Brush.radialGradient(
                             listOf(
-                                Color(0xFF1E2124),
-                                Color(0xFF3A3F47),
                                 Color(0xFF2A2E35),
-                                Color(0xFF1E2124)
+                                Color(0xFF1E2124),
+                                Color(0xFF121416)
                             )
                         )
                     )
