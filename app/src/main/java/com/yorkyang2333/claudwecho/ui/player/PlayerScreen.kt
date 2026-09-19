@@ -99,6 +99,7 @@ fun PlayerScreen(
     }
 
     val isPodcast by viewModel.isCurrentSongPodcast.collectAsState()
+    val isPodcastSubscribed by viewModel.isCurrentPodcastSubscribed.collectAsState()
     val isVip by viewModel.isCurrentSongVip.collectAsState()
 
     val focusRequester = remember { FocusRequester() }
@@ -410,18 +411,23 @@ fun PlayerScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val isFav = if (isPodcast) isPodcastSubscribed else isLiked
                     PlayerIconButton(
                         onClick = {
                             focusRequester.requestFocus()
-                            if (!isPodcast) viewModel.toggleLikeCurrentSong()
+                            if (isPodcast) {
+                                viewModel.toggleSubscribeCurrentPodcast()
+                            } else {
+                                viewModel.toggleLikeCurrentSong()
+                            }
                         },
                         modifier = Modifier.size(44.dp).offset(y = (-8).dp),
-                        enabled = currentTitle != null && !isPodcast
+                        enabled = currentTitle != null
                     ) {
                         Icon(
-                            imageVector = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                            contentDescription = "Like",
-                            tint = if (currentTitle == null || isPodcast) Color.Gray else if (isLiked) MaterialTheme.colorScheme.primary else Color.White,
+                            imageVector = if (isFav) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                            contentDescription = if (isPodcast) (if (isFav) "取消收藏播客" else "收藏播客") else (if (isFav) "取消喜欢" else "喜欢"),
+                            tint = if (currentTitle == null) Color.Gray else if (isFav) MaterialTheme.colorScheme.primary else Color.White,
                             modifier = Modifier.size(32.dp)
                         )
                     }

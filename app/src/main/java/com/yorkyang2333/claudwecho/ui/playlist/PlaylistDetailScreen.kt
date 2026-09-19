@@ -341,9 +341,13 @@ fun PlaylistDetailScreen(
                 },
                 currentSort = currentSortText,
                 isAlphabetIndexEnabled = sortMode != SortMode.DEFAULT,
-                showFavorite = type == "album" || (type == "playlist" && !isOwned),
+                showFavorite = type == "album" || type == "djradio" || (type == "playlist" && !isOwned),
                 isFavorite = isSubscribed,
-                favoriteLabel = if (type == "album") "收藏专辑" else "收藏歌单",
+                favoriteLabel = when (type) {
+                    "album" -> "收藏专辑"
+                    "djradio" -> "收藏播客"
+                    else -> "收藏歌单"
+                },
                 onToggleFavorite = {
                     viewModel.toggleSubscribe(type)
                 },

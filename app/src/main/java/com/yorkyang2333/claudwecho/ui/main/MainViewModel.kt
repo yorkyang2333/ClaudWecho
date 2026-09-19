@@ -27,6 +27,17 @@ class MainViewModel(private val repository: MainRepository) : ViewModel() {
 
     private var isInitialized = false
 
+    init {
+        viewModelScope.launch {
+            repository.collectionUpdates.collect {
+                val profile = _userProfile.value
+                if (profile != null) {
+                    _playlists.value = repository.getUserPlaylists(profile.userId, forceRefresh = false)
+                }
+            }
+        }
+    }
+
     fun loadData(forceRefresh: Boolean = false) {
         if (isInitialized && !forceRefresh) return
         

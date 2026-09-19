@@ -264,6 +264,7 @@ fun AppNavigation(
                 viewModel = playerViewModel,
                 onNavigateToSongInfo = { id -> navController.navigate("song_info/$id") },
                 onNavigateToAlbum = { id -> navController.navigate("album/$id") },
+                onNavigateToPodcast = { id -> navController.navigate("djradio/$id") },
                 onNavigateToComments = { id -> navController.navigate("comment/$id") },
                 onNavigateToSleepTimer = { navController.navigate("player_menu/sleep_timer") }
             )

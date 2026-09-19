@@ -74,6 +74,9 @@ class PlayerViewModel(
     private val _isCurrentSongPodcast = MutableStateFlow(false)
     val isCurrentSongPodcast: StateFlow<Boolean> = _isCurrentSongPodcast.asStateFlow()
 
+    private val _isCurrentPodcastSubscribed = MutableStateFlow(false)
+    val isCurrentPodcastSubscribed: StateFlow<Boolean> = _isCurrentPodcastSubscribed.asStateFlow()
+
     private val _isCurrentSongVip = MutableStateFlow(false)
     val isCurrentSongVip: StateFlow<Boolean> = _isCurrentSongVip.asStateFlow()
 
@@ -92,6 +95,14 @@ class PlayerViewModel(
         prefs.registerOnSharedPreferenceChangeListener(prefListener)
         initializeController()
         fetchLikedSongs()
+        viewModelScope.launch {
+            repository.collectionUpdates.collect {
+                val pId = currentPodcastId()
+                if (pId != null) {
+                    _isCurrentPodcastSubscribed.value = repository.isDjRadioSubscribed(pId)
+                }
+            }
+        }
     }
 
     private fun fetchLikedSongs() {
@@ -111,6 +122,15 @@ class PlayerViewModel(
         val songId = player?.currentMediaItem?.mediaId?.toLongOrNull()
         if (songId != null) {
             _isCurrentSongLiked.value = likedSongs.contains(songId)
+            val song = _currentPlaylist.value.find { it.id == songId }
+            if (song?.isPodcast == true) {
+                val pId = song.podcastId ?: repository.getPodcastIdForSong(songId)
+                if (pId != null) {
+                    viewModelScope.launch {
+                        _isCurrentPodcastSubscribed.value = repository.isDjRadioSubscribed(pId)
+                    }
+                }
+            }
         }
     }
 
@@ -416,6 +436,25 @@ class PlayerViewModel(
                 onResult(detail?.al?.id?.takeIf { it > 0L })
             } catch (e: Exception) {
                 onResult(null)
+            }
+        }
+    }
+
+    fun currentPodcastId(): Long? {
+        val songId = currentSongId() ?: return null
+        val song = _currentPlaylist.value.find { it.id == songId }
+        return song?.podcastId ?: repository.getPodcastIdForSong(songId)
+    }
+
+    fun toggleSubscribeCurrentPodcast() {
+        val podcastId = currentPodcastId() ?: return
+        val currentSub = _isCurrentPodcastSubscribed.value
+        val newSub = !currentSub
+        _isCurrentPodcastSubscribed.value = newSub
+        viewModelScope.launch {
+            val success = repository.subscribeDjRadio(podcastId, newSub)
+            if (!success) {
+                _isCurrentPodcastSubscribed.value = currentSub
             }
         }
     }

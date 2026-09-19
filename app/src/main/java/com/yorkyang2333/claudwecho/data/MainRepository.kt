@@ -6,12 +6,27 @@ import com.yorkyang2333.claudwecho.data.api.Song
 import com.yorkyang2333.claudwecho.data.api.SongDetail
 import com.yorkyang2333.claudwecho.data.api.UserProfile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.withContext
+import java.util.concurrent.ConcurrentHashMap
 
 class MainRepository(
     private val api: NeteaseApi,
     private val localRecentPlaysManager: LocalRecentPlaysManager
 ) {
+    private val _collectionUpdates = MutableSharedFlow<Unit>(replay = 0, extraBufferCapacity = 1)
+    val collectionUpdates: SharedFlow<Unit> = _collectionUpdates.asSharedFlow()
+
+    private val songIdToPodcastId = ConcurrentHashMap<Long, Long>()
+
+    fun notifyCollectionChanged() {
+        _collectionUpdates.tryEmit(Unit)
+    }
+
+    fun getPodcastIdForSong(songId: Long): Long? = songIdToPodcastId[songId]
+
     private var cachedProfile: UserProfile? = null
     private var hasCheckedLogin: Boolean = false
     private var cachedDailyRecommend: List<Song>? = null
@@ -334,6 +349,8 @@ class MainRepository(
             val list = if (response.code == 200 && response.programs != null) {
                 response.programs.map { program ->
                     val djSong = program.mainSong
+                    val podcastId = program.radio?.id ?: rid
+                    songIdToPodcastId[djSong.id] = podcastId
                     // Map DjSong to Song for unified playback
                     Song(
                         id = djSong.id,
@@ -341,7 +358,8 @@ class MainRepository(
                         ar = djSong.artists ?: emptyList(),
                         al = djSong.album,
                         fee = 0,
-                        isPodcast = true
+                        isPodcast = true,
+                        podcastId = podcastId
                     )
                 }
             } else {
@@ -366,6 +384,7 @@ class MainRepository(
                     cachedPlaylistDetails[id] = it.copy(subscribed = subscribe)
                 }
                 cachedUserPlaylists = null
+                notifyCollectionChanged()
             }
             success
         } catch (e: Exception) {
@@ -379,18 +398,11 @@ class MainRepository(
             val response = api.subscribeAlbum(id = id, t = if (subscribe) 1 else 0)
             val success = response.isSuccess
             if (success) {
-                if (subscribe) {
-                    val album = cachedAlbumDetails[id]
-                    if (album != null && cachedAlbums != null && cachedAlbums!!.none { it.id == id }) {
-                        cachedAlbums = cachedAlbums!! + album
-                    } else {
-                        cachedAlbums = null
-                    }
-                } else {
-                    if (cachedAlbums != null) {
-                        cachedAlbums = cachedAlbums!!.filter { it.id != id }
-                    }
+                cachedAlbumDetails[id]?.let {
+                    // Update cache state if present
                 }
+                cachedAlbums = null
+                notifyCollectionChanged()
             }
             success
         } catch (e: Exception) {
@@ -402,6 +414,36 @@ class MainRepository(
     suspend fun isAlbumSubscribed(id: Long): Boolean = withContext(Dispatchers.IO) {
         try {
             getSubscribedAlbums().any { it.id == id }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun subscribeDjRadio(rid: Long, subscribe: Boolean): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val response = api.subscribeDjRadio(rid = rid, t = if (subscribe) 1 else 0)
+            val success = response.isSuccess
+            if (success) {
+                cachedDjRadioDetails[rid]?.let {
+                    cachedDjRadioDetails[rid] = it.copy(subed = subscribe)
+                }
+                cachedDjRadios = null
+                notifyCollectionChanged()
+            }
+            success
+        } catch (e: Exception) {
+            android.util.Log.e("MainRepository", "subscribeDjRadio error: ${e.message}", e)
+            false
+        }
+    }
+
+    suspend fun isDjRadioSubscribed(id: Long): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val detail = getDjRadioDetail(id)
+            if (detail?.subed != null) {
+                return@withContext detail.subed
+            }
+            getSubscribedDjRadios().any { it.id == id }
         } catch (e: Exception) {
             false
         }
@@ -422,6 +464,7 @@ class MainRepository(
             if (success) {
                 invalidatePlaylistCaches()
                 cachedDailyRecommend = null
+                notifyCollectionChanged()
             }
             success
         } catch (e: Exception) {

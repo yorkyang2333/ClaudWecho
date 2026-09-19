@@ -176,6 +176,13 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): BaseResponse
 
+    @GET("/dj/sub")
+    suspend fun subscribeDjRadio(
+        @Query("rid") rid: Long,
+        @Query("t") t: Int, // 1: 订阅, 0: 取消
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
+    ): BaseResponse
+
     @GET("/comment/music")
     suspend fun getMusicComments(
         @Query("id") id: Long,
@@ -263,7 +270,7 @@ data class AlbumDetailResponse(val code: Int, val album: Album? = null, val song
 data class DjProgramResponse(val code: Int, val programs: List<DjProgram>? = null)
 
 @Serializable
-data class DjProgram(val id: Long, val mainSong: DjSong)
+data class DjProgram(val id: Long, val mainSong: DjSong, val radio: DjRadio? = null)
 
 @Serializable
 data class DjSong(val id: Long, val name: String, val artists: List<Artist>? = null, val album: Album? = null)
@@ -331,7 +338,8 @@ data class Song(
     val fee: Int = 0,
     val artists: List<Artist>? = null,
     val album: Album? = null,
-    val isPodcast: Boolean = false
+    val isPodcast: Boolean = false,
+    val podcastId: Long? = null
 ) {
     val displayArtists: List<Artist> get() = ar.ifEmpty { artists ?: emptyList() }
     val displayAlbum: Album? get() = al ?: album
@@ -448,7 +456,8 @@ data class DjRadio(
     val subCount: Int? = null,
     val desc: String? = null,
     val category: String? = null,
-    val dj: PlaylistCreator? = null
+    val dj: PlaylistCreator? = null,
+    val subed: Boolean? = null
 )
 
 @Serializable

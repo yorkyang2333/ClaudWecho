@@ -29,6 +29,11 @@ class MyCollectionViewModel(private val repository: MainRepository) : ViewModel(
 
     init {
         loadData()
+        viewModelScope.launch {
+            repository.collectionUpdates.collect {
+                loadData(forceRefresh = false)
+            }
+        }
     }
 
     fun loadData(forceRefresh: Boolean = false) {

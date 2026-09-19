@@ -40,6 +40,10 @@ fun MyCollectionPlaylistsScreen(
 
     var selectedTabIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0) }
 
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.loadData(forceRefresh = false)
+    }
+
     val createdPlaylists = androidx.compose.runtime.remember(playlists, currentUserId) {
         val firstId = playlists.firstOrNull()?.id
         playlists.filter { it.isCreatedBy(currentUserId) && it.id != firstId && it.name != "我喜欢" }
@@ -187,6 +191,10 @@ fun MyCollectionAlbumsScreen(
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.loadData(forceRefresh = false)
+    }
+
     CollectionListBase(
         title = "专辑",
         items = albums,
@@ -212,6 +220,10 @@ fun MyCollectionBlogsScreen(
 ) {
     val djRadios by viewModel.djRadios.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.loadData(forceRefresh = false)
+    }
 
     CollectionListBase(
         title = "播客",

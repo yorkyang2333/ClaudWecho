@@ -33,6 +33,9 @@ import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
+import androidx.compose.material.icons.rounded.Podcasts
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material.icons.rounded.Timer
 
 @Composable
@@ -40,6 +43,7 @@ fun PlayerMenuScreen(
     viewModel: PlayerViewModel,
     onNavigateToSongInfo: (Long) -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
+    onNavigateToPodcast: (Long) -> Unit,
     onNavigateToComments: (Long) -> Unit,
     onNavigateToSleepTimer: () -> Unit
 ) {
@@ -47,6 +51,8 @@ fun PlayerMenuScreen(
     val shuffleMode by viewModel.shuffleModeEnabled.collectAsState()
     val repeatMode by viewModel.repeatMode.collectAsState()
     val isFmMode by viewModel.isPersonalFmMode.collectAsState()
+    val isPodcast by viewModel.isCurrentSongPodcast.collectAsState()
+    val isPodcastSubscribed by viewModel.isCurrentPodcastSubscribed.collectAsState()
     val showAddToPlaylistDialog = remember { mutableStateOf(false) }
     val createdPlaylists by viewModel.createdPlaylists.collectAsState()
     val isLoadingCreatedPlaylists by viewModel.isLoadingCreatedPlaylists.collectAsState()
@@ -198,35 +204,85 @@ fun PlayerMenuScreen(
                     icon = { Icon(Icons.Rounded.Info, null, tint = MaterialTheme.colorScheme.primary) }
                 )
             }
+            if (isPodcast) {
+                item {
+                    Button(
+                        onClick = { viewModel.toggleSubscribeCurrentPodcast() },
+                        enabled = viewModel.currentPodcastId() != null,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        label = {
+                            Text(
+                                text = if (isPodcastSubscribed) "取消收藏播客" else "收藏播客",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (isPodcastSubscribed) Icons.Rounded.Star else Icons.Rounded.StarBorder,
+                                contentDescription = if (isPodcastSubscribed) "取消收藏播客" else "收藏播客",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    )
+                }
+            }
             item {
-                Button(
-                    onClick = {
-                        val albumId = viewModel.currentAlbumId()
-                        if (albumId != null) {
-                            onNavigateToAlbum(albumId)
-                        } else {
-                            viewModel.fetchAlbumIdForCurrentSong { fetchedId ->
-                                if (fetchedId != null) {
-                                    onNavigateToAlbum(fetchedId)
-                                } else {
-                                    Toast.makeText(context, "未找到专辑信息", Toast.LENGTH_SHORT).show()
+                if (isPodcast) {
+                    Button(
+                        onClick = {
+                            val podcastId = viewModel.currentPodcastId()
+                            if (podcastId != null) {
+                                onNavigateToPodcast(podcastId)
+                            } else {
+                                Toast.makeText(context, "未找到播客信息", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        enabled = viewModel.currentSongId() != null,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        label = {
+                            Text(
+                                text = "转到播客",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        },
+                        icon = { Icon(Icons.Rounded.Podcasts, null, tint = MaterialTheme.colorScheme.primary) }
+                    )
+                } else {
+                    Button(
+                        onClick = {
+                            val albumId = viewModel.currentAlbumId()
+                            if (albumId != null) {
+                                onNavigateToAlbum(albumId)
+                            } else {
+                                viewModel.fetchAlbumIdForCurrentSong { fetchedId ->
+                                    if (fetchedId != null) {
+                                        onNavigateToAlbum(fetchedId)
+                                    } else {
+                                        Toast.makeText(context, "未找到专辑信息", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
-                        }
-                    },
-                    enabled = viewModel.currentSongId() != null,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.filledTonalButtonColors(),
-                    label = {
-                        Text(
-                            text = "转到专辑",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                        )
-                    },
-                    icon = { Icon(Icons.Rounded.Album, null, tint = MaterialTheme.colorScheme.primary) }
-                )
+                        },
+                        enabled = viewModel.currentSongId() != null,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(),
+                        label = {
+                            Text(
+                                text = "转到专辑",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        },
+                        icon = { Icon(Icons.Rounded.Album, null, tint = MaterialTheme.colorScheme.primary) }
+                    )
+                }
             }
             item {
                 Button(

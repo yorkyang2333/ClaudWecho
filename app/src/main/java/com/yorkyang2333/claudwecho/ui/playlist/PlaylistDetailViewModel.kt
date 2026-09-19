@@ -209,7 +209,7 @@ class PlaylistDetailViewModel(
             _originalSongs.value = programs
             val titleStr = dj?.name ?: repository.getCachedDjRadioTitle(id) ?: "播客"
             _title.value = titleStr
-            _isSubscribed.value = false
+            _isSubscribed.value = repository.isDjRadioSubscribed(id)
             _resourceDetail.value = ResourceDetailInfo(
                 id = id,
                 title = titleStr,
@@ -259,10 +259,10 @@ class PlaylistDetailViewModel(
     fun toggleSubscribe(type: String) {
         viewModelScope.launch {
             val target = !_isSubscribed.value
-            val success = if (type == "album") {
-                repository.subscribeAlbum(currentPlaylistId, target)
-            } else {
-                repository.subscribePlaylist(currentPlaylistId, target)
+            val success = when (type) {
+                "album" -> repository.subscribeAlbum(currentPlaylistId, target)
+                "djradio" -> repository.subscribeDjRadio(currentPlaylistId, target)
+                else -> repository.subscribePlaylist(currentPlaylistId, target)
             }
             if (success) {
                 _isSubscribed.value = target
