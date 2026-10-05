@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("cnwearoverlay")
     repositories {
         google {
             content {
