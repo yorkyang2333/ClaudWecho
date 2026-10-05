@@ -12,8 +12,9 @@ coroutines = "1.11.0"
 junit = "4.13.2"
 kotlin = "2.4.20"
 nav3Core = "1.0.1"
+navigationCompose = "2.8.8"
 lifecycleViewmodelNav3 = "2.10.0"
-wearCompose = "1.4.1"
+wearCompose = "1.5.0"
 wearComposeMaterial3 = "1.0.0-alpha27"
 playServicesWearable = "18.1.0"
 koin = "4.2.2"
@@ -49,6 +50,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
 androidx-wear-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "wearCompose" }
 androidx-wear-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "wearComposeMaterial3" }

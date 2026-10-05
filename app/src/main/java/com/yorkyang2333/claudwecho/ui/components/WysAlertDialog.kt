@@ -98,7 +98,7 @@ fun WysAlertDialog(
         }
     } else {
         AlertDialog(
-            show = show,
+            visible = show,
             onDismissRequest = onDismissRequest,
             modifier = Modifier.fillMaxSize(),
             icon = {

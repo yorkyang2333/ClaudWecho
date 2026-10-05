@@ -128,6 +128,7 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.wear.compose.foundation)
   implementation(libs.androidx.wear.compose.navigation)
+  implementation(libs.androidx.navigation.compose)
   implementation("androidx.wear:wear-input:1.2.0-alpha02")
   implementation(libs.play.services.wearable)
 

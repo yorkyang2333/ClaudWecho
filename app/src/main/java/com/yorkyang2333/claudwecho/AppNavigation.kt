@@ -12,9 +12,20 @@ import androidx.navigation.NavHostController
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import androidx.wear.compose.navigation.SwipeDismissableNavHost
-import androidx.wear.compose.navigation.composable
-import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.wear.compose.material3.ButtonDefaults
@@ -28,11 +39,10 @@ import com.yorkyang2333.claudwecho.ui.main.HomePagerScreen
 import androidx.compose.runtime.getValue
 import androidx.wear.compose.material3.AppScaffold
 import com.yorkyang2333.claudwecho.ui.components.WysTimeText
-import androidx.wear.compose.navigation.currentBackStackEntryAsState
 
 @Composable
 fun AppNavigation(
-    navController: NavHostController = rememberSwipeDismissableNavController()
+    navController: NavHostController = rememberNavController()
 ) {
     val playerViewModel: PlayerViewModel = koinViewModel()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -46,10 +56,34 @@ fun AppNavigation(
             }
         }
     ) {
-        SwipeDismissableNavHost(
+        NavHost(
             navController = navController,
             startDestination = "player",
-            userSwipeEnabled = currentRoute != "player"
+            modifier = Modifier.fillMaxSize(),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it / 2 },
+                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
+                ) + fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.9f)
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it / 3 },
+                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
+                ) + fadeOut(animationSpec = tween(200)) + scaleOut(targetScale = 0.9f)
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it / 3 },
+                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
+                ) + fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.9f)
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
+                ) + fadeOut(animationSpec = tween(200)) + scaleOut(targetScale = 0.85f)
+            }
         ) {
         composable("player") {
             HomePagerScreen(
