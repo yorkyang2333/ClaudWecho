@@ -63,26 +63,30 @@ fun AppNavigation(
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it / 2 },
-                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
-                ) + fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.9f)
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                ) + fadeIn(animationSpec = tween(durationMillis = 300, easing = LinearEasing)) +
+                scaleIn(initialScale = 0.85f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
             },
             exitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { -it / 3 },
-                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
-                ) + fadeOut(animationSpec = tween(200)) + scaleOut(targetScale = 0.9f)
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                ) + fadeOut(animationSpec = tween(durationMillis = 250, easing = LinearEasing)) +
+                scaleOut(targetScale = 0.9f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
             },
             popEnterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { -it / 3 },
-                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
-                ) + fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.9f)
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                ) + fadeIn(animationSpec = tween(durationMillis = 300, easing = LinearEasing)) +
+                scaleIn(initialScale = 0.85f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
             },
             popExitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { it },
-                    animationSpec = spring(dampingRatio = 0.85f, stiffness = Spring.StiffnessMedium)
-                ) + fadeOut(animationSpec = tween(200)) + scaleOut(targetScale = 0.85f)
+                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                ) + fadeOut(animationSpec = tween(durationMillis = 250, easing = LinearEasing)) +
+                scaleOut(targetScale = 0.85f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
             }
         ) {
         composable("player") {
