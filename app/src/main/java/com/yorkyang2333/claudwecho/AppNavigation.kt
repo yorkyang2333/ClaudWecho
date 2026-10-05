@@ -63,30 +63,48 @@ fun AppNavigation(
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it / 2 },
-                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                ) + fadeIn(animationSpec = tween(durationMillis = 300, easing = LinearEasing)) +
-                scaleIn(initialScale = 0.85f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
+                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
+                ) + scaleIn(
+                    initialScale = 0.8f,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 500f)
+                ) + fadeIn(
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 1500f)
+                )
             },
             exitTransition = {
                 slideOutHorizontally(
-                    targetOffsetX = { -it / 3 },
-                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                ) + fadeOut(animationSpec = tween(durationMillis = 250, easing = LinearEasing)) +
-                scaleOut(targetScale = 0.9f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
+                    targetOffsetX = { -it / 2 },
+                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 200f)
+                ) + scaleOut(
+                    targetScale = 0.85f,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 150f)
+                ) + fadeOut(
+                    targetAlpha = 0.6f,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 1400f)
+                )
             },
             popEnterTransition = {
                 slideInHorizontally(
-                    initialOffsetX = { -it / 3 },
-                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                ) + fadeIn(animationSpec = tween(durationMillis = 300, easing = LinearEasing)) +
-                scaleIn(initialScale = 0.85f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
+                    initialOffsetX = { -it / 2 },
+                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
+                ) + scaleIn(
+                    initialScale = 0.8f,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 500f)
+                ) + fadeIn(
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 1500f)
+                )
             },
             popExitTransition = {
                 slideOutHorizontally(
                     targetOffsetX = { it },
-                    animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                ) + fadeOut(animationSpec = tween(durationMillis = 250, easing = LinearEasing)) +
-                scaleOut(targetScale = 0.85f, animationSpec = tween(durationMillis = 300, easing = LinearEasing))
+                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
+                ) + scaleOut(
+                    targetScale = 0.8f,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 300f)
+                ) + fadeOut(
+                    targetAlpha = 0.6f,
+                    animationSpec = spring(dampingRatio = 1f, stiffness = 1400f)
+                )
             }
         ) {
         composable("player") {
