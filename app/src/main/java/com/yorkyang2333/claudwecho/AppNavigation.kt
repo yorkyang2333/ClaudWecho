@@ -27,7 +27,7 @@ import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 import com.yorkyang2333.claudwecho.ui.main.HomePagerScreen
 import androidx.compose.runtime.getValue
 import androidx.wear.compose.material3.AppScaffold
-import androidx.wear.compose.material3.TimeText
+import com.yorkyang2333.claudwecho.ui.components.WysTimeText
 import androidx.wear.compose.navigation.currentBackStackEntryAsState
 
 @Composable
@@ -42,9 +42,7 @@ fun AppNavigation(
         modifier = Modifier.fillMaxSize(),
         timeText = {
             if (currentRoute != "player") {
-                TimeText {
-                    time()
-                }
+                WysTimeText()
             }
         }
     ) {

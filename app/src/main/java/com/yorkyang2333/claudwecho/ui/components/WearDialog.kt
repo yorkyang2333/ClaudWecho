@@ -23,4 +23,3 @@ fun WearDialog(
         content()
     }
 }
-

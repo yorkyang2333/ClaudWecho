@@ -17,6 +17,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -122,21 +123,70 @@ fun HomePagerScreen(
             )
         }
 
-        HorizontalPager(
-            state = pagerState
-        ) { page ->
-            when (page) {
-                0 -> PlayerScreen(
-                    viewModel = playerViewModel,
-                    isActivePage = pagerState.currentPage == 0,
-                    onMenuClick = onNavigateToMenu,
-                    onSettingsClick = onSettingsClick
-                )
-                1 -> LyricsScreen(
-                    viewModel = playerViewModel,
-                    isActivePage = pagerState.currentPage == 1
-                )
+        val context = androidx.compose.ui.platform.LocalContext.current
+        var dynamicColorScheme by remember { mutableStateOf<androidx.wear.compose.material3.ColorScheme?>(null) }
+
+        LaunchedEffect(currentArtworkUri) {
+            val uri = currentArtworkUri
+            if (uri != null) {
+                try {
+                    val loader = coil3.ImageLoader(context)
+                    val req = ImageRequest.Builder(context)
+                        .data(uri)
+                        .size(100)
+                        .build()
+                    val result = loader.execute(req)
+                    if (result is coil3.request.SuccessResult) {
+                        val image = result.image
+                        val bitmap: android.graphics.Bitmap? = when (image) {
+                            is coil3.BitmapImage -> image.bitmap
+                            is coil3.DrawableImage -> (image.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                            else -> null
+                        }
+                        if (bitmap != null) {
+                            val seed = com.yorkyang2333.claudwecho.theme.extractSeedColorFromBitmap(bitmap)
+                            if (seed != null) {
+                                dynamicColorScheme = com.yorkyang2333.claudwecho.theme.generateWearColorSchemeFromSeed(seed)
+                            } else {
+                                dynamicColorScheme = null
+                            }
+                        }
+                    }
+                } catch (_: Exception) {
+                    dynamicColorScheme = null
+                }
+            } else {
+                dynamicColorScheme = null
             }
+        }
+
+        val contentWithTheme = @Composable {
+            HorizontalPager(
+                state = pagerState
+            ) { page ->
+                when (page) {
+                    0 -> PlayerScreen(
+                        viewModel = playerViewModel,
+                        isActivePage = pagerState.currentPage == 0,
+                        onMenuClick = onNavigateToMenu,
+                        onSettingsClick = onSettingsClick
+                    )
+                    1 -> LyricsScreen(
+                        viewModel = playerViewModel,
+                        isActivePage = pagerState.currentPage == 1
+                    )
+                }
+            }
+        }
+
+        val scheme = dynamicColorScheme
+        if (scheme != null) {
+            androidx.wear.compose.material3.MaterialTheme(
+                colorScheme = scheme,
+                content = contentWithTheme
+            )
+        } else {
+            contentWithTheme()
         }
     }
 }

@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.wear.compose.material3.AlertDialog
 import androidx.wear.compose.material3.AlertDialogDefaults
+import com.yorkyang2333.claudwecho.ui.components.WysAlertDialog
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Check
@@ -154,23 +155,15 @@ fun UserProfileScreen(
         }
     }
 
-    AlertDialog(
+    WysAlertDialog(
         show = showLogoutConfirm,
         onDismissRequest = { showLogoutConfirm = false },
-        confirmButton = {
-            AlertDialogDefaults.ConfirmButton(
-                onClick = {
-                    viewModel.logout()
-                    showLogoutConfirm = false
-                }
-            )
+        onConfirm = {
+            viewModel.logout()
+            showLogoutConfirm = false
         },
-        dismissButton = {
-            AlertDialogDefaults.DismissButton(
-                onClick = { showLogoutConfirm = false }
-            )
-        },
-        title = { Text("退出登录") },
-        text = { Text("确认退出当前账号？") }
+        title = "退出登录",
+        message = "确认退出当前账号？",
+        icon = Icons.AutoMirrored.Rounded.ExitToApp
     )
 }

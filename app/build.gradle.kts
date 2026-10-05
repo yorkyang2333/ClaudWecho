@@ -102,6 +102,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
 
   implementation(libs.androidx.palette.ktx)
+  implementation(libs.material.color.utilities)
   val composeBom = platform(libs.androidx.compose.bom)
   implementation(composeBom)
   androidTestImplementation(composeBom)

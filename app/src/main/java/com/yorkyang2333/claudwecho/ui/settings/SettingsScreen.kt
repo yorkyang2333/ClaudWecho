@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.wear.compose.material3.AlertDialog
 import androidx.wear.compose.material3.AlertDialogDefaults
 import com.yorkyang2333.claudwecho.ui.components.WearDialog
+import com.yorkyang2333.claudwecho.ui.components.WysAlertDialog
 
 @Composable
 fun SettingsScreen(
@@ -74,7 +75,7 @@ fun SettingsScreen(
                 val url = results?.getCharSequence("api_url")?.toString()
                 if (!url.isNullOrBlank()) {
                     viewModel.setApiBaseUrl(url)
-                    android.widget.Toast.makeText(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效", android.widget.Toast.LENGTH_SHORT).show()
+                    com.yorkyang2333.claudwecho.ui.components.RoundToast.show(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效")
                 }
             }
         }
@@ -238,24 +239,16 @@ fun SettingsScreen(
         }
     }
 
-    AlertDialog(
+    WysAlertDialog(
         show = showConfirm,
         onDismissRequest = { showConfirm = false },
-        confirmButton = {
-            AlertDialogDefaults.ConfirmButton(
-                onClick = {
-                    viewModel.clearCache()
-                    showConfirm = false
-                }
-            )
+        onConfirm = {
+            viewModel.clearCache()
+            showConfirm = false
         },
-        dismissButton = {
-            AlertDialogDefaults.DismissButton(
-                onClick = { showConfirm = false }
-            )
-        },
-        title = { Text("清除缓存") },
-        text = { Text("确认清除所有本地缓存？") }
+        title = "清除缓存",
+        message = "确认清除所有本地缓存？",
+        icon = Icons.Rounded.Delete
     )
 
     WearDialog(
@@ -303,7 +296,7 @@ fun SettingsScreen(
                     onCancel = { showUrlDialog = false },
                     onConfirm = {
                         viewModel.setApiBaseUrl(tempUrl)
-                        android.widget.Toast.makeText(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效", android.widget.Toast.LENGTH_SHORT).show()
+                        com.yorkyang2333.claudwecho.ui.components.RoundToast.show(viewModel.getApplicationContext(), "后端地址已修改，重启应用后生效")
                         showUrlDialog = false
                     }
                 )

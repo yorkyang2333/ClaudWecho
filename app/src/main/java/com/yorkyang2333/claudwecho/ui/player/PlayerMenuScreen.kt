@@ -18,7 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import android.widget.Toast
+import com.yorkyang2333.claudwecho.ui.components.RoundToast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -237,7 +237,7 @@ fun PlayerMenuScreen(
                             if (podcastId != null) {
                                 onNavigateToPodcast(podcastId)
                             } else {
-                                Toast.makeText(context, "未找到播客信息", Toast.LENGTH_SHORT).show()
+                                RoundToast.show(context, "未找到播客信息")
                             }
                         },
                         enabled = viewModel.currentSongId() != null,
@@ -264,7 +264,7 @@ fun PlayerMenuScreen(
                                     if (fetchedId != null) {
                                         onNavigateToAlbum(fetchedId)
                                     } else {
-                                        Toast.makeText(context, "未找到专辑信息", Toast.LENGTH_SHORT).show()
+                                        RoundToast.show(context, "未找到专辑信息")
                                     }
                                 }
                             }
@@ -311,11 +311,10 @@ fun PlayerMenuScreen(
             onPlaylistSelected = { playlist ->
                 viewModel.currentSongId()?.let { songId ->
                     viewModel.addSongToPlaylist(playlist.id, songId) { success ->
-                        Toast.makeText(
+                        RoundToast.show(
                             context,
-                            if (success) "已添加到：${playlist.name}" else "添加失败",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            if (success) "已添加到：${playlist.name}" else "添加失败"
+                        )
                     }
                 }
                 showAddToPlaylistDialog.value = false

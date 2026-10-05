@@ -276,7 +276,7 @@ fun PlayerScreen(
                         onClick = {
                             focusRequester.requestFocus()
                             viewModel.trashCurrentFmSong()
-                            android.widget.Toast.makeText(context, "已添加到黑名单", android.widget.Toast.LENGTH_SHORT).show()
+                            com.yorkyang2333.claudwecho.ui.components.RoundToast.show(context, "已添加到黑名单")
                         },
                         modifier = Modifier.size(56.dp),
                         enabled = currentTitle != null
