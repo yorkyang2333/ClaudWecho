@@ -16,7 +16,8 @@ When creating or updating pages with lists (`ScalingLazyColumn` / `RotaryScaling
          WearListHeader(title = "...")
      }
      ```
-   - Do NOT use pinned headers overlaying lists (`PinnedHeader` + `Spacer(48.dp)`) unless explicitly designing a fixed-header overlay. In standard Wear OS M3, headers naturally scroll with the list items using `ListHeader`.
+   - In Wear OS Material 3 Expressive, `ListHeader` uses standard `ListHeaderDefaults.contentPadding` (top 16.dp, bottom 12.dp, horizontal 14.dp).
+   - Do NOT insert manual `Spacer` components before the header or around it. In standard Wear OS M3, headers naturally scroll with the list items using `ListHeader`.
 
 2. **ScalingLazyColumn Layout Parameters**:
    - `scalingParams`: Do not use custom `scalingParams` so it defaults to standard Wear OS scaling parameters (wider items, less edge shrinking).

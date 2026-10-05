@@ -24,9 +24,7 @@ fun WearListHeader(
     actionIcon: @Composable (() -> Unit)? = null
 ) {
     ListHeader(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
