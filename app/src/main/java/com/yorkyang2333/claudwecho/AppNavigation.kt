@@ -49,7 +49,7 @@ fun AppNavigation(
         SwipeDismissableNavHost(
             navController = navController,
             startDestination = "player",
-            userSwipeEnabled = true
+            userSwipeEnabled = currentRoute != "player"
         ) {
         composable("player") {
             HomePagerScreen(
