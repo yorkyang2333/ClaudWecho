@@ -1,10 +1,16 @@
 package com.yorkyang2333.claudwecho
 
+import android.os.Build
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -12,41 +18,44 @@ import androidx.navigation.NavHostController
 import com.yorkyang2333.claudwecho.ui.components.Button
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.wear.compose.material3.AppScaffold
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
+import androidx.wear.compose.navigation.SwipeDismissableNavHost
+import androidx.wear.compose.navigation.composable
+import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import com.yorkyang2333.claudwecho.ui.main.MainScreen
 import com.yorkyang2333.claudwecho.ui.player.PlayerScreen
 
 import org.koin.androidx.compose.koinViewModel
 import com.yorkyang2333.claudwecho.ui.player.PlayerViewModel
 import com.yorkyang2333.claudwecho.ui.main.HomePagerScreen
-import androidx.compose.runtime.getValue
-import androidx.wear.compose.material3.AppScaffold
 import com.yorkyang2333.claudwecho.ui.components.WysTimeText
 
 @Composable
 fun AppNavigation(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberSwipeDismissableNavController()
 ) {
     val playerViewModel: PlayerViewModel = koinViewModel()
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentBackStackEntry by navController.currentBackStackEntryFlow.collectAsState(initial = navController.currentBackStackEntry)
     val currentRoute = currentBackStackEntry?.destination?.route
+
+    val isMiWatch5 = Build.MODEL == "M2505W1" || Build.MODEL == "M2501W1"
+    val isSwipeEnabled = remember(currentRoute, isMiWatch5) {
+        if (isMiWatch5) false
+        else currentRoute != "player"
+    }
+
+    val canGoBack = remember(currentBackStackEntry) {
+        navController.previousBackStackEntry != null
+    }
+    val backHandlerEnabled = canGoBack && isMiWatch5
+
+    BackHandler(enabled = backHandlerEnabled) {
+        navController.popBackStack()
+    }
 
     AppScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -56,56 +65,13 @@ fun AppNavigation(
             }
         }
     ) {
-        NavHost(
+        SwipeDismissableNavHost(
             navController = navController,
             startDestination = "player",
-            modifier = Modifier.fillMaxSize(),
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it / 2 },
-                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
-                ) + scaleIn(
-                    initialScale = 0.8f,
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 500f)
-                ) + fadeIn(
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 1500f)
-                )
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it / 2 },
-                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 200f)
-                ) + scaleOut(
-                    targetScale = 0.85f,
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 150f)
-                ) + fadeOut(
-                    targetAlpha = 0.6f,
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 1400f)
-                )
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it / 2 },
-                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
-                ) + scaleIn(
-                    initialScale = 0.8f,
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 500f)
-                ) + fadeIn(
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 1500f)
-                )
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f)
-                ) + scaleOut(
-                    targetScale = 0.8f,
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 300f)
-                ) + fadeOut(
-                    targetAlpha = 0.6f,
-                    animationSpec = spring(dampingRatio = 1f, stiffness = 1400f)
-                )
-            }
+            userSwipeEnabled = isSwipeEnabled,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
         composable("player") {
             HomePagerScreen(
