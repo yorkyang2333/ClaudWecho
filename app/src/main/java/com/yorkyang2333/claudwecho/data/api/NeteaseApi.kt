@@ -489,6 +489,15 @@ data class CommentUser(
 )
 
 @Serializable
+data class CommentReply(
+    val user: CommentUser? = null,
+    val beRepliedCommentId: Long? = null,
+    val content: String? = null,
+    val status: Int? = null,
+    val expressionUrl: String? = null
+)
+
+@Serializable
 data class Comment(
     val commentId: Long,
     val content: String? = null,
@@ -496,7 +505,9 @@ data class Comment(
     val timeStr: String? = null,
     val likedCount: Int = 0,
     val user: CommentUser? = null,
-    val liked: Boolean = false
+    val liked: Boolean = false,
+    val expressionUrl: String? = null,
+    val beReplied: List<CommentReply>? = null
 )
 
 @Serializable

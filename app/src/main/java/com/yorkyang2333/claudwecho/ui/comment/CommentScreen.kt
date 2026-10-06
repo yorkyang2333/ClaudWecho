@@ -15,10 +15,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.ButtonDefaults
@@ -28,6 +35,7 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import coil3.compose.AsyncImage
 import com.yorkyang2333.claudwecho.data.api.Comment
+import com.yorkyang2333.claudwecho.data.api.CommentReply
 import com.yorkyang2333.claudwecho.ui.components.Button
 import com.yorkyang2333.claudwecho.ui.components.WearListHeader
 import com.yorkyang2333.claudwecho.ui.components.RotaryScalingLazyColumn
@@ -352,6 +360,26 @@ private fun CommentItem(
                 )
             }
 
+            // Main comment expression if any
+            val expressionUrl = comment.expressionUrl
+            if (!expressionUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = toOriginalImageUrl(expressionUrl),
+                    contentDescription = "表情",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(top = 2.dp)
+                )
+            }
+
+            // Quoted replies (beReplied)
+            val beRepliedList = comment.beReplied
+            if (!beRepliedList.isNullOrEmpty()) {
+                beRepliedList.forEach { reply ->
+                    QuotedCommentItem(reply = reply)
+                }
+            }
+
             // Publish time
             val timeText = comment.timeStr ?: comment.time?.let { formatDate(it) }
             if (!timeText.isNullOrBlank()) {
@@ -360,6 +388,92 @@ private fun CommentItem(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                     maxLines = 1
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuotedCommentItem(
+    reply: CommentReply,
+    modifier: Modifier = Modifier
+) {
+    val replyUser = reply.user?.nickname?.trim()
+    val replyContent = when {
+        !reply.content.isNullOrBlank() -> reply.content.trim()
+        reply.status != null && reply.status < 0 -> "该评论已删除"
+        else -> null
+    }
+
+    if (replyUser.isNullOrBlank() && replyContent.isNullOrBlank() && reply.expressionUrl.isNullOrBlank()) {
+        return
+    }
+
+    val barColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawLine(
+                    color = barColor,
+                    start = Offset(1.5.dp.toPx(), 2.dp.toPx()),
+                    end = Offset(1.5.dp.toPx(), size.height - 2.dp.toPx()),
+                    strokeWidth = 2.dp.toPx(),
+                    cap = StrokeCap.Round
+                )
+            }
+            .padding(start = 8.dp, top = 2.dp, bottom = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            val annotatedText = buildAnnotatedString {
+                if (!replyUser.isNullOrBlank()) {
+                    withStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    ) {
+                        append("@$replyUser")
+                    }
+                    if (!replyContent.isNullOrBlank()) {
+                        append(": ")
+                    }
+                }
+                if (!replyContent.isNullOrBlank()) {
+                    withStyle(
+                        SpanStyle(
+                            color = if (reply.status != null && reply.status < 0 && reply.content.isNullOrBlank()) {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    ) {
+                        append(replyContent)
+                    }
+                }
+            }
+
+            if (annotatedText.isNotEmpty()) {
+                Text(
+                    text = annotatedText,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            val replyExpressionUrl = reply.expressionUrl
+            if (!replyExpressionUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = toOriginalImageUrl(replyExpressionUrl),
+                    contentDescription = "表情",
+                    modifier = Modifier
+                        .size(28.dp)
+                        .padding(top = 2.dp)
                 )
             }
         }
