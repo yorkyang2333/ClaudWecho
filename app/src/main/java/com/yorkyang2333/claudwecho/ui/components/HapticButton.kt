@@ -25,9 +25,26 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private val isOppoOrOnePlus: Boolean by lazy {
+    val brand = android.os.Build.BRAND.lowercase()
+    val manufacturer = android.os.Build.MANUFACTURER.lowercase()
+    brand.contains("oppo") || brand.contains("oneplus") || manufacturer.contains("oppo") || manufacturer.contains("oneplus")
+}
+
 fun View.performRotaryHaptic() {
-    if (!performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)) {
-        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+    // 12 (GESTURE_START) 是 OPPO / ColorOS Watch 官方专用的表冠滚动触觉波形（波形 302）
+    if (isOppoOrOnePlus) {
+        if (!performHapticFeedback(12)) {
+            if (!performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)) {
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            }
+        }
+    } else {
+        if (!performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)) {
+            if (!performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)) {
+                performHapticFeedback(12)
+            }
+        }
     }
 }
 
