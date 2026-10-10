@@ -28,7 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.drawWithCache
 import androidx.wear.compose.material3.CircularProgressIndicator
+import androidx.wear.compose.material3.drawCircularProgressIndicator
 import androidx.wear.compose.material3.ProgressIndicatorDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
@@ -197,14 +199,24 @@ fun PlayerScreen(
         )
         
         if (isRound) {
-            CircularProgressIndicator(
-                progress = { animatedProgress },
-                modifier = Modifier.fillMaxSize(),
-                strokeWidth = 6.dp,
-                colors = ProgressIndicatorDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.primary,
-                    trackColor = Color.White.copy(alpha = 0.2f)
-                )
+            val strokeWidth = 6.dp
+            val progressColors = ProgressIndicatorDefaults.colors(
+                indicatorColor = MaterialTheme.colorScheme.primary,
+                trackColor = Color.White.copy(alpha = 0.2f)
+            )
+            val currentProgressValue = animatedProgress.coerceIn(0f, 1f)
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .drawWithCache {
+                        onDrawWithContent {
+                            drawCircularProgressIndicator(
+                                progress = currentProgressValue,
+                                colors = progressColors,
+                                strokeWidth = strokeWidth
+                            )
+                        }
+                    }
             )
         }
 
