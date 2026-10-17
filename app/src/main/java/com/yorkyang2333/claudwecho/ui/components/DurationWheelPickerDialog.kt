@@ -145,7 +145,9 @@ fun DurationWheelPickerDialog(
                     if (event.action == MotionEvent.ACTION_SCROLL) {
                         val vScroll = event.getAxisValue(MotionEvent.AXIS_VSCROLL)
                         if (vScroll != 0f) {
-                            val scrollFactor = ViewConfiguration.get(view.context).scaledVerticalScrollFactor
+                            val scrollFactor = androidx.core.view.ViewConfigurationCompat.getScaledVerticalScrollFactor(
+                                ViewConfiguration.get(view.context), view.context
+                            )
                             val deltaPx = -vScroll * scrollFactor
                             val now = System.currentTimeMillis()
                             if (now - lastRotaryTime > 250L) {

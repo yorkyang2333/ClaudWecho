@@ -15,6 +15,7 @@ import org.koin.dsl.module
 import java.io.File
 import java.util.TreeSet
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class DynamicLruCacheEvictor(
     @Volatile var maxBytes: Long
 ) : CacheEvictor {
@@ -65,7 +66,10 @@ class DynamicLruCacheEvictor(
     }
 }
 
-val playerModule = module {
+val playerModule = createPlayerModule()
+
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+private fun createPlayerModule() = module {
     single {
         val context: Context = androidContext()
         val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)

@@ -15,6 +15,7 @@ import com.yorkyang2333.claudwecho.data.PlaybackStateManager
 import com.yorkyang2333.claudwecho.data.SleepTimerManager
 import org.koin.android.ext.android.inject
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class PlaybackService : MediaSessionService() {
     private val player: ExoPlayer by inject()
     private val playbackStateManager: PlaybackStateManager by inject()

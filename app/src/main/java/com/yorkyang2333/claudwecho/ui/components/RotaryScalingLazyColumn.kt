@@ -96,7 +96,9 @@ fun RotaryScalingLazyColumn(
                     if (event.action == android.view.MotionEvent.ACTION_SCROLL) {
                         val vScroll = event.getAxisValue(android.view.MotionEvent.AXIS_VSCROLL)
                         if (vScroll != 0f) {
-                            val scrollFactor = android.view.ViewConfiguration.get(view.context).scaledVerticalScrollFactor
+                            val scrollFactor = androidx.core.view.ViewConfigurationCompat.getScaledVerticalScrollFactor(
+                                android.view.ViewConfiguration.get(view.context), view.context
+                            )
                             val deltaPx = -vScroll * scrollFactor
                             
                             val currentTime = System.currentTimeMillis()

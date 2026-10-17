@@ -25,7 +25,7 @@ import androidx.wear.compose.material3.Text
 import coil3.compose.AsyncImage
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -122,7 +122,7 @@ fun UserProfileScreen(
                         if (vipInfo == null) {
                             Text(text = "加载中...")
                         } else if (expireTime != null && expireTime > 0) {
-                            val sdf = SimpleDateFormat("yyyy-MM-dd 到期", Locale.getDefault())
+                            val sdf = SimpleDateFormat("yyyy-MM-dd 到期", LocalConfiguration.current.locales[0])
                             Text(text = sdf.format(Date(expireTime)))
                         } else {
                             if (isVip) {
