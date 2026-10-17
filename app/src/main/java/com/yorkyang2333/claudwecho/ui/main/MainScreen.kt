@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -152,6 +153,13 @@ fun MainScreen(
                     )
                 }
                 
+                item {
+                    FeatureButton(
+                        icon = Icons.Rounded.Mic,
+                        text = "听歌识曲",
+                        onClick = { onNavigateToFeature("recognition") }
+                    )
+                }
                 item {
                     FeatureButton(
                         icon = Icons.Rounded.Radio,

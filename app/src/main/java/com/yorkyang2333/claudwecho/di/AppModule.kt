@@ -102,7 +102,13 @@ val networkModule = module {
             .connectionPool(okhttp3.ConnectionPool(15, 5, java.util.concurrent.TimeUnit.MINUTES))
             .addInterceptor(dynamicBaseUrlInterceptor)
             .addInterceptor(bluetoothCompatibilityRetryInterceptor)
-            .addInterceptor(logging)
+            .addInterceptor { chain ->
+                if (chain.request().url.encodedPath.endsWith("/audio/match")) {
+                    chain.proceed(chain.request())
+                } else {
+                    logging.intercept(chain)
+                }
+            }
             .build()
     }
 
@@ -131,6 +137,16 @@ val networkModule = module {
     single { com.yorkyang2333.claudwecho.data.SleepTimerManager(androidContext()) { getOrNull<androidx.media3.exoplayer.ExoPlayer>() } }
     single { LoginRepository(get()) }
     single { MainRepository(get(), get()) }
+    factory<com.yorkyang2333.claudwecho.data.recognition.AudioRecorder> {
+        com.yorkyang2333.claudwecho.data.recognition.MicrophoneAudioRecorder(androidContext())
+    }
+    single<com.yorkyang2333.claudwecho.data.recognition.AudioFingerprint> {
+        com.yorkyang2333.claudwecho.data.recognition.LocalAudioFingerprint()
+    }
+    single<com.yorkyang2333.claudwecho.data.recognition.RecognitionRepository> {
+        com.yorkyang2333.claudwecho.data.recognition.ApiRecognitionRepository(get())
+    }
+    viewModel { com.yorkyang2333.claudwecho.ui.recognition.RecognitionViewModel(get(), get(), get()) }
     
     // ViewModels
     viewModel { LoginViewModel(get()) }

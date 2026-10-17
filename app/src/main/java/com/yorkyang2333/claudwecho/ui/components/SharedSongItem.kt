@@ -60,6 +60,7 @@ fun SharedSongItem(
                     style = MaterialTheme.typography.titleMedium,
                     color = if (isPlaying && !isMultiSelectMode) MaterialTheme.colorScheme.primary else Color.Unspecified,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .weight(1f, fill = false)
                         .basicMarquee(iterations = Int.MAX_VALUE)

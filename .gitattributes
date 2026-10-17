@@ -1,0 +1,3 @@
+app/src/main/cpp/fingerprint/afp.[ch] linguist-generated=true
+app/src/main/cpp/fingerprint/runtime/* linguist-vendored=true
+app/src/androidTest/assets/recognition/* binary

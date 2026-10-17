@@ -185,7 +185,20 @@ fun AppNavigation(
             )
         }
         
-        composable("my_collection") { 
+        composable("recognition") {
+            val vm: com.yorkyang2333.claudwecho.ui.recognition.RecognitionViewModel = koinViewModel()
+            com.yorkyang2333.claudwecho.ui.recognition.RecognitionScreen(
+                viewModel = vm,
+                onPausePlayback = { playerViewModel.pausePlayback() },
+                onPlay = { songs, index ->
+                    playerViewModel.playPlaylist(songs, index)
+                    navController.navigate("player") { popUpTo("player") { inclusive = true } }
+                },
+                onPlayNext = { playerViewModel.playNext(it) },
+                onSongInfo = { navController.navigate("song_info/$it") }
+            )
+        }
+        composable("my_collection") {
             val vm: com.yorkyang2333.claudwecho.ui.collection.MyCollectionViewModel = koinViewModel()
             com.yorkyang2333.claudwecho.ui.collection.MyCollectionScreen(
                 viewModel = vm,

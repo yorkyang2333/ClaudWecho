@@ -325,6 +325,10 @@ class PlayerViewModel(
         }
     }
 
+    fun pausePlayback() {
+        player?.pause()
+    }
+
     fun skipToNext() {
         player?.let {
             if (it.playbackState == Player.STATE_IDLE) {

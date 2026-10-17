@@ -3,8 +3,21 @@ package com.yorkyang2333.claudwecho.data.api
 import kotlinx.serialization.Serializable
 import retrofit2.http.GET
 import retrofit2.http.Query
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.POST
 
 interface NeteaseApi {
+    @FormUrlEncoded
+    @POST("/audio/match")
+    suspend fun matchAudio(
+        @Field("duration") duration: Int,
+        @Field("audioFP") fingerprint: String
+    ): AudioMatchResponse
+
+    @GET("/song/detail")
+    suspend fun getSongDetails(@Query("ids") ids: String): SongDetailResponse
+
     @GET("/login/qr/key")
     suspend fun getQrKey(@Query("timestamp") timestamp: Long = System.currentTimeMillis()): QrKeyResponse
 
@@ -211,6 +224,18 @@ interface NeteaseApi {
         @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): BaseResponse
 }
+
+@Serializable
+data class AudioMatchResponse(val code: Int, val data: AudioMatchData? = null)
+
+@Serializable
+data class AudioMatchData(val result: List<AudioMatchCandidate>? = null)
+
+@Serializable
+data class AudioMatchCandidate(val song: AudioMatchSong? = null)
+
+@Serializable
+data class AudioMatchSong(val id: Long)
 
 @Serializable
 data class PlaylistTracksResponse(

@@ -11,6 +11,14 @@ plugins {
 android {
     namespace = "com.yorkyang2333.claudwecho"
     compileSdk = 37
+    ndkVersion = "27.0.12077973"
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 
     val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
@@ -24,6 +32,10 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
 
         val rawApiBaseUrl = localProperties.getProperty("API_BASE_URL")?.takeIf { it.isNotBlank() } 
             ?: System.getenv("API_BASE_URL")?.takeIf { it.isNotBlank() }
