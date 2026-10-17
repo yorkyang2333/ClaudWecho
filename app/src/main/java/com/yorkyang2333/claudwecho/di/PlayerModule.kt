@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.di
 
+import androidx.core.net.toUri
 import android.content.Context
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.okhttp.OkHttpDataSource
@@ -128,7 +129,7 @@ private fun createPlayerModule() = module {
                             resolved
                         }
                         return@Resolver dataSpec.buildUpon()
-                            .setUri(android.net.Uri.parse(finalUrl))
+                            .setUri(finalUrl.toUri())
                             .setKey(dataSpec.key ?: id.toString())
                             .build()
                     }

@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.data
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.media3.exoplayer.ExoPlayer
@@ -41,7 +42,9 @@ class SleepTimerManager(
     fun setDuration(minutes: Int) {
         val clamped = minutes.coerceIn(1, 23 * 60 + 59)
         _durationMinutes.value = clamped
-        prefs.edit().putInt("duration_minutes", clamped).apply()
+        prefs.edit {
+            putInt("duration_minutes", clamped)
+        }
         if (_isEnabled.value) {
             // Restart timer with new duration
             startCountdown()
@@ -50,7 +53,9 @@ class SleepTimerManager(
 
     fun setFinishCurrentSong(finish: Boolean) {
         _finishCurrentSong.value = finish
-        prefs.edit().putBoolean("finish_current_song", finish).apply()
+        prefs.edit {
+            putBoolean("finish_current_song", finish)
+        }
     }
 
     fun setEnabled(enabled: Boolean) {

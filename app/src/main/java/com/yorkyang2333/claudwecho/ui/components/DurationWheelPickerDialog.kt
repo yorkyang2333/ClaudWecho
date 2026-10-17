@@ -1,5 +1,8 @@
 package com.yorkyang2333.claudwecho.ui.components
 
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.compose.foundation.background
@@ -20,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -65,14 +67,14 @@ fun DurationWheelPickerDialog(
         repeatItems = false
     )
 
-    var focusedColumn by remember { mutableStateOf(1) } // 0: hours, 1: minutes
+    var focusedColumn by remember { mutableIntStateOf(1) } // 0: hours, 1: minutes
 
     val coroutineScope = rememberCoroutineScope()
     val view = LocalView.current
     val focusRequester = remember { FocusRequester() }
 
-    var accumulatedRotaryDelta by remember { mutableStateOf(0f) }
-    var lastRotaryTime by remember { mutableStateOf(0L) }
+    var accumulatedRotaryDelta by remember { mutableFloatStateOf(0f) }
+    var lastRotaryTime by remember { mutableLongStateOf(0L) }
 
     // Auto switch focus when user touches or scrolls a picker
     LaunchedEffect(hoursState.isScrollInProgress) {
@@ -88,8 +90,8 @@ fun DurationWheelPickerDialog(
     }
 
     // Haptic vibration whenever selected option changes
-    var lastHoursOption by remember { mutableStateOf(initHours) }
-    var lastMinutesOption by remember { mutableStateOf(initMins) }
+    var lastHoursOption by remember { mutableIntStateOf(initHours) }
+    var lastMinutesOption by remember { mutableIntStateOf(initMins) }
 
     LaunchedEffect(hoursState.selectedOption) {
         if (hoursState.selectedOption != lastHoursOption) {
@@ -239,7 +241,7 @@ fun DurationWheelPickerDialog(
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         Text(
-                                            text = String.format("%02d", optionIndex),
+                                            text = String.format(java.util.Locale.ROOT, "%02d", optionIndex),
                                             style = if (isSelected) {
                                                 MaterialTheme.typography.titleLarge.copy(
                                                     fontSize = 24.sp,
@@ -313,7 +315,7 @@ fun DurationWheelPickerDialog(
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         Text(
-                                            text = String.format("%02d", optionIndex),
+                                            text = String.format(java.util.Locale.ROOT, "%02d", optionIndex),
                                             style = if (isSelected) {
                                                 MaterialTheme.typography.titleLarge.copy(
                                                     fontSize = 24.sp,

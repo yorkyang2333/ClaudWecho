@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.data
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import com.yorkyang2333.claudwecho.data.api.Song
@@ -43,7 +44,9 @@ class LocalRecentPlaysManager(context: Context) {
     private fun saveSongs(songs: List<Song>) {
         try {
             val jsonStr = json.encodeToString(songs)
-            prefs.edit().putString(KEY_RECENT_SONGS, jsonStr).apply()
+            prefs.edit {
+                putString(KEY_RECENT_SONGS, jsonStr)
+            }
         } catch (e: Exception) {
             // Error encoding songs
         }

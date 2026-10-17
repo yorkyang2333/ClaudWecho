@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.data
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import kotlinx.serialization.encodeToString
@@ -36,13 +37,17 @@ class LocalSearchHistoryManager(context: Context) {
     }
 
     fun clearHistory() {
-        prefs.edit().remove(KEY_HISTORY_QUERIES).apply()
+        prefs.edit {
+            remove(KEY_HISTORY_QUERIES)
+        }
     }
 
     private fun saveHistory(queries: List<String>) {
         try {
             val jsonStr = json.encodeToString(queries)
-            prefs.edit().putString(KEY_HISTORY_QUERIES, jsonStr).apply()
+            prefs.edit {
+                putString(KEY_HISTORY_QUERIES, jsonStr)
+            }
         } catch (e: Exception) {
             // Error encoding queries
         }

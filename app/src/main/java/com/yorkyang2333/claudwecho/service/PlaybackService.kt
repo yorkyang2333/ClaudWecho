@@ -106,8 +106,12 @@ class PlaybackService : MediaSessionService() {
                 ): MediaSession.ConnectionResult {
                     val sessionCommands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS
                         .buildUpon()
-                        .add(addNextCommand)
-                        .add(playPlaylistCommand)
+                        .apply {
+                            if (controller.uid == applicationInfo.uid) {
+                                add(addNextCommand)
+                                add(playPlaylistCommand)
+                            }
+                        }
                         .build()
                     return MediaSession.ConnectionResult.accept(
                         sessionCommands,
@@ -121,6 +125,11 @@ class PlaybackService : MediaSessionService() {
                     customCommand: SessionCommand,
                     args: android.os.Bundle
                 ): com.google.common.util.concurrent.ListenableFuture<SessionResult> {
+                    if (controller.uid != applicationInfo.uid) {
+                        return Futures.immediateFuture(
+                            SessionResult(SessionResult.RESULT_ERROR_PERMISSION_DENIED)
+                        )
+                    }
                     when (customCommand.customAction) {
                         PlaybackCommands.ACTION_ADD_NEXT -> {
                             val mediaItemBundle = args.getBundle(PlaybackCommands.EXTRA_MEDIA_ITEM)

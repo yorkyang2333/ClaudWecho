@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.ui.utils
 
+import androidx.core.graphics.createBitmap
 import android.content.Context
 import android.graphics.Bitmap
 import android.renderscript.Allocation
@@ -17,7 +18,7 @@ class BlurTransformation(
     override val cacheKey: String = "blur-$radius"
 
     override suspend fun transform(input: Bitmap, size: Size): Bitmap {
-        val output = Bitmap.createBitmap(input.width, input.height, input.config ?: Bitmap.Config.ARGB_8888)
+        val output = createBitmap(input.width, input.height, input.config ?: Bitmap.Config.ARGB_8888)
         
         var rs: RenderScript? = null
         try {

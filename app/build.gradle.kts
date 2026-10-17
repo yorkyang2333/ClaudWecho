@@ -99,8 +99,6 @@ kotlin {
 }
 
 dependencies {
-    implementation("androidx.compose.material:material-icons-extended")
-
   implementation(libs.androidx.palette.ktx)
   implementation(libs.material.color.utilities)
   val composeBom = platform(libs.androidx.compose.bom)
@@ -130,8 +128,7 @@ dependencies {
   implementation(libs.androidx.wear.compose.foundation)
   implementation(libs.androidx.wear.compose.navigation)
   implementation(libs.androidx.navigation.compose)
-  implementation("androidx.wear:wear-input:1.2.0-alpha02")
-  implementation(libs.play.services.wearable)
+  implementation(libs.androidx.wear.input)
 
   // Koin
   implementation(libs.koin.androidx.compose)
@@ -152,7 +149,7 @@ dependencies {
   implementation(libs.coil.network.okhttp)
 
   // Pinyin
-  implementation("com.belerweb:pinyin4j:2.5.1")
+  implementation(libs.pinyin4j)
 
   // Tooling
   debugImplementation(libs.androidx.compose.ui.tooling)
@@ -170,8 +167,4 @@ dependencies {
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.androidx.test.espresso.core)
 
-  // Navigation
-  implementation(libs.androidx.navigation3.ui)
-  implementation(libs.androidx.navigation3.runtime)
-  implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 }

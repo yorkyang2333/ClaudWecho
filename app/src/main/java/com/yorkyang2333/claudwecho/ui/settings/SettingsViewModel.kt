@@ -1,7 +1,9 @@
 package com.yorkyang2333.claudwecho.ui.settings
 
+import androidx.core.content.edit
 import android.content.Context
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,9 +15,10 @@ import androidx.lifecycle.viewModelScope
 import com.yorkyang2333.claudwecho.di.DynamicLruCacheEvictor
 
 class SettingsViewModel(
-    private val context: Context,
+    application: Application,
     private val cacheEvictor: DynamicLruCacheEvictor? = null
-) : ViewModel() {
+) : AndroidViewModel(application) {
+    private val context: Application get() = getApplication()
     private val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
 
     private val _screenShape = MutableStateFlow(prefs.getString("screen_shape", "auto") ?: "auto")
@@ -41,7 +44,9 @@ class SettingsViewModel(
     fun setApiBaseUrl(url: String) {
         val trimmed = url.trim()
         if (trimmed.isEmpty()) {
-            prefs.edit().remove("api_base_url").apply()
+            prefs.edit {
+                remove("api_base_url")
+            }
             _apiBaseUrl.value = com.yorkyang2333.claudwecho.BuildConfig.API_BASE_URL
             return
         }
@@ -52,7 +57,9 @@ class SettingsViewModel(
         if (!fixedUrl.endsWith("/")) {
             fixedUrl = "$fixedUrl/"
         }
-        prefs.edit().putString("api_base_url", fixedUrl).apply()
+        prefs.edit {
+            putString("api_base_url", fixedUrl)
+        }
         _apiBaseUrl.value = fixedUrl
     }
     
@@ -113,24 +120,32 @@ class SettingsViewModel(
         val shapes = listOf("auto", "round", "square")
         val nextIndex = (shapes.indexOf(current) + 1) % shapes.size
         val nextShape = shapes[nextIndex]
-        prefs.edit().putString("screen_shape", nextShape).apply()
+        prefs.edit {
+            putString("screen_shape", nextShape)
+        }
         _screenShape.value = nextShape
     }
 
     fun toggleKeepScreenOn() {
         val next = !_keepScreenOn.value
-        prefs.edit().putBoolean("keep_screen_on", next).apply()
+        prefs.edit {
+            putBoolean("keep_screen_on", next)
+        }
         _keepScreenOn.value = next
     }
 
     fun toggleVerbatimLyrics() {
         val next = !_verbatimLyrics.value
-        prefs.edit().putBoolean("verbatim_lyrics", next).apply()
+        prefs.edit {
+            putBoolean("verbatim_lyrics", next)
+        }
         _verbatimLyrics.value = next
     }
 
     fun setAudioCacheLimit(limitMb: Int) {
-        prefs.edit().putInt("audio_cache_limit_mb", limitMb).apply()
+        prefs.edit {
+            putInt("audio_cache_limit_mb", limitMb)
+        }
         _audioCacheLimitMb.value = limitMb
         cacheEvictor?.maxBytes = limitMb * 1024 * 1024L
     }

@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.data.api
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import okhttp3.Cookie
@@ -16,7 +17,10 @@ class PersistentCookieJar(context: Context) : CookieJar {
     init {
         // Clear corrupted cookies from previous versions
         if (!sharedPreferences.getBoolean("is_corrupted_cleared_v2", false)) {
-            sharedPreferences.edit().clear().putBoolean("is_corrupted_cleared_v2", true).apply()
+            sharedPreferences.edit {
+                clear()
+                putBoolean("is_corrupted_cleared_v2", true)
+            }
         }
 
         // Load cookies from shared preferences
@@ -45,7 +49,9 @@ class PersistentCookieJar(context: Context) : CookieJar {
         
         // Save to shared preferences
         val cookieString = currentCookies.joinToString("\n") { it.toString() }
-        sharedPreferences.edit().putString(host, cookieString).apply()
+        sharedPreferences.edit {
+            putString(host, cookieString)
+        }
     }
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
@@ -66,7 +72,9 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
         if (changed) {
             val cookieString = hostCookies.joinToString("\n") { it.toString() }
-            sharedPreferences.edit().putString(url.host, cookieString).apply()
+            sharedPreferences.edit {
+                putString(url.host, cookieString)
+            }
         }
 
         return validCookies
@@ -74,6 +82,8 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
     fun clear() {
         cookies.clear()
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit {
+            clear()
+        }
     }
 }

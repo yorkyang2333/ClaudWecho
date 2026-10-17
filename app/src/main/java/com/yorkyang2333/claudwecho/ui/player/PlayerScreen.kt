@@ -106,10 +106,10 @@ fun PlayerScreen(
 
     val focusRequester = remember { FocusRequester() }
     val view = LocalView.current
-    var accumulatedRotaryPx by remember { mutableStateOf(0f) }
-    var lastRotaryHapticTime by remember { mutableStateOf(0L) }
-    var accumulatedOppoScroll by remember { mutableStateOf(0f) }
-    var lastOppoScrollTime by remember { mutableStateOf(0L) }
+    var accumulatedRotaryPx by remember { mutableFloatStateOf(0f) }
+    var lastRotaryHapticTime by remember { mutableLongStateOf(0L) }
+    var accumulatedOppoScroll by remember { mutableFloatStateOf(0f) }
+    var lastOppoScrollTime by remember { mutableLongStateOf(0L) }
     var targetSeekPos by remember { mutableStateOf<Long?>(null) }
 
     LaunchedEffect(isActivePage) {
@@ -366,7 +366,7 @@ fun PlayerScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (!isRound) {
-                    var trackWidthPx by remember { mutableStateOf(1f) }
+                    var trackWidthPx by remember { mutableFloatStateOf(1f) }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -550,8 +550,8 @@ private fun formatTime(ms: Long): String {
     val minutes = (totalSeconds % 3600) / 60
     val seconds = totalSeconds % 60
     return if (hours > 0) {
-        String.format("%d:%02d:%02d", hours, minutes, seconds)
+        String.format(java.util.Locale.ROOT, "%d:%02d:%02d", hours, minutes, seconds)
     } else {
-        String.format("%02d:%02d", minutes, seconds)
+        String.format(java.util.Locale.ROOT, "%02d:%02d", minutes, seconds)
     }
 }

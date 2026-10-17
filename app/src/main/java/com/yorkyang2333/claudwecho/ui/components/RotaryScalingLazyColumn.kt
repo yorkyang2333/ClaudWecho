@@ -1,12 +1,13 @@
 package com.yorkyang2333.claudwecho.ui.components
 
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,8 +66,8 @@ fun RotaryScalingLazyColumn(
     val focusRequester = remember { FocusRequester() }
     val view = LocalView.current
     val coroutineScope = rememberCoroutineScope()
-    var accumulatedRotaryPx by remember { mutableStateOf(0f) }
-    var lastRotaryHapticTime by remember { mutableStateOf(0L) }
+    var accumulatedRotaryPx by remember { mutableFloatStateOf(0f) }
+    var lastRotaryHapticTime by remember { mutableLongStateOf(0L) }
     
     ScreenScaffold(
         scrollState = state,

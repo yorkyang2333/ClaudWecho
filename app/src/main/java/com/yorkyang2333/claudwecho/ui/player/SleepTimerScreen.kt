@@ -63,7 +63,7 @@ fun SleepTimerScreen(
         } else {
             val rMins = remainingSeconds / 60
             val rSecs = remainingSeconds % 60
-            "剩余 ${String.format("%02d:%02d", rMins, rSecs)}"
+            "剩余 ${String.format(java.util.Locale.ROOT, "%02d:%02d", rMins, rSecs)}"
         }
     } else null
 

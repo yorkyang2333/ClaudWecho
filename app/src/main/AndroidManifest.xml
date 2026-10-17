@@ -22,7 +22,8 @@
         android:windowSoftInputMode="adjustResize"
         android:theme="@style/Theme.ClaudWecho"
         android:enableOnBackInvokedCallback="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="33">
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
@@ -31,15 +32,17 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ClaudWecho.Starting"
-            android:enableOnBackInvokedCallback="true">
+            android:taskAffinity="${applicationId}">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- Media3 must accept system media controllers; internal queue commands are UID-gated. -->
         <service
             android:name=".service.PlaybackService"
+            tools:ignore="ExportedService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true">
             <intent-filter>

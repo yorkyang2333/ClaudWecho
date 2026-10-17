@@ -17,6 +17,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -135,12 +136,12 @@ val networkModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { MainViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.profile.UserProfileViewModel(get(), get(), get()) }
-    viewModel { PlayerViewModel(androidContext(), get(), get(), get()) }
+    viewModel { PlayerViewModel(androidApplication(), get(), get(), get()) }
     viewModel { PlaylistDetailViewModel(get(), androidContext()) }
     viewModel { com.yorkyang2333.claudwecho.ui.collection.MyCollectionViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recommend.DailyRecommendViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.recent.RecentlyPlayedViewModel(get()) }
-    viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidContext(), get()) }
+    viewModel { com.yorkyang2333.claudwecho.ui.settings.SettingsViewModel(androidApplication(), get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.search.SearchViewModel(get(), get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.songinfo.SongInfoViewModel(get()) }
     viewModel { com.yorkyang2333.claudwecho.ui.comment.CommentViewModel(get()) }

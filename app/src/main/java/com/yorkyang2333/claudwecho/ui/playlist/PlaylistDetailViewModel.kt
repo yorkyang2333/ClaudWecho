@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.ui.playlist
 
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yorkyang2333.claudwecho.data.MainRepository
@@ -121,10 +122,10 @@ class PlaylistDetailViewModel(
         _sortOrder.value = order
         val id = currentPlaylistId
         if (id != -1L) {
-            prefs.edit()
-                .putString("sort_mode_$id", mode.name)
-                .putString("sort_order_$id", order.name)
-                .apply()
+            prefs.edit {
+                putString("sort_mode_$id", mode.name)
+                putString("sort_order_$id", order.name)
+            }
         }
     }
 

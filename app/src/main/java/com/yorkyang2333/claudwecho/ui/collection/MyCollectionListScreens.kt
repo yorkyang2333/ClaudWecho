@@ -38,7 +38,7 @@ fun MyCollectionPlaylistsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val currentUserId by viewModel.currentUserId.collectAsState()
 
-    var selectedTabIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(0) }
+    var selectedTabIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
 
     androidx.compose.runtime.LaunchedEffect(Unit) {
         viewModel.loadData(forceRefresh = false)

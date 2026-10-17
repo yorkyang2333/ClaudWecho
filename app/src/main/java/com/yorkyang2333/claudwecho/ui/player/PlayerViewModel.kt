@@ -1,8 +1,10 @@
 package com.yorkyang2333.claudwecho.ui.player
 
+import androidx.core.net.toUri
 import android.content.ComponentName
 import android.content.Context
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -30,11 +32,12 @@ import kotlinx.coroutines.delay
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class PlayerViewModel(
-    private val context: Context,
+    application: Application,
     private val repository: MainRepository,
     private val playbackStateManager: com.yorkyang2333.claudwecho.data.PlaybackStateManager,
     val sleepTimerManager: com.yorkyang2333.claudwecho.data.SleepTimerManager
-) : ViewModel() {
+) : AndroidViewModel(application) {
+    private val context: Application get() = getApplication()
 
     private var controllerFuture: ListenableFuture<MediaController>? = null
     var player: MediaController? = null
@@ -689,7 +692,7 @@ class PlayerViewModel(
     }
 
     private fun Song.toMediaItem(): MediaItem {
-        val artworkUri = displayAlbum?.picUrl?.let { android.net.Uri.parse(it) }
+        val artworkUri = displayAlbum?.picUrl?.let { it.toUri() }
         return MediaItem.Builder()
             .setMediaId(id.toString())
             .setUri("netease://song/$id")

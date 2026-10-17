@@ -1,5 +1,6 @@
 package com.yorkyang2333.claudwecho.data
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import com.yorkyang2333.claudwecho.data.api.Song
@@ -16,10 +17,10 @@ class PlaybackStateManager(context: Context) {
     fun saveState(songs: List<Song>, index: Int) {
         try {
             val jsonStr = json.encodeToString(songs)
-            prefs.edit()
-                .putString("last_playlist", jsonStr)
-                .putInt("last_index", index)
-                .apply()
+            prefs.edit {
+                putString("last_playlist", jsonStr)
+                putInt("last_index", index)
+            }
         } catch (e: Exception) {
             // Ignore
         }
@@ -39,10 +40,10 @@ class PlaybackStateManager(context: Context) {
     }
 
     fun savePlaybackMode(repeatMode: Int, shuffleMode: Boolean) {
-        prefs.edit()
-            .putInt("repeat_mode", repeatMode)
-            .putBoolean("shuffle_mode", shuffleMode)
-            .apply()
+        prefs.edit {
+            putInt("repeat_mode", repeatMode)
+            putBoolean("shuffle_mode", shuffleMode)
+        }
     }
 
     fun getRepeatMode(): Int {
