@@ -44,7 +44,8 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
     val lyrics by viewModel.lyrics.collectAsState()
     val currentLyricIndex by viewModel.currentLyricIndex.collectAsState()
     val currentTitle by viewModel.currentTrackTitle.collectAsState()
-    val currentPosition by viewModel.currentPosition.collectAsState()
+    // Read the playback clock only during drawing, not while composing the list.
+    val currentPosition = viewModel.currentPosition.collectAsState()
     val verbatimLyricsEnabled by viewModel.verbatimLyricsEnabled.collectAsState()
     val listState = rememberScalingLazyListState()
 
@@ -154,7 +155,13 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
                             SweepingVerbatimLyricText(
                                 text = line.text,
                                 words = line.words,
-                                currentPosition = currentPosition,
+                                currentPosition = {
+                                    when {
+                                        isCurrent -> currentPosition.value
+                                        index < currentLyricIndex -> Long.MAX_VALUE
+                                        else -> Long.MIN_VALUE
+                                    }
+                                },
                                 activeColor = activeColor,
                                 inactiveColor = inactiveColor,
                                 baseTextStyle = mainTextStyle
@@ -198,13 +205,21 @@ fun LyricsScreen(viewModel: PlayerViewModel, isActivePage: Boolean = true) {
 private fun SweepingVerbatimLyricText(
     text: String,
     words: List<LyricWord>,
-    currentPosition: Long,
+    currentPosition: () -> Long,
     activeColor: Color,
     inactiveColor: Color,
     baseTextStyle: androidx.compose.ui.text.TextStyle
 ) {
     var layoutResult by remember(text) { mutableStateOf<TextLayoutResult?>(null) }
     val clipPath = remember(text) { Path() }
+    val wordBounds = remember(words, layoutResult) {
+        val layout = layoutResult
+        if (layout == null) emptyList() else buildVerbatimWordBounds(
+            words = words,
+            textLength = layout.layoutInput.text.length,
+            boundingBox = layout::getBoundingBox
+        )
+    }
 
     Box(contentAlignment = Alignment.Center) {
         // 底层：未扫过状态的完整文本（自带阴影，保证文字可读性）
@@ -223,90 +238,32 @@ private fun SweepingVerbatimLyricText(
             color = activeColor,
             textAlign = TextAlign.Center,
             modifier = Modifier.drawWithContent {
-                val layout = layoutResult ?: return@drawWithContent
+                val position = currentPosition()
                 clipPath.reset()
 
-                var charOffset = 0
-                for (word in words) {
-                    val wordLen = word.text.length
-                    val wordStart = word.startTimeMs
-                    val wordDur = word.durationMs.coerceAtLeast(1L)
-                    val wordEnd = word.endTimeMs
-
-                    if (currentPosition >= wordEnd) {
-                        // 词已唱完：完整裁切整词区域
-                        val cStart = charOffset.coerceIn(0, layout.layoutInput.text.length)
-                        val cEnd = (charOffset + wordLen - 1).coerceIn(0, layout.layoutInput.text.length - 1)
-                        if (cStart <= cEnd) {
-                            val firstBox = layout.getBoundingBox(cStart)
-                            val lastBox = layout.getBoundingBox(cEnd)
-                            if (firstBox.top == lastBox.top) {
-                                clipPath.addRect(
-                                    Rect(
-                                        left = firstBox.left,
-                                        top = firstBox.top,
-                                        right = lastBox.right,
-                                        bottom = firstBox.bottom
-                                    )
-                                )
-                            } else {
-                                for (i in 0 until wordLen) {
-                                    val ci = charOffset + i
-                                    if (ci < layout.layoutInput.text.length) {
-                                        clipPath.addRect(layout.getBoundingBox(ci))
-                                    }
-                                }
-                            }
-                        }
-                    } else if (currentPosition > wordStart) {
-                        // 词正在唱：按时间比例从左到右平滑扫光
-                        val fraction = ((currentPosition - wordStart).toFloat() / wordDur.toFloat()).coerceIn(0f, 1f)
-                        val cStart = charOffset.coerceIn(0, layout.layoutInput.text.length)
-                        val cEnd = (charOffset + wordLen - 1).coerceIn(0, layout.layoutInput.text.length - 1)
-                        if (cStart <= cEnd) {
-                            val firstBox = layout.getBoundingBox(cStart)
-                            val lastBox = layout.getBoundingBox(cEnd)
-                            if (firstBox.top == lastBox.top) {
-                                val wordLeft = firstBox.left
-                                val wordRight = lastBox.right
-                                val sweepRight = wordLeft + (wordRight - wordLeft) * fraction
-                                clipPath.addRect(
-                                    Rect(
-                                        left = wordLeft,
-                                        top = firstBox.top,
-                                        right = sweepRight,
-                                        bottom = firstBox.bottom
-                                    )
-                                )
-                            } else {
-                                val totalCharsFraction = fraction * wordLen
-                                val completedChars = totalCharsFraction.toInt()
-                                val partialCharFraction = totalCharsFraction - completedChars
-
-                                for (i in 0 until completedChars) {
-                                    val ci = charOffset + i
-                                    if (ci < layout.layoutInput.text.length) {
-                                        clipPath.addRect(layout.getBoundingBox(ci))
-                                    }
-                                }
-                                if (completedChars < wordLen) {
-                                    val ci = charOffset + completedChars
-                                    if (ci < layout.layoutInput.text.length) {
-                                        val cBox = layout.getBoundingBox(ci)
-                                        clipPath.addRect(
-                                            Rect(
-                                                left = cBox.left,
-                                                top = cBox.top,
-                                                right = cBox.left + cBox.width * partialCharFraction,
-                                                bottom = cBox.bottom
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                for (wordIndex in wordBounds.indices) {
+                    val word = words[wordIndex]
+                    val bounds = wordBounds[wordIndex]
+                    val fraction = when {
+                        position >= word.endTimeMs -> 1f
+                        position <= word.startTimeMs -> 0f
+                        else -> ((position - word.startTimeMs).toFloat() /
+                            word.durationMs.coerceAtLeast(1L)).coerceIn(0f, 1f)
                     }
-                    charOffset += wordLen
+                    val sweptBounds = fraction * bounds.size
+                    for (index in bounds.indices) {
+                        val rect = bounds[index]
+                        val sweptFraction = (sweptBounds - index).coerceIn(0f, 1f)
+                        if (sweptFraction <= 0f) break
+                        clipPath.addRect(
+                            if (sweptFraction == 1f) rect else Rect(
+                                left = rect.left,
+                                top = rect.top,
+                                right = rect.left + rect.width * sweptFraction,
+                                bottom = rect.bottom
+                            )
+                        )
+                    }
                 }
 
                 clipPath(clipPath) {
