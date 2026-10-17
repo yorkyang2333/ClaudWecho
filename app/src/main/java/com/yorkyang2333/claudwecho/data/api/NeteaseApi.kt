@@ -3,16 +3,14 @@ package com.yorkyang2333.claudwecho.data.api
 import kotlinx.serialization.Serializable
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface NeteaseApi {
-    @FormUrlEncoded
     @POST("/audio/match")
     suspend fun matchAudio(
-        @Field("duration") duration: Int,
-        @Field("audioFP") fingerprint: String
+        @Query("duration") duration: Int,
+        @Query("audioFP") fingerprint: String,
+        @Query("timestamp") timestamp: Long = System.currentTimeMillis()
     ): AudioMatchResponse
 
     @GET("/song/detail")

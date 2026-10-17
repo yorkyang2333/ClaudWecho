@@ -30,10 +30,36 @@ class RecognitionRepositoryTest {
         assertEquals("Artist", songs.first().displayArtists.first().name)
         assertEquals(1, songs.last().fee)
         assertEquals("POST", requests.first().method)
-        val form = requests.first().body as FormBody
-        assertEquals("3", form.value((0 until form.size).first { form.name(it) == "duration" }))
-        assertEquals("a+b/c==", form.value((0 until form.size).first { form.name(it) == "audioFP" }))
+        assertEquals("3", requests.first().url.queryParameter("duration"))
+        assertEquals("a+b/c==", requests.first().url.queryParameter("audioFP"))
+        assertNotNull(requests.first().url.queryParameter("timestamp"))
         assertEquals("2,1", requests.last().url.queryParameter("ids"))
+    }
+
+    @Test fun newRecordingDoesNotReuseCachedNoMatch() = runBlocking {
+        val requests = mutableListOf<Request>()
+        val cache = mutableMapOf<String, String>()
+        val repository = repository(requests) { request ->
+            if (request.url.encodedPath == "/audio/match") {
+                // The upstream middleware caches by URL and cookies, ignoring the body.
+                cache.getOrPut(request.url.toString()) {
+                    val form = request.body as? FormBody
+                    val bodyFingerprint = form?.let { body ->
+                        (0 until body.size).firstOrNull { body.name(it) == "audioFP" }?.let(body::value)
+                    }
+                    if ((request.url.queryParameter("audioFP") ?: bodyFingerprint) == "silence") {
+                        """{"code":200,"data":{"result":[]}}"""
+                    } else {
+                        """{"code":200,"data":{"result":[{"song":{"id":1}}]}}"""
+                    }
+                }
+            } else {
+                """{"code":200,"songs":[{"id":1,"name":"Song"}]}"""
+            }
+        }
+        assertTrue(repository.recognize("silence").isEmpty())
+        assertEquals(listOf(1L), repository.recognize("music").map { it.id })
+        assertEquals(2, cache.size)
     }
 
     @Test fun absentOrEmptyMatchesDoNotRequestSongDetails() = runBlocking {
