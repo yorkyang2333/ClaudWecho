@@ -10,7 +10,11 @@ plugins {
 
 android {
     namespace = "com.yorkyang2333.claudwecho"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
